@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "WorldAttributes", menuName = "TerrainGenerator/World Attribute")]
+[CreateAssetMenu(fileName = "WorldAttributes", menuName = "TerrainGenerator/World Attributes")]
 public class WorldAttributes : ScriptableObject
 {
     

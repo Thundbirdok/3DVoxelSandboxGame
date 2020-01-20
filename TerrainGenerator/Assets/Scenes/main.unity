@@ -151,7 +151,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46ee6ff98c4da5946a2ff026918048b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  worldAttributes: {fileID: 11400000, guid: 066f8b69334cb604fa7917a1abeff6d6, type: 2}
+  worldAttributes: {fileID: 11400000, guid: 7b2461927aaab6c4fbb7f120a9d60cf1, type: 2}
+  blocksAttributes: {fileID: 11400000, guid: 1dcba7852861e3d468a35c719585c0b1, type: 2}
   meshRenderer: {fileID: 1046901250}
   meshFilter: {fileID: 1046901251}
 --- !u!23 &1046901250
@@ -171,7 +172,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: ca30f17403ce81e4ea0f665356fe8bcf, type: 2}
+  - {fileID: 2100000, guid: 97eeaa3f2c3d3774b991ce54fdc1fd76, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
