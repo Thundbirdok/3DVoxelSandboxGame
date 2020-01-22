@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NewBehaviourScript
   chunkWidth: 16
   chunkHeight: 256
+  worldSizeInChunks: 64

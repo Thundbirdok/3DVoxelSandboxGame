@@ -10,6 +10,20 @@ public class BlocksAttributes : ScriptableObject
     private Material material;
     [SerializeField]
     private BlockType[] blocktypes;
+    
+    public Material Material { get => material; }
+
+    [SerializeField]
+    private int textureAtlasSizeInBlocks;
+
+    public int TextureAtlasSizeInBlocks { get => textureAtlasSizeInBlocks; }
+
+    public float NormalizedBlockTextureSize
+    {
+
+        get { return 1f / (float)textureAtlasSizeInBlocks; }
+
+    }
 
     public BlockType[] Blocktypes { get => blocktypes; }
 

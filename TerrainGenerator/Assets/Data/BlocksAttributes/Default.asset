@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: ead9703ddec522b4b8efc9651582efb8, type: 3}
   m_Name: Default
-  m_EditorClassIdentifier: Assembly-CSharp::BlocksAttributes
+  m_EditorClassIdentifier: 
   material: {fileID: 2100000, guid: 97eeaa3f2c3d3774b991ce54fdc1fd76, type: 2}
   blocktypes:
   - blockName: Air
@@ -46,38 +46,14 @@ MonoBehaviour:
     bottomFaceTexture: 1
     leftFaceTexture: 2
     rightFaceTexture: 2
-  - blockName: Sand
+  - blockName: Dirt
     isSolid: 1
-    backFaceTexture: 10
-    frontFaceTexture: 10
-    topFaceTexture: 10
-    bottomFaceTexture: 10
-    leftFaceTexture: 10
-    rightFaceTexture: 10
-  - blockName: Wood Plank
-    isSolid: 1
-    backFaceTexture: 4
-    frontFaceTexture: 4
-    topFaceTexture: 4
-    bottomFaceTexture: 4
-    leftFaceTexture: 4
-    rightFaceTexture: 4
-  - blockName: Wood
-    isSolid: 1
-    backFaceTexture: 5
-    frontFaceTexture: 5
-    topFaceTexture: 6
-    bottomFaceTexture: 6
-    leftFaceTexture: 5
-    rightFaceTexture: 5
-  - blockName: Coal Ore
-    isSolid: 1
-    backFaceTexture: 3
-    frontFaceTexture: 3
-    topFaceTexture: 3
-    bottomFaceTexture: 3
-    leftFaceTexture: 3
-    rightFaceTexture: 3
+    backFaceTexture: 1
+    frontFaceTexture: 1
+    topFaceTexture: 1
+    bottomFaceTexture: 1
+    leftFaceTexture: 1
+    rightFaceTexture: 1
   - blockName: Cobblestone
     isSolid: 1
     backFaceTexture: 8
@@ -86,7 +62,31 @@ MonoBehaviour:
     bottomFaceTexture: 8
     leftFaceTexture: 8
     rightFaceTexture: 8
-  - blockName: Double Brick Slab
+  - blockName: Sand
+    isSolid: 1
+    backFaceTexture: 10
+    frontFaceTexture: 10
+    topFaceTexture: 10
+    bottomFaceTexture: 10
+    leftFaceTexture: 10
+    rightFaceTexture: 10
+  - blockName: Wood
+    isSolid: 1
+    backFaceTexture: 5
+    frontFaceTexture: 5
+    topFaceTexture: 6
+    bottomFaceTexture: 6
+    leftFaceTexture: 5
+    rightFaceTexture: 5
+  - blockName: Wood Plank
+    isSolid: 1
+    backFaceTexture: 4
+    frontFaceTexture: 4
+    topFaceTexture: 4
+    bottomFaceTexture: 4
+    leftFaceTexture: 4
+    rightFaceTexture: 4
+  - blockName: Bricks
     isSolid: 1
     backFaceTexture: 11
     frontFaceTexture: 11
@@ -94,6 +94,14 @@ MonoBehaviour:
     bottomFaceTexture: 11
     leftFaceTexture: 11
     rightFaceTexture: 11
+  - blockName: Coal Ore
+    isSolid: 1
+    backFaceTexture: 3
+    frontFaceTexture: 3
+    topFaceTexture: 3
+    bottomFaceTexture: 3
+    leftFaceTexture: 3
+    rightFaceTexture: 3
   - blockName: Furnace
     isSolid: 1
     backFaceTexture: 13
@@ -110,3 +118,4 @@ MonoBehaviour:
     bottomFaceTexture: 15
     leftFaceTexture: 13
     rightFaceTexture: 13
+  textureAtlasSizeInBlocks: 4

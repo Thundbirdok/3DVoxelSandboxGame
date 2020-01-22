@@ -3,15 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public static class VoxelData
-{
-
-    public static readonly int TextureAtlasSizeInBlocks = 4;
-    public static float NormalizedBlockTextureSize
-    {
-
-        get { return 1f / (float)TextureAtlasSizeInBlocks; }
-
-    }
+{    
 
     public static readonly Vector3[] voxelVerts = new Vector3[8] {
 
