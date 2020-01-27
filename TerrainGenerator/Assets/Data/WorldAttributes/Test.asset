@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   chunkWidth: 16
   chunkHeight: 16
-  worldSizeInChunks: 10
+  worldSizeInChunks: 8

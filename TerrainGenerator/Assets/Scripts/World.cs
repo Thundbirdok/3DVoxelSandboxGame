@@ -5,132 +5,162 @@ using UnityEngine;
 public class World : MonoBehaviour
 {
 
-    [SerializeField]
-    private WorldAttributes worldAttributes;
-    [SerializeField]
-    private BlocksAttributes blocksAttributes;    
+	[SerializeField]
+	private WorldAttributes worldAttributes;
+	[SerializeField]
+	private BlocksAttributes blocksAttributes;
 
-    Chunk[,] chunks;
+	public WorldAttributes WorldAttributes { get => worldAttributes; }
+	public BlocksAttributes BlocksAttributes { get => blocksAttributes; }
+    public Chunk[,] Chunks { get; private set; }
 
     private void Start()
-    {
+	{
 
-        chunks = new Chunk[worldAttributes.WorldSizeInChunks, worldAttributes.WorldSizeInChunks];
+		Chunks = new Chunk[WorldAttributes.WorldSizeInChunks, WorldAttributes.WorldSizeInChunks];
 
-        GenerateWorld(); 
+		GenerateWorld(); 
 
-    }
+	}
 
-    private void Update()
-    {
+	private void Update()
+	{
 
 
 
-    }
+	}
 
-    private void GenerateWorld()
-    {
+	private void GenerateWorld()
+	{
 
-        for (int x = 0; x < worldAttributes.WorldSizeInChunks; ++x)
-        {
+		for (int x = 0; x < WorldAttributes.WorldSizeInChunks; ++x)
+		{
 
-            for (int z = 0; z < worldAttributes.WorldSizeInChunks; ++z)
-            {
+			for (int z = 0; z < WorldAttributes.WorldSizeInChunks; ++z)
+			{
 
-                CreateChunk(new ChunkCoord(x, z));
+				CreateChunk(new ChunkCoord(x, z));
 
-            }
+			}
 
-        }
+		}
 
-        for (int x = 0; x < worldAttributes.WorldSizeInChunks; ++x)
-        {
+		for (int x = 0; x < WorldAttributes.WorldSizeInChunks; ++x)
+		{
 
-            for (int z = 0; z < worldAttributes.WorldSizeInChunks; ++z)
-            {
+			for (int z = 0; z < WorldAttributes.WorldSizeInChunks; ++z)
+			{
 
-                GenerateChunk(new ChunkCoord(x, z));
+				GenerateChunk(new ChunkCoord(x, z));
 
-            }
+			}
 
-        }
+		}
 
-    }
+	}
 
-    void GenerateChunk(ChunkCoord coord)
-    {
+	void GenerateChunk(ChunkCoord coord)
+	{
 
-        for (byte y = 0; y < worldAttributes.ChunkHeight; ++y)
-        {
+		for (byte y = 0; y < WorldAttributes.ChunkHeight; ++y)
+		{
 
-            for (int x = (y * worldAttributes.ChunkWidth) / worldAttributes.ChunkHeight; x < worldAttributes.ChunkWidth; ++x)
-            {
+			for (int x = (y * WorldAttributes.ChunkWidth) / WorldAttributes.ChunkHeight; x < WorldAttributes.ChunkWidth; ++x)
+			{
 
-                for (int z = (y * worldAttributes.ChunkWidth) / worldAttributes.ChunkHeight; z < worldAttributes.ChunkWidth; ++z)
-                {
+				for (int z = (y * WorldAttributes.ChunkWidth) / WorldAttributes.ChunkHeight; z < WorldAttributes.ChunkWidth; ++z)
+				{
 
-                    if (y == worldAttributes.ChunkHeight - 1)
-                    {
+					if (y == WorldAttributes.ChunkHeight - 1)
+					{
 
-                        chunks[coord.x, coord.z].voxelMap[x, y, z] = 3;
+						Chunks[coord.x, coord.z].voxelMap[x, y, z] = 3;
 
-                    }
-                    else if (y == 0)
-                    {
+					}
+					else if (y == 0)
+					{
 
-                        chunks[coord.x, coord.z].voxelMap[x, 0, z] = 1;
+						Chunks[coord.x, coord.z].voxelMap[x, 0, z] = 1;
 
-                    }
-                    else
-                    {
+					}
+					else
+					{
 
-                        chunks[coord.x, coord.z].voxelMap[x, y, z] = (byte)(2 + y % 11);
+						Chunks[coord.x, coord.z].voxelMap[x, y, z] = (byte)(2 + y % 11);
 
-                    }
+					}
 
-                }
+				}
 
-            }
+			}
 
-        }
+		}
 
-        chunks[coord.x, coord.z].Update();
+		Chunks[coord.x, coord.z].Update();
 
-    }
+	}
 
-    private void CreateChunk(ChunkCoord coord)
-    {
+	private void CreateChunk(ChunkCoord coord)
+	{
 
-        chunks[coord.x, coord.z] = new Chunk(new ChunkCoord(coord.x, coord.z), this, worldAttributes, blocksAttributes);
+		Chunks[coord.x, coord.z] = new Chunk(new ChunkCoord(coord.x, coord.z), this, WorldAttributes, BlocksAttributes);
 
-    }
+	}
+
+	public bool IsVoxelInWorld(int x, int y, int z)
+	{
+
+		if (x < WorldAttributes.WorldSizeInBlocks && z < WorldAttributes.WorldSizeInBlocks && y < WorldAttributes.ChunkHeight)
+		{
+
+			return true;
+
+		}
+
+		return false;
+
+	}
+
+	public bool IsVoxelInWorld(int x, int z)
+	{
+
+		if (x < WorldAttributes.WorldSizeInBlocks && z < WorldAttributes.WorldSizeInBlocks)
+		{
+
+			return true;
+
+		}
+
+		return false;
+
+	}
 
 }
 
 public class ChunkCoord
 {
 
-    public int x;
-    public int z;
+	public int x;
+	public int z;
 
-    public ChunkCoord(int _x, int _z)
-    {
+	public ChunkCoord(int _x, int _z)
+	{
 
-        x = _x;
-        z = _z;
+		x = _x;
+		z = _z;
 
-    }
+	}
 
-    public bool Equals(ChunkCoord other)
-    {
+	public bool Equals(ChunkCoord other)
+	{
 
-        if (other == null)
-            return false;
-        else if (other.x == x && other.z == z)
-            return true;
-        else
-            return false;
+		if (other == null)
+			return false;
+		else if (other.x == x && other.z == z)
+			return true;
+		else
+			return false;
 
-    }
+	}
 
 }
