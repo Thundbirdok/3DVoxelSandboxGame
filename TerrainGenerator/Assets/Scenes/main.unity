@@ -496,6 +496,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MapTexture: {fileID: 8400000, guid: 8048451ef2ee4744bac6a01babb7df14, type: 2}
   src: {fileID: 2800000, guid: 0bdbf6c7e67df704fa049a356e6d3c64, type: 3}
+  world: {fileID: 50123750}
 --- !u!1 &1958832994
 GameObject:
   m_ObjectHideFlags: 0

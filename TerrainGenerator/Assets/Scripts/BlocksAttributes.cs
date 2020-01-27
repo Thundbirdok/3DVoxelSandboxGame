@@ -25,8 +25,7 @@ public class BlocksAttributes : ScriptableObject
 
 	}
 
-	public BlockType[] Blocktypes { get => blocktypes; }
-
+	public BlockType[] Blocktypes { get => blocktypes; }	
 }
 
 [System.Serializable]

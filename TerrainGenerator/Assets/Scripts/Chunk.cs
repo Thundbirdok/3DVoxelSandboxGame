@@ -6,14 +6,14 @@ using UnityEngine;
 public class Chunk
 {
 
-	private WorldAttributes worldAttributes;
-	private BlocksAttributes blocksAttributes;
+	private readonly WorldAttributes worldAttributes;
+	private readonly BlocksAttributes blocksAttributes;
 
 	private MeshRenderer meshRenderer;
 	private MeshFilter meshFilter;
 
 	public ChunkCoord coord;
-	GameObject chunkObject;
+	private GameObject chunkObject;
 
 	private int vertexIndex = 0;
 	private List<Vector3> vertices = new List<Vector3>();

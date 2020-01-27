@@ -1,107 +1,200 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Map : MonoBehaviour
 {
-	[SerializeField]
-	private RenderTexture MapTexture;
+    [SerializeField]
+    private RenderTexture MapTexture;
 
-	[SerializeField]
-	private Texture2D src;
+    [SerializeField]
+    private Texture2D src;
 
-	// Start is called before the first frame update
-	void Start()
-	{
-		//
-		int WorldSizeInBlocks = 4096;
-		int BlocksInAtlas = 4;
-		//
+    [SerializeField]
+    private World world;
 
-		int widthOfBlockInSrc = src.width / BlocksInAtlas;
-		int heightOfBlockInSrc = src.height / BlocksInAtlas;
+    private Color[] MapColors;
 
-		int pixelsInBlockInSrc = widthOfBlockInSrc * heightOfBlockInSrc;
+    // Start is called before the first frame update
+    void Start()
+    {
 
-		Color[] srcPixels = src.GetPixels();
-		Color[] MapColors = new Color[BlocksInAtlas * BlocksInAtlas];
+        GetMapColors();
 
-		for (int x = 0; x < BlocksInAtlas; ++x)
-		{
+        GetMapTexture();
 
-			for (int y = 0; y < BlocksInAtlas; ++y)
-			{
+    }
 
-				float r = 0;
-				float g = 0;
-				float b = 0;
+    private void GetMapTexture()
+    {
 
-				int n = y * heightOfBlockInSrc * src.width + x * widthOfBlockInSrc;
+        Texture2D texRef = new Texture2D(MapTexture.width, MapTexture.height)
+        {
+            wrapMode = TextureWrapMode.Clamp,
+            filterMode = FilterMode.Point
+        };
 
-				for (int k = 0; k < widthOfBlockInSrc; ++k) 
-				{
+        Color[] MapPixels = new Color[MapTexture.width * MapTexture.height];
 
-					for (int m = 0; m < heightOfBlockInSrc; ++m)
-					{
+        int widthOfBlockInMap;        
 
-						Color c = srcPixels[n + k + m * src.width];
+        if (world.WorldAttributes.WorldSizeInBlocks <= MapTexture.width)
+        {
 
-						r += c.r;
-						g += c.g;
-						b += c.b;
+            widthOfBlockInMap = MapTexture.width / world.WorldAttributes.WorldSizeInBlocks;            
 
-					}
+            for (int x = 0; x < world.WorldAttributes.WorldSizeInBlocks; ++x)
+            {
 
-				}                
+                for (int z = 0; z < world.WorldAttributes.WorldSizeInBlocks; ++z)
+                {
 
-				MapColors[x + y * BlocksInAtlas] = new Color(r / pixelsInBlockInSrc, g / pixelsInBlockInSrc, b / pixelsInBlockInSrc);
+                    Color c = GetTopBlockColor(x, z);
 
-			}
+                    int n = z * widthOfBlockInMap * MapTexture.width + x * widthOfBlockInMap;
 
-		}
+                    for (int k = 0; k < widthOfBlockInMap; ++k)
+                    {
 
-		Texture2D texRef = new Texture2D(MapTexture.width, MapTexture.height);
+                        for (int m = 0; m < widthOfBlockInMap; ++m)
+                        {
 
-		texRef.wrapMode = TextureWrapMode.Clamp;
-		texRef.filterMode = FilterMode.Point;
+                            MapPixels[n + k + m * MapTexture.width] = c;
 
-		int widthOfBlockInMap = MapTexture.width / WorldSizeInBlocks;//если размер мира больше чем размер карты, то необходимо брать средний цвет от пикселей по кратности
-		int heightOfBlockInMap = MapTexture.height / WorldSizeInBlocks;		
+                        }
 
-		Color[] MapPixels = new Color[MapTexture.width * MapTexture.height];
+                    }
 
-		for (int x = 0; x < WorldSizeInBlocks; ++x)
-		{
+                }
 
-			for (int y = 0; y < WorldSizeInBlocks; ++y)
-			{
+            }
 
-				Color c = MapColors[x % 4 + (y % 4) * 4];
+        }
+        else
+        {
 
-				int n = y * heightOfBlockInMap * MapTexture.width + x * widthOfBlockInMap;
+            int widthOfPixelInMap = world.WorldAttributes.WorldSizeInBlocks / MapTexture.width;
 
-				for (int k = 0; k < widthOfBlockInMap; ++k)
-				{
+            int blocksInPixelInMap = widthOfPixelInMap * widthOfPixelInMap;
 
-					for (int m = 0; m < heightOfBlockInMap; ++m)
-					{
+            for (int x = 0; x < MapTexture.width; ++x)
+            {
 
-						MapPixels[n + k + m * MapTexture.width] = c;
+                for (int y = 0; y < MapTexture.height; ++y)
+                {
 
-					}
+                    float r = 0;
+                    float g = 0;
+                    float b = 0;                    
 
-				}
+                    for (int k = 0; k < widthOfPixelInMap; ++k)
+                    {
 
-			}
+                        for (int m = 0; m < widthOfPixelInMap; ++m)
+                        {
 
-		}
+                            Color c = GetTopBlockColor(x * widthOfPixelInMap + k, y * widthOfPixelInMap + m);
 
-		texRef.SetPixels(MapPixels);
+                            r += c.r;
+                            g += c.g;
+                            b += c.b;
 
-		texRef.Apply();
+                        }
 
-		Graphics.Blit(texRef, MapTexture);
+                    }
 
-	}
+                    MapPixels[y * MapTexture.width + x] = new Color(r / blocksInPixelInMap, g / blocksInPixelInMap, b / blocksInPixelInMap);
+
+                }
+
+            }
+
+        }
+
+        texRef.SetPixels(MapPixels);
+
+        texRef.Apply();
+
+        Graphics.Blit(texRef, MapTexture);
+
+    }
+
+    private Color GetTopBlockColor(int x, int z)
+    {
+        if (!world.IsVoxelInWorld(x, z))
+        {
+            return Color.black;
+        }
+
+        for (int y = world.WorldAttributes.ChunkHeight - 1; y >= 0; --y)
+        {
+
+            int blockIndex = world.Chunks[x / world.WorldAttributes.ChunkWidth,
+                z / world.WorldAttributes.ChunkWidth].voxelMap[x % world.WorldAttributes.ChunkWidth,
+                y, z % world.WorldAttributes.ChunkWidth];
+
+            if (world.BlocksAttributes.Blocktypes[blockIndex].isSolid)
+            {
+
+                return MapColors[world.BlocksAttributes.Blocktypes[blockIndex].topFaceTexture];
+
+            }
+
+        }
+
+        return Color.black;
+
+    }
+
+    private void GetMapColors()
+    {
+
+        int widthOfBlockInSrc = src.width / world.BlocksAttributes.TextureAtlasSizeInBlocks;
+        int heightOfBlockInSrc = src.height / world.BlocksAttributes.TextureAtlasSizeInBlocks;
+
+        int pixelsInBlockInSrc = widthOfBlockInSrc * heightOfBlockInSrc;
+
+        Color[] srcPixels = src.GetPixels();
+
+        MapColors = new Color[world.BlocksAttributes.TextureAtlasSizeInBlocks * world.BlocksAttributes.TextureAtlasSizeInBlocks];
+
+        for (int y = world.BlocksAttributes.TextureAtlasSizeInBlocks - 1; y >= 0; --y)
+        {
+
+            for (int x = 0; x < world.BlocksAttributes.TextureAtlasSizeInBlocks; ++x)
+            {
+
+                float r = 0;
+                float g = 0;
+                float b = 0;
+
+                int n = y * heightOfBlockInSrc * src.width + x * widthOfBlockInSrc;
+
+                for (int k = 0; k < widthOfBlockInSrc; ++k)
+                {
+
+                    for (int m = 0; m < heightOfBlockInSrc; ++m)
+                    {
+
+                        Color c = srcPixels[n + k + m * src.width];
+
+                        r += c.r;
+                        g += c.g;
+                        b += c.b;
+
+                    }
+
+                }
+
+                Color color = new Color(r / pixelsInBlockInSrc, g / pixelsInBlockInSrc, b / pixelsInBlockInSrc);
+                MapColors[x + (world.BlocksAttributes.TextureAtlasSizeInBlocks - 1 - y)
+                    * world.BlocksAttributes.TextureAtlasSizeInBlocks] = color;
+
+            }
+
+        }
+
+    }
 
 }
