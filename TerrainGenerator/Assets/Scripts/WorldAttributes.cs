@@ -12,12 +12,10 @@ public class WorldAttributes : ScriptableObject
 	private int chunkHeight;
 
 	[SerializeField]
-	private int worldSizeInChunks;   
+	private int powerOfTwoOfWorldSizeInChunks;  
 
 	public int ChunkWidth { get => chunkWidth; }
 	public int ChunkHeight { get => chunkHeight; }
-	public int WorldSizeInChunks { get => worldSizeInChunks; }
-	
-	[SerializeField]
-	public int WorldSizeInBlocks { get => worldSizeInChunks * chunkWidth; }
+	public int WorldSizeInChunks { get => 1 << powerOfTwoOfWorldSizeInChunks; }	
+	public int WorldSizeInBlocks { get => WorldSizeInChunks * chunkWidth; }
 }
