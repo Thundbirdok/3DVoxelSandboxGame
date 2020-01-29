@@ -86,7 +86,7 @@ MonoBehaviour:
     bottomFaceTexture: 4
     leftFaceTexture: 4
     rightFaceTexture: 4
-  - blockName: Bricks
+  - blockName: Water
     isSolid: 1
     backFaceTexture: 11
     frontFaceTexture: 11
@@ -118,4 +118,12 @@ MonoBehaviour:
     bottomFaceTexture: 15
     leftFaceTexture: 13
     rightFaceTexture: 13
+  - blockName: Water
+    isSolid: 0
+    backFaceTexture: 0
+    frontFaceTexture: 0
+    topFaceTexture: 0
+    bottomFaceTexture: 0
+    leftFaceTexture: 0
+    rightFaceTexture: 0
   textureAtlasSizeInBlocks: 4
