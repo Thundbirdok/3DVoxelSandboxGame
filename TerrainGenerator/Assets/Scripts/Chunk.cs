@@ -32,7 +32,7 @@ public class Chunk
 		chunkObject = new GameObject();
 		chunkObject.transform.position = new Vector3(coord.x * worldAttributes.ChunkWidth, 0f, coord.z * worldAttributes.ChunkWidth);
 
-		voxelMap = new byte[worldAttributes.ChunkWidth, worldAttributes.ChunkHeight, worldAttributes.ChunkWidth];
+		voxelMap = new byte[worldAttributes.ChunkWidth, worldAttributes.ChunkHeight, worldAttributes.ChunkWidth];		
 
 		meshRenderer = chunkObject.AddComponent<MeshRenderer>();
 		meshFilter = chunkObject.AddComponent<MeshFilter>();        
@@ -44,14 +44,51 @@ public class Chunk
 
 	}
 	
-	public void Update ()
+	private void ClearMeshData()
 	{
-		CreateMeshData();
-		CreateMesh();
+
+		vertexIndex = 0;
+		vertices.Clear();
+		triangles.Clear();
+		uvs.Clear();
+
 	}
 
-	private void CreateMeshData()
+	public void Clear()
 	{
+
+		ClearMeshData();
+
+		for (int i = 0; i < worldAttributes.ChunkWidth; ++i)
+		{
+
+			for (int j = 0; j < worldAttributes.ChunkWidth; ++j)
+			{
+
+				for (int k = 0; k < worldAttributes.ChunkWidth; ++k)
+				{
+
+					voxelMap[i, j, k] = 0;
+
+				}
+
+			}
+
+		}
+
+	}
+
+	public void Update ()
+	{
+
+		ClearMeshData();
+		UpdateChunk();
+		CreateMesh();
+
+	}
+
+	private void UpdateChunk()
+	{		
 
 		for (int y = 0; y < worldAttributes.ChunkHeight; ++y)
 		{
@@ -62,7 +99,7 @@ public class Chunk
 				for (int z = 0; z < worldAttributes.ChunkWidth; ++z)
 				{
 
-					AddVoxelDataToChunk(new Vector3(x, y, z));
+					UpdateMeshData(new Vector3(x, y, z));
 
 				}
 
@@ -90,7 +127,7 @@ public class Chunk
 
 	}
 
-	private void AddVoxelDataToChunk(Vector3 pos)
+	private void UpdateMeshData(Vector3 pos)
 	{
 
 		if (CheckVoxel(pos))

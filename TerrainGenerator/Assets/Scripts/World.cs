@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,10 +12,11 @@ public class World : MonoBehaviour
 	private BlocksAttributes blocksAttributes;
 
 	public WorldAttributes WorldAttributes { get => worldAttributes; }
+
 	public BlocksAttributes BlocksAttributes { get => blocksAttributes; }
     public Chunk[,] Chunks { get; private set; }
 
-	IWorldGenerator generator;
+	public IWorldGenerator generator;
 
     private void Start()
 	{
@@ -28,23 +30,48 @@ public class World : MonoBehaviour
 	}
 
 	private void Update()
-	{
-
-
+	{		
 
 	}
 
-	private void GenerateWorld()
+	public void GenerateWorld()
 	{
 
 		generator.GenerateWorld(this);
 
-	}	
+	}
+
+	//internal void Clear()
+	//{
+
+	//	for (int i = 0; i < WorldAttributes.WorldSizeInChunks; ++i)
+	//	{
+
+	//		for (int j = 0; j < WorldAttributes.WorldSizeInChunks; ++j)
+	//		{
+
+	//			Chunks[i, j];
+
+	//		}
+
+	//	}
+
+	//}
 
 	public void CreateChunk(ChunkCoord coord)
 	{
 
-		Chunks[coord.x, coord.z] = new Chunk(new ChunkCoord(coord.x, coord.z), this, WorldAttributes, BlocksAttributes);
+		if (Chunks[coord.x, coord.z] == null) {
+
+			Chunks[coord.x, coord.z] = new Chunk(new ChunkCoord(coord.x, coord.z), this, WorldAttributes, BlocksAttributes);
+
+		}
+		else
+		{
+
+			Chunks[coord.x, coord.z].Clear();
+
+		}
 
 	}
 
