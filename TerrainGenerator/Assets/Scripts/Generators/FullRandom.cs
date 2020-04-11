@@ -13,8 +13,6 @@ class FullRandom : IWorldGenerator
 
         Random rand = new Random();
 
-//        world.Clear();
-
         for (int x = 0; x < world.WorldAttributes.WorldSizeInChunks; ++x)
         {
 

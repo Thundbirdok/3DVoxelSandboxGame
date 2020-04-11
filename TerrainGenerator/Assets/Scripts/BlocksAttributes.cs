@@ -34,6 +34,7 @@ public class BlockType
 
 	public string blockName;
 	public bool isSolid;
+	public bool isLiquid;
 
 	[Header("Texture Values")]
 	public int backFaceTexture;

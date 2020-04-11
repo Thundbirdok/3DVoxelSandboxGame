@@ -16,7 +16,7 @@ public class World : MonoBehaviour
 	public BlocksAttributes BlocksAttributes { get => blocksAttributes; }
     public Chunk[,] Chunks { get; private set; }
 
-	public IWorldGenerator generator;
+	private IWorldGenerator generator;
 
     private void Start()
 	{
@@ -33,30 +33,31 @@ public class World : MonoBehaviour
 	{		
 
 	}
+	
+	public void GenerateWorldFullRandom()
+	{
 
-	public void GenerateWorld()
+		generator = new FullRandom();
+
+		GenerateWorld();
+
+	}
+
+	public void GenerateWorldRandomHills()
+	{
+
+		generator = new RandomHills();
+
+		GenerateWorld();
+
+	}
+
+	private void GenerateWorld()
 	{
 
 		generator.GenerateWorld(this);
 
 	}
-
-	//internal void Clear()
-	//{
-
-	//	for (int i = 0; i < WorldAttributes.WorldSizeInChunks; ++i)
-	//	{
-
-	//		for (int j = 0; j < WorldAttributes.WorldSizeInChunks; ++j)
-	//		{
-
-	//			Chunks[i, j];
-
-	//		}
-
-	//	}
-
-	//}
 
 	public void CreateChunk(ChunkCoord coord)
 	{
@@ -101,7 +102,27 @@ public class World : MonoBehaviour
 
 		return false;
 
-	}	
+	}
+	
+	public ChunkCoord GetChunkCoord(Vector3 coord)
+	{
+
+		int x = Mathf.FloorToInt(coord.x / WorldAttributes.ChunkWidth);
+		int z = Mathf.FloorToInt(coord.z / WorldAttributes.ChunkWidth);
+
+		return new ChunkCoord(x, z);
+
+	}
+
+	public ChunkCoord GetChunkCoord(int x, int z)
+	{
+
+		int _x = x / WorldAttributes.ChunkWidth;
+		int _z = z / WorldAttributes.ChunkWidth;
+
+		return new ChunkCoord(_x, _z);
+
+	}
 
 }
 

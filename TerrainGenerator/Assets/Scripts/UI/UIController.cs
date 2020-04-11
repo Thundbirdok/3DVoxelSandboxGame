@@ -13,8 +13,16 @@ public class UIController : MonoBehaviour
 
     [SerializeField]
     private GameObject Map;
+    private Map MapScript;
 
     private bool isShow;
+
+    public void Awake()
+    {
+
+        MapScript = Map.GetComponent<Map>();
+
+    }
 
     private void Update()
     {
@@ -100,9 +108,18 @@ public class UIController : MonoBehaviour
     public void GenerateWorldFullRandom()
     {
 
-        World.generator = new FullRandom();
+        World.GenerateWorldRandomHills();
 
-        World.GenerateWorld();
+        MapScript.CreateMap();
+
+    }
+
+    public void GenerateWorldRandomHills()
+    {        
+
+        World.GenerateWorldRandomHills();
+
+        MapScript.CreateMap();
 
     }
 

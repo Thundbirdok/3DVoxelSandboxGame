@@ -20,6 +20,13 @@ public class Map : MonoBehaviour
     void Start()
     {
 
+        CreateMap();
+
+    }
+
+    public void CreateMap()
+    {
+
         GetMapColors();
 
         GetMapTexture();
