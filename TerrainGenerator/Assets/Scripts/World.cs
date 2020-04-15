@@ -52,6 +52,15 @@ public class World : MonoBehaviour
 
 	}
 
+	public void GenerateWorldPerlinNoise()
+	{
+
+		generator = new PerlinNoise();
+
+		GenerateWorld();
+
+	}
+
 	private void GenerateWorld()
 	{
 
