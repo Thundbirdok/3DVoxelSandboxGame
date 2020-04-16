@@ -50,11 +50,12 @@ public class PerlinNoise : IWorldGenerator
     void IWorldGenerator.GenerateWorld(World world)
     {
 
-        BiomeAttributes Plain = new BiomeAttributes();
-        
-        Plain.solidGroundHeight = world.WorldAttributes.ChunkHeight / 3;
-        Plain.terrainHeight = world.WorldAttributes.ChunkHeight / 2;
-        Plain.terrainScale = 0.25f;
+        BiomeAttributes Plain = new BiomeAttributes
+        {
+            solidGroundHeight = world.WorldAttributes.ChunkHeight / 6,
+            terrainHeight = world.WorldAttributes.ChunkHeight / 6,
+            terrainScale = 2f / world.WorldAttributes.ChunkHeight
+        };
 
         for (int x = 0; x < world.WorldAttributes.WorldSizeInChunks; ++x)
         {
@@ -97,9 +98,15 @@ public class PerlinNoise : IWorldGenerator
         int yPos = Mathf.FloorToInt(pos.y);
         
         if (yPos == 0)
-            return 1;        
+            return 1;
 
-        int terrainHeight = Mathf.FloorToInt(biome.terrainHeight * Noise.Get2DPerlin(world, new Vector2(pos.x, pos.z), 0, biome.terrainScale)) + biome.solidGroundHeight;
+        int terrainHeight = 0;
+
+        terrainHeight += Mathf.FloorToInt(biome.terrainHeight * Noise.Get2DPerlin(world, new Vector2(pos.x, pos.z), 0, biome.terrainScale)) + biome.solidGroundHeight;
+        terrainHeight += Mathf.FloorToInt(0.5f * biome.terrainHeight * Noise.Get2DPerlin(world, new Vector2(pos.x, pos.z), 1, biome.terrainScale * 8));
+        terrainHeight += Mathf.FloorToInt(0.25f * biome.terrainHeight * Noise.Get2DPerlin(world, new Vector2(pos.x, pos.z), 2, biome.terrainScale * 16));
+
+
         byte voxelValue;
 
         if (yPos == terrainHeight)
