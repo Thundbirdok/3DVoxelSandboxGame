@@ -12,10 +12,15 @@ public class WorldAttributes : ScriptableObject
 	private int chunkHeight;
 
 	[SerializeField]
-	private int powerOfTwoOfWorldSizeInChunks;  
+	private int powerOfTwoOfWorldSizeInChunks;
+
+	[SerializeField]
+	private BiomeAttributes[] biomeAttributes;
 
 	public int ChunkWidth { get => chunkWidth; }
 	public int ChunkHeight { get => chunkHeight; }
 	public int WorldSizeInChunks { get => 1 << powerOfTwoOfWorldSizeInChunks; }	
 	public int WorldSizeInBlocks { get => WorldSizeInChunks * chunkWidth; }
+	public BiomeAttributes[] BiomeAttributes { get => biomeAttributes; set => biomeAttributes = value; }	
+
 }

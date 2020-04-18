@@ -113,21 +113,21 @@ public class World : MonoBehaviour
 
 	}
 	
-	public ChunkCoord GetChunkCoord(Vector3 coord)
+	public ChunkCoord GetChunkCoord(Vector3 pos)
 	{
 
-		int x = Mathf.FloorToInt(coord.x / WorldAttributes.ChunkWidth);
-		int z = Mathf.FloorToInt(coord.z / WorldAttributes.ChunkWidth);
+		int x = Mathf.FloorToInt(pos.x / WorldAttributes.ChunkWidth);
+		int z = Mathf.FloorToInt(pos.z / WorldAttributes.ChunkWidth);
 
 		return new ChunkCoord(x, z);
 
 	}
 
-	public ChunkCoord GetChunkCoord(int x, int z)
+	public ChunkCoord GetChunkCoord(Vector2 pos)
 	{
 
-		int _x = x / WorldAttributes.ChunkWidth;
-		int _z = z / WorldAttributes.ChunkWidth;
+		int _x = Mathf.FloorToInt(pos.x / WorldAttributes.ChunkWidth);
+		int _z = Mathf.FloorToInt(pos.y / WorldAttributes.ChunkWidth);
 
 		return new ChunkCoord(_x, _z);
 

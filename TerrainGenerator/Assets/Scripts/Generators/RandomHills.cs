@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,8 +9,6 @@ class RandomHills : IWorldGenerator
 
     void IWorldGenerator.GenerateWorld(World world)
     {
-
-        System.Random rand = new System.Random();
 
         for (int x = 0; x < world.WorldAttributes.WorldSizeInChunks; ++x)
         {
@@ -25,27 +22,27 @@ class RandomHills : IWorldGenerator
 
         }
 
-        for (int i = 0; i < Math.Pow(world.WorldAttributes.WorldSizeInChunks, 2); ++i)
+        for (int i = 0; i < Mathf.Pow(world.WorldAttributes.WorldSizeInChunks, 2); ++i)
         {
 
-            int x = rand.Next(1, world.WorldAttributes.WorldSizeInBlocks);
-            int z = rand.Next(1, world.WorldAttributes.WorldSizeInBlocks);
+            int x = Random.Range(1, world.WorldAttributes.WorldSizeInBlocks);
+            int z = Random.Range(1, world.WorldAttributes.WorldSizeInBlocks);
 
-            int y = rand.Next(1, world.WorldAttributes.ChunkHeight);
+            int y = Random.Range(1, world.WorldAttributes.ChunkHeight);
 
             if (y > world.WorldAttributes.ChunkHeight / 2)
             {
 
-                AddColumn(world, rand, x, y, z, 3);
+                AddColumn(world, new Vector3Int(x, y, z), 3);
 
                 int r = 1;
 
                 do
                 {
 
-                    AddRing(world, rand, x, y - rand.Next(0, 3), z, r, 3);
+                    AddRing(world, new Vector3Int(x, y - Random.Range(0, 3), z), r, 3);
 
-                    y -= rand.Next(1, 3);
+                    y -= Random.Range(1, 3);
 
                     ++r;
 
@@ -55,16 +52,16 @@ class RandomHills : IWorldGenerator
             else if (y < world.WorldAttributes.ChunkHeight / 3)
             {
 
-                AddWaterColumn(world, rand, x, y, z, 6, world.WorldAttributes.ChunkHeight / 2);
+                AddWaterColumn(world, new Vector3Int(x, y, z), 6, world.WorldAttributes.ChunkHeight / 2);
 
                 int r = 1;
 
                 do
                 {
 
-                    AddWaterRing(world, rand, x, y + rand.Next(0, 3), z, r, 6, world.WorldAttributes.ChunkHeight / 2);
+                    AddWaterRing(world, new Vector3Int(x, y + Random.Range(0, 3), z), r, 6, world.WorldAttributes.ChunkHeight / 2);
 
-                    y += rand.Next(1, 3);
+                    y += Random.Range(1, 3);
 
                     ++r;
 
@@ -80,10 +77,10 @@ class RandomHills : IWorldGenerator
             for (int z = 0; z < world.WorldAttributes.WorldSizeInBlocks; ++z)
             {
 
-                if (ColumnCheck(world, x, z) == 0)
+                if (ColumnCheck(world, new Vector2Int(x, z)) == 0)
                 {
 
-                    AddColumn(world, rand, x, world.WorldAttributes.ChunkHeight / 2, z, 3);
+                    AddColumn(world, new Vector3Int(x, world.WorldAttributes.ChunkHeight / 2, z), 3);
 
                 }
 
@@ -105,234 +102,241 @@ class RandomHills : IWorldGenerator
 
     }
 
-    private void AddRing(World world, System.Random rand, int x, int y, int z, int r, byte id)
-    {        
-
-        for (int k = -r; k <= r; ++k)
-        {
-
-            int y1 = y - rand.Next(0, 3);
-
-            if (y1 < world.WorldAttributes.ChunkHeight / 2)
-            {
-
-                y1 = world.WorldAttributes.ChunkHeight / 2;
-
-            }
-
-            if (x + k >= 0 && x + k < world.WorldAttributes.WorldSizeInBlocks
-                && z - r >= 0)
-            {
-
-                AddColumn(world, rand, x + k, y1, z - r, id);
-
-            }
-
-        }
-
-        for (int k = -r; k <= r; ++k)
-        {
-
-            int y1 = y - rand.Next(0, 3);
-
-            if (y1 < world.WorldAttributes.ChunkHeight / 2)
-            {
-
-                y1 = world.WorldAttributes.ChunkHeight / 2;
-
-            }
-
-            if (x + k >= 0 && x + k < world.WorldAttributes.WorldSizeInBlocks
-                && z + r < world.WorldAttributes.WorldSizeInBlocks)
-            {
-
-                AddColumn(world, rand, x + k, y1, z + r, id);
-
-            }
-        }
-
-        for (int k = -r + 1; k < r; ++k)
-        {
-
-            int y1 = y - rand.Next(0, 3);
-
-            if (y1 < world.WorldAttributes.ChunkHeight / 2)
-            {
-
-                y1 = world.WorldAttributes.ChunkHeight / 2;
-
-            }
-
-            if (x - r >= 0 && z + k >= 0 && z + k < world.WorldAttributes.WorldSizeInBlocks)
-            {
-
-                AddColumn(world, rand, x - r, y1, z + k, id);
-
-            }
-
-        }
-
-        for (int k = -r + 1; k < r; ++k)
-        {
-
-            int y1 = y - rand.Next(0, 3);
-
-            if (y1 < world.WorldAttributes.ChunkHeight / 2)
-            {
-
-                y1 = world.WorldAttributes.ChunkHeight / 2;
-
-            }
-
-            if (z + k >= 0 && z + k < world.WorldAttributes.WorldSizeInBlocks
-                && x + r < world.WorldAttributes.WorldSizeInBlocks)
-            {
-
-                AddColumn(world, rand, x + r, y1, z + k, id);
-
-            }
-
-        }
-
-    }
-
-    private void AddWaterRing(World world, System.Random rand, int x, int y, int z, int r, byte id, int waterY)
-    {        
-
-        for (int k = -r; k <= r; ++k)
-        {
-
-            int y1 = y + rand.Next(0, 3);
-
-            if (y1 > waterY)
-            {
-
-                y1 = waterY - 1;
-
-            }
-
-            if (x + k >= 0 && x + k < world.WorldAttributes.WorldSizeInBlocks
-                && z - r >= 0)
-            {
-
-                AddWaterColumn(world, rand, x + k, y1, z - r, id, waterY);
-
-            }
-
-        }
-
-        for (int k = -r; k <= r; ++k)
-        {
-
-            int y1 = y + rand.Next(0, 3);
-
-            if (y1 > waterY)
-            {
-
-                y1 = waterY - 1;
-
-            }
-
-            if (x + k >= 0 && x + k < world.WorldAttributes.WorldSizeInBlocks
-                && z + r < world.WorldAttributes.WorldSizeInBlocks)
-            {
-
-                AddWaterColumn(world, rand, x + k, y1, z + r, id, waterY);
-
-            }
-
-        }
-
-        for (int k = -r + 1; k < r; ++k)
-        {
-
-            int y1 = y + rand.Next(0, 3);
-
-            if (y1 > waterY)
-            {
-
-                y1 = waterY - 1;
-
-            }
-
-            if (x - r >= 0 && z + k >= 0 && z + k < world.WorldAttributes.WorldSizeInBlocks)
-            {
-
-                AddWaterColumn(world, rand, x - r, y1, z + k, id, waterY);
-
-            }
-
-        }
-
-        for (int k = -r + 1; k < r; ++k)
-        {
-
-            int y1 = y + rand.Next(0, 3);
-
-            if (y1 > waterY)
-            {
-
-                y1 = waterY - 1;
-
-            }
-
-            if (z + k >= 0 && z + k < world.WorldAttributes.WorldSizeInBlocks
-                && x + r < world.WorldAttributes.WorldSizeInBlocks)
-            {
-
-                AddWaterColumn(world, rand, x + r, y1, z + k, id, waterY);
-
-            }
-
-        }
-
-    }
-
-    private void AddColumn(World world, System.Random rand, int x, int y, int z, byte id)
+    private void AddRing(World world, Vector3Int pos, int r, byte id)
     {
 
-        ChunkCoord chunkCoord = world.GetChunkCoord(x, z);
-
-        int yPr = ColumnCheck(world, x, z);
-
-        int xCh = x % world.WorldAttributes.ChunkWidth;
-        int zCh = z % world.WorldAttributes.ChunkWidth;
-
-        if (yPr != 0 && y != yPr)
+        for (int k = -r; k <= r; ++k)
         {
 
-            if (rand.Next(0, 2) > 0 && !world.BlocksAttributes.Blocktypes[world.Chunks[chunkCoord.x, chunkCoord.z].voxelMap[xCh, yPr, zCh]].isLiquid)
+            int y1 = pos.y - Random.Range(0, 3);
+
+            if (y1 < world.WorldAttributes.ChunkHeight / 2)
             {
 
-                world.Chunks[chunkCoord.x, chunkCoord.z].voxelMap[xCh, (y + yPr) / 2, zCh] = id;
-
-            }
-            else
-            {
-
-                world.Chunks[chunkCoord.x, chunkCoord.z].voxelMap[xCh, (y + yPr) / 2, zCh]
-                    = world.Chunks[chunkCoord.x, chunkCoord.x].voxelMap[xCh, yPr, zCh];
+                y1 = world.WorldAttributes.ChunkHeight / 2;
 
             }
 
-            if (y > yPr)
+            if (pos.x + k >= 0 && pos.x + k < world.WorldAttributes.WorldSizeInBlocks
+                && pos.z - r >= 0)
             {
 
-                for (int y1 = (y + yPr) / 2 - 1; y1 >= yPr; --y1)
+                AddColumn(world, new Vector3Int(pos.x + k, y1, pos.z - r), id);
+
+            }
+
+        }
+
+        for (int k = -r; k <= r; ++k)
+        {
+
+            int y1 = pos.y - Random.Range(0, 3);
+
+            if (y1 < world.WorldAttributes.ChunkHeight / 2)
+            {
+
+                y1 = world.WorldAttributes.ChunkHeight / 2;
+
+            }
+
+            if (pos.x + k >= 0 && pos.x + k < world.WorldAttributes.WorldSizeInBlocks
+                && pos.z + r < world.WorldAttributes.WorldSizeInBlocks)
+            {
+
+                AddColumn(world, new Vector3Int(pos.x + k, y1, pos.z + r), id);
+
+            }
+        }
+
+        for (int k = -r + 1; k < r; ++k)
+        {
+
+            int y1 = pos.y - Random.Range(0, 3);
+
+            if (y1 < world.WorldAttributes.ChunkHeight / 2)
+            {
+
+                y1 = world.WorldAttributes.ChunkHeight / 2;
+
+            }
+
+            if (pos.x - r >= 0 && pos.z + k >= 0 && pos.z + k < world.WorldAttributes.WorldSizeInBlocks)
+            {
+
+                AddColumn(world, new Vector3Int(pos.x - r, y1, pos.z + k), id);
+
+            }
+
+        }
+
+        for (int k = -r + 1; k < r; ++k)
+        {
+
+            int y1 = pos.y - Random.Range(0, 3);
+
+            if (y1 < world.WorldAttributes.ChunkHeight / 2)
+            {
+
+                y1 = world.WorldAttributes.ChunkHeight / 2;
+
+            }
+
+            if (pos.z + k >= 0 && pos.z + k < world.WorldAttributes.WorldSizeInBlocks
+                && pos.x + r < world.WorldAttributes.WorldSizeInBlocks)
+            {
+
+                AddColumn(world, new Vector3Int(pos.x + r, y1, pos.z + k), id);
+
+            }
+
+        }
+
+    }
+
+    private void AddWaterRing(World world, Vector3Int pos, int r, byte id, int waterY)
+    {
+
+        for (int k = -r; k <= r; ++k)
+        {
+
+            int y1 = pos.y + Random.Range(0, 3);
+
+            if (y1 > waterY)
+            {
+
+                y1 = waterY - 1;
+
+            }
+
+            if (pos.x + k >= 0 && pos.x + k < world.WorldAttributes.WorldSizeInBlocks
+                && pos.z - r >= 0)
+            {
+
+                AddWaterColumn(world, new Vector3Int(pos.x + k, y1, pos.z - r), id, waterY);
+
+            }
+
+        }
+
+        for (int k = -r; k <= r; ++k)
+        {
+
+            int y1 = pos.y + Random.Range(0, 3);
+
+            if (y1 > waterY)
+            {
+
+                y1 = waterY - 1;
+
+            }
+
+            if (pos.x + k >= 0 && pos.x + k < world.WorldAttributes.WorldSizeInBlocks
+                && pos.z + r < world.WorldAttributes.WorldSizeInBlocks)
+            {
+
+                AddWaterColumn(world, new Vector3Int(pos.x + k, y1, pos.z + r), id, waterY);
+
+            }
+
+        }
+
+        for (int k = -r + 1; k < r; ++k)
+        {
+
+            int y1 = pos.y + Random.Range(0, 3);
+
+            if (y1 > waterY)
+            {
+
+                y1 = waterY - 1;
+
+            }
+
+            if (pos.x - r >= 0 && pos.z + k >= 0 && pos.z + k < world.WorldAttributes.WorldSizeInBlocks)
+            {
+
+                AddWaterColumn(world, new Vector3Int(pos.x - r, y1, pos.z + k), id, waterY);
+
+            }
+
+        }
+
+        for (int k = -r + 1; k < r; ++k)
+        {
+
+            int y1 = pos.y + Random.Range(0, 3);
+
+            if (y1 > waterY)
+            {
+
+                y1 = waterY - 1;
+
+            }
+
+            if (pos.z + k >= 0 && pos.z + k < world.WorldAttributes.WorldSizeInBlocks
+                && pos.x + r < world.WorldAttributes.WorldSizeInBlocks)
+            {
+
+                AddWaterColumn(world, new Vector3Int(pos.x + r, y1, pos.z + k), id, waterY);
+
+            }
+
+        }
+
+    }
+
+    private void AddColumn(World world, Vector3Int pos, byte id)
+    {
+
+        ChunkCoord chunkCoord = world.GetChunkCoord(new Vector2(pos.x, pos.z));
+
+        int yPr = ColumnCheck(world, new Vector2Int(pos.x, pos.z));
+
+        int xCh = pos.x % world.WorldAttributes.ChunkWidth;
+        int zCh = pos.z % world.WorldAttributes.ChunkWidth;
+
+        if (yPr != 0 && pos.y != yPr)
+        {
+
+            if (!world.BlocksAttributes.Blocktypes[world.Chunks[chunkCoord.x, chunkCoord.z].voxelMap[xCh, yPr, zCh]].isLiquid)
+            {
+
+                if (Random.Range(0, 2) > 0)
                 {
 
-                    world.Chunks[chunkCoord.x, chunkCoord.z].voxelMap[xCh, y1, zCh] = 2;
+                    world.Chunks[chunkCoord.x, chunkCoord.z].voxelMap[xCh, (pos.y + yPr) / 2, zCh] = id;
+
+                }
+                else
+                {
+
+                    world.Chunks[chunkCoord.x, chunkCoord.z].voxelMap[xCh, (pos.y + yPr) / 2, zCh]
+                        = world.Chunks[chunkCoord.x, chunkCoord.x].voxelMap[xCh, yPr, zCh];
 
                 }
 
-            }
-            else if (y < yPr)
-            {
 
-                for (int y1 = (y + yPr) / 2 + 1; y1 <= yPr; ++y1)
+
+                if (pos.y > yPr)
                 {
 
-                    world.Chunks[chunkCoord.x, chunkCoord.z].voxelMap[xCh, y1, zCh] = 0;
+                    for (int y1 = (pos.y + yPr) / 2 - 1; y1 >= yPr; --y1)
+                    {
+
+                        world.Chunks[chunkCoord.x, chunkCoord.z].voxelMap[xCh, y1, zCh] = 2;
+
+                    }
+
+                }
+                else if (pos.y < yPr)
+                {
+
+                    for (int y1 = (pos.y + yPr) / 2 + 1; y1 <= yPr; ++y1)
+                    {
+
+                        world.Chunks[chunkCoord.x, chunkCoord.z].voxelMap[xCh, y1, zCh] = 0;
+
+                    }
 
                 }
 
@@ -340,11 +344,11 @@ class RandomHills : IWorldGenerator
 
         }
         else
-        {            
+        {
 
-            world.Chunks[chunkCoord.x, chunkCoord.z].voxelMap[xCh, y, zCh] = id;
+            world.Chunks[chunkCoord.x, chunkCoord.z].voxelMap[xCh, pos.y, zCh] = id;
 
-            for (int y1 = y - 1; y1 > 0; --y1)
+            for (int y1 = pos.y - 1; y1 > 0; --y1)
             {
 
                 world.Chunks[chunkCoord.x, chunkCoord.z].voxelMap[xCh, y1, zCh] = 2;
@@ -357,75 +361,29 @@ class RandomHills : IWorldGenerator
 
     }
 
-    private void AddWaterColumn(World world, System.Random rand, int x, int y, int z, byte id, int waterY)
+    private void AddWaterColumn(World world, Vector3Int pos, byte id, int waterY)
     {
 
-        ChunkCoord chunkCoord = world.GetChunkCoord(x, z);
+        ChunkCoord chunkCoord = world.GetChunkCoord(new Vector2(pos.x, pos.z));
 
-        int yPr = ColumnCheck(world, x, z);
+        int yPr = ColumnCheck(world, new Vector2Int(pos.x, pos.z));
 
-        int xCh = x % world.WorldAttributes.ChunkWidth;
-        int zCh = z % world.WorldAttributes.ChunkWidth;
+        int xCh = pos.x % world.WorldAttributes.ChunkWidth;
+        int zCh = pos.z % world.WorldAttributes.ChunkWidth;
 
-        if (yPr != 0 && y != yPr)
+        if (yPr == 0 || pos.y == yPr)
         {
 
-            if (rand.Next(0, 2) > 0 && world.BlocksAttributes.Blocktypes[world.Chunks[chunkCoord.x, chunkCoord.z].voxelMap[xCh, yPr, zCh]].isLiquid)
-            {
+            world.Chunks[chunkCoord.x, chunkCoord.z].voxelMap[xCh, pos.y, zCh] = id;
 
-                world.Chunks[chunkCoord.x, chunkCoord.z].voxelMap[xCh, (y + yPr) / 2, zCh] = id;
-
-            }
-            else
-            {
-
-                world.Chunks[chunkCoord.x, chunkCoord.z].voxelMap[xCh, (y + yPr) / 2, zCh]
-                    = world.Chunks[chunkCoord.x, chunkCoord.x].voxelMap[xCh, yPr, zCh];
-
-            }
-
-            if (y > yPr)
-            {
-
-                for (int y1 = (y + yPr) / 2 - 1; y1 >= yPr; --y1)
-                {
-
-                    world.Chunks[chunkCoord.x, chunkCoord.z].voxelMap[xCh, y1, zCh] = 2;
-
-                }
-
-            }
-            else if (y < yPr)
-            {
-
-                if (world.BlocksAttributes.Blocktypes[world.Chunks[chunkCoord.x, chunkCoord.z].voxelMap[xCh, waterY, zCh]].isLiquid)
-                {
-
-                    for (int y1 = (y + yPr) / 2 + 1; y1 <= yPr; ++y1)
-                    {
-
-                        world.Chunks[chunkCoord.x, chunkCoord.z].voxelMap[xCh, y1, zCh] = 9;
-
-                    }
-
-                }
-
-            }
-
-        }
-        else
-        {            
-
-            world.Chunks[chunkCoord.x, chunkCoord.z].voxelMap[xCh, y, zCh] = id;
-
-            for (int y1 = y - 1; y1 > 0; --y1)
+            for (int y1 = pos.y - 1; y1 > 0; --y1)
             {
 
                 world.Chunks[chunkCoord.x, chunkCoord.z].voxelMap[xCh, y1, zCh] = 2;
 
             }
 
-            for (int y1 = y + 1; y1 <= waterY; ++y1)
+            for (int y1 = pos.y + 1; y1 <= waterY; ++y1)
             {
 
                 world.Chunks[chunkCoord.x, chunkCoord.z].voxelMap[xCh, y1, zCh] = 9;
@@ -438,16 +396,16 @@ class RandomHills : IWorldGenerator
 
     }
 
-    private int ColumnCheck(World world, int x, int z)
+    private int ColumnCheck(World world, Vector2Int pos)
     {
 
-        ChunkCoord chunkCoord = world.GetChunkCoord(x, z);
+        ChunkCoord chunkCoord = world.GetChunkCoord(new Vector2(pos.x, pos.y));
 
         for (int y = world.WorldAttributes.ChunkHeight - 1; y > 0; --y)
         {
 
-            int xCh = x % world.WorldAttributes.ChunkWidth;
-            int zCh = z % world.WorldAttributes.ChunkWidth;
+            int xCh = pos.x % world.WorldAttributes.ChunkWidth;
+            int zCh = pos.y % world.WorldAttributes.ChunkWidth;
 
             if (world.BlocksAttributes.Blocktypes[world.Chunks[chunkCoord.x, chunkCoord.z].voxelMap[xCh, y, zCh]].isSolid)
             {

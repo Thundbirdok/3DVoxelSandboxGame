@@ -62,7 +62,7 @@ public class Chunk
 		for (int i = 0; i < worldAttributes.ChunkWidth; ++i)
 		{
 
-			for (int j = 0; j < worldAttributes.ChunkWidth; ++j)
+			for (int j = 0; j < worldAttributes.ChunkHeight; ++j)
 			{
 
 				for (int k = 0; k < worldAttributes.ChunkWidth; ++k)

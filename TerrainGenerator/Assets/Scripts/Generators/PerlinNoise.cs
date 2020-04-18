@@ -5,15 +5,6 @@ using UnityEngine;
 public class PerlinNoise : IWorldGenerator
 {
 
-    public class BiomeAttributes
-    {
-
-        public int solidGroundHeight;
-        public int terrainHeight;
-        public float terrainScale;
-
-    }
-
     private static class Noise
     {
 
@@ -48,14 +39,7 @@ public class PerlinNoise : IWorldGenerator
     }
 
     void IWorldGenerator.GenerateWorld(World world)
-    {
-
-        BiomeAttributes Plain = new BiomeAttributes
-        {
-            solidGroundHeight = world.WorldAttributes.ChunkHeight / 6,
-            terrainHeight = world.WorldAttributes.ChunkHeight / 6,
-            terrainScale = 2f / world.WorldAttributes.ChunkHeight
-        };
+    {        
 
         for (int x = 0; x < world.WorldAttributes.WorldSizeInChunks; ++x)
         {
@@ -71,14 +55,8 @@ public class PerlinNoise : IWorldGenerator
                     for (int z1 = 0; z1 < world.WorldAttributes.ChunkWidth; ++z1)
                     {
 
-                        for (int y1 = 0; y1 < world.WorldAttributes.ChunkHeight; ++y1)
-                        {
-
-                            world.Chunks[x, z].voxelMap[x1, y1, z1] 
-                                = GetVoxel(new Vector3(x * world.WorldAttributes.ChunkWidth + x1, 
-                                y1, z * world.WorldAttributes.ChunkWidth + z1), world, Plain);
-
-                        }
+                        GetColumn(new Vector2Int(x, z), new Vector2Int(x1, z1), new Vector2Int(x * world.WorldAttributes.ChunkWidth + x1,
+                            z * world.WorldAttributes.ChunkWidth + z1), world, world.WorldAttributes.BiomeAttributes[0]);
 
                     }
 
@@ -88,37 +66,59 @@ public class PerlinNoise : IWorldGenerator
 
             }
 
-        }            
+        }
 
     }
 
-    public byte GetVoxel(Vector3 pos, World world, BiomeAttributes biome)
+    private int GetTerrainHeight(Vector2 pos, World world, BiomeAttributes biome)
     {
 
-        int yPos = Mathf.FloorToInt(pos.y);
-        
-        if (yPos == 0)
-            return 1;
+        int terrainHeight = biome.SolidGroundHeight;
 
-        int terrainHeight = 0;
+        for (int i = 0; i < biome.OctavesNumber; ++i)
+        {
 
-        terrainHeight += Mathf.FloorToInt(biome.terrainHeight * Noise.Get2DPerlin(world, new Vector2(pos.x, pos.z), 0, biome.terrainScale)) + biome.solidGroundHeight;
-        terrainHeight += Mathf.FloorToInt(0.5f * biome.terrainHeight * Noise.Get2DPerlin(world, new Vector2(pos.x, pos.z), 1, biome.terrainScale * 8));
-        terrainHeight += Mathf.FloorToInt(0.25f * biome.terrainHeight * Noise.Get2DPerlin(world, new Vector2(pos.x, pos.z), 2, biome.terrainScale * 16));
+            terrainHeight += Mathf.FloorToInt((1 / Mathf.Pow(2, i)) * biome.BiomeHeight * Noise.Get2DPerlin(world, new Vector2(pos.x, pos.y), i, biome.BiomeScale * Mathf.Pow(2, i)));
 
+        }
 
-        byte voxelValue;
+        return terrainHeight;
 
-        if (yPos == terrainHeight)
-            voxelValue = 3;
-        else if (yPos < terrainHeight && yPos > terrainHeight - 4)
-            voxelValue = 4;
-        else if (yPos > terrainHeight)
-            return 0;
-        else
-            voxelValue = 2;
+    }
 
-        return voxelValue;
+    private void GetColumn(Vector2Int ChunkPos, Vector2Int InChunkPos, Vector2Int ColumnPos, World world, BiomeAttributes biome)
+    {
+
+        int terrainHeight = GetTerrainHeight(ColumnPos, world, biome);
+
+        if (terrainHeight >= world.WorldAttributes.ChunkHeight)
+        {
+
+            Debug.Log(terrainHeight);
+
+        }
+
+        int y;
+
+        world.Chunks[ChunkPos.x, ChunkPos.y].voxelMap[InChunkPos.x, terrainHeight, InChunkPos.y] = 3;
+
+        int groundDepth = Random.Range(biome.GroundDepthMin, biome.GroundDepthMax + 1);
+
+        for (y = terrainHeight - 1; y > terrainHeight - groundDepth; --y)
+        {
+
+            world.Chunks[ChunkPos.x, ChunkPos.y].voxelMap[InChunkPos.x, y, InChunkPos.y] = 4;
+
+        }
+
+        for (; y > 0; --y)
+        {
+
+            world.Chunks[ChunkPos.x, ChunkPos.y].voxelMap[InChunkPos.x, y, InChunkPos.y] = 2;
+
+        }
+
+        world.Chunks[ChunkPos.x, ChunkPos.y].voxelMap[InChunkPos.x, 0, InChunkPos.y] = 1;
 
     }
 
