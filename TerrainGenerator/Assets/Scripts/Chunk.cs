@@ -12,7 +12,7 @@ public class Chunk
 	private MeshRenderer meshRenderer;
 	private MeshFilter meshFilter;
 
-	public ChunkCoord coord;
+	public Vector2Int coord;
 	private GameObject chunkObject;
 
 	private int vertexIndex = 0;
@@ -22,7 +22,7 @@ public class Chunk
 
 	public byte[,,] voxelMap;
 
-	public Chunk(ChunkCoord _coord, World _world, WorldAttributes _worldAttributes, BlocksAttributes _blocksAttributes)
+	public Chunk(Vector2Int _coord, World _world, WorldAttributes _worldAttributes, BlocksAttributes _blocksAttributes)
 	{
 
 		worldAttributes = _worldAttributes;
@@ -30,7 +30,7 @@ public class Chunk
 
 		coord = _coord;
 		chunkObject = new GameObject();
-		chunkObject.transform.position = new Vector3(coord.x * worldAttributes.ChunkWidth, 0f, coord.z * worldAttributes.ChunkWidth);
+		chunkObject.transform.position = new Vector3(coord.x * worldAttributes.ChunkWidth, 0f, coord.y * worldAttributes.ChunkWidth);
 
 		voxelMap = new byte[worldAttributes.ChunkWidth, worldAttributes.ChunkHeight, worldAttributes.ChunkWidth];		
 
@@ -40,7 +40,7 @@ public class Chunk
 		chunkObject.transform.SetParent(_world.transform);
 		meshRenderer.material = blocksAttributes.Material;
 
-		chunkObject.name = coord.x + ", " + coord.z;
+		chunkObject.name = coord.x + ", " + coord.y;
 
 	}
 	

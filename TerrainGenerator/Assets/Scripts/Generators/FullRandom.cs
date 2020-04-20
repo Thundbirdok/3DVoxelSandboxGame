@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using UnityEngine;
 
 class FullRandom : IWorldGenerator
 {
 
     void IWorldGenerator.GenerateWorld(World world)
-    {
-
-        Random rand = new Random();
+    {        
 
         for (int x = 0; x < world.WorldAttributes.WorldSizeInChunks; ++x)
         {
@@ -19,7 +16,7 @@ class FullRandom : IWorldGenerator
             for (int z = 0; z < world.WorldAttributes.WorldSizeInChunks; ++z)
             {
 
-                world.CreateChunk(new ChunkCoord(x, z));
+                world.CreateChunk(new Vector2Int(x, z));
 
                 for (int x1 = 0; x1 < world.WorldAttributes.ChunkWidth; ++x1)
                 {
@@ -27,9 +24,9 @@ class FullRandom : IWorldGenerator
                     for (int z1 = 0; z1 < world.WorldAttributes.ChunkWidth; ++z1)
                     {
 
-                        int y = rand.Next(1, world.WorldAttributes.ChunkHeight);
+                        int y = Random.Range(1, world.WorldAttributes.ChunkHeight);
 
-                        switch (rand.Next(0, 3))
+                        switch (Random.Range(0, 3))
                         {
                             case 0:
 

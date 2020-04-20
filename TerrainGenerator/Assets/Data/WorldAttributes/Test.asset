@@ -15,11 +15,32 @@ MonoBehaviour:
   chunkWidth: 16
   chunkHeight: 64
   powerOfTwoOfWorldSizeInChunks: 4
+  worldScale: 0.25
   biomeAttributes:
+  - biomeName: Ocean
+    mainVoxel: 9
+    secondVoxel: 0
+    solidGroundHeight: 10
+    biomeHeight: 15
+    groundDepthMin: 0
+    groundDepthMax: 2
+    biomeScale: 0.25
+    octavesNumber: 3
   - biomeName: Plain
+    mainVoxel: 3
+    secondVoxel: 4
     solidGroundHeight: 20
     biomeHeight: 10
     groundDepthMin: 2
     groundDepthMax: 6
     biomeScale: 0.2
     octavesNumber: 3
+  - biomeName: Desert
+    mainVoxel: 6
+    secondVoxel: 6
+    solidGroundHeight: 20
+    biomeHeight: 20
+    groundDepthMin: 4
+    groundDepthMax: 8
+    biomeScale: 0.2
+    octavesNumber: 2

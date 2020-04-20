@@ -16,7 +16,7 @@ class RandomHills : IWorldGenerator
             for (int z = 0; z < world.WorldAttributes.WorldSizeInChunks; ++z)
             {
 
-                world.CreateChunk(new ChunkCoord(x, z));
+                world.CreateChunk(new Vector2Int(x, z));
 
             }
 
@@ -288,7 +288,7 @@ class RandomHills : IWorldGenerator
     private void AddColumn(World world, Vector3Int pos, byte id)
     {
 
-        ChunkCoord chunkCoord = world.GetChunkCoord(new Vector2(pos.x, pos.z));
+        Vector2Int chunkCoord = world.GetChunkCoord(new Vector2(pos.x, pos.z));
 
         int yPr = ColumnCheck(world, new Vector2Int(pos.x, pos.z));
 
@@ -298,19 +298,19 @@ class RandomHills : IWorldGenerator
         if (yPr != 0 && pos.y != yPr)
         {
 
-            if (!world.BlocksAttributes.Blocktypes[world.Chunks[chunkCoord.x, chunkCoord.z].voxelMap[xCh, yPr, zCh]].isLiquid)
+            if (!world.BlocksAttributes.Blocktypes[world.Chunks[chunkCoord.x, chunkCoord.y].voxelMap[xCh, yPr, zCh]].isLiquid)
             {
 
                 if (Random.Range(0, 2) > 0)
                 {
 
-                    world.Chunks[chunkCoord.x, chunkCoord.z].voxelMap[xCh, (pos.y + yPr) / 2, zCh] = id;
+                    world.Chunks[chunkCoord.x, chunkCoord.y].voxelMap[xCh, (pos.y + yPr) / 2, zCh] = id;
 
                 }
                 else
                 {
 
-                    world.Chunks[chunkCoord.x, chunkCoord.z].voxelMap[xCh, (pos.y + yPr) / 2, zCh]
+                    world.Chunks[chunkCoord.x, chunkCoord.y].voxelMap[xCh, (pos.y + yPr) / 2, zCh]
                         = world.Chunks[chunkCoord.x, chunkCoord.x].voxelMap[xCh, yPr, zCh];
 
                 }
@@ -323,7 +323,7 @@ class RandomHills : IWorldGenerator
                     for (int y1 = (pos.y + yPr) / 2 - 1; y1 >= yPr; --y1)
                     {
 
-                        world.Chunks[chunkCoord.x, chunkCoord.z].voxelMap[xCh, y1, zCh] = 2;
+                        world.Chunks[chunkCoord.x, chunkCoord.y].voxelMap[xCh, y1, zCh] = 2;
 
                     }
 
@@ -334,7 +334,7 @@ class RandomHills : IWorldGenerator
                     for (int y1 = (pos.y + yPr) / 2 + 1; y1 <= yPr; ++y1)
                     {
 
-                        world.Chunks[chunkCoord.x, chunkCoord.z].voxelMap[xCh, y1, zCh] = 0;
+                        world.Chunks[chunkCoord.x, chunkCoord.y].voxelMap[xCh, y1, zCh] = 0;
 
                     }
 
@@ -346,16 +346,16 @@ class RandomHills : IWorldGenerator
         else
         {
 
-            world.Chunks[chunkCoord.x, chunkCoord.z].voxelMap[xCh, pos.y, zCh] = id;
+            world.Chunks[chunkCoord.x, chunkCoord.y].voxelMap[xCh, pos.y, zCh] = id;
 
             for (int y1 = pos.y - 1; y1 > 0; --y1)
             {
 
-                world.Chunks[chunkCoord.x, chunkCoord.z].voxelMap[xCh, y1, zCh] = 2;
+                world.Chunks[chunkCoord.x, chunkCoord.y].voxelMap[xCh, y1, zCh] = 2;
 
             }
 
-            world.Chunks[chunkCoord.x, chunkCoord.z].voxelMap[xCh, 0, zCh] = 1;
+            world.Chunks[chunkCoord.x, chunkCoord.y].voxelMap[xCh, 0, zCh] = 1;
 
         }
 
@@ -364,7 +364,7 @@ class RandomHills : IWorldGenerator
     private void AddWaterColumn(World world, Vector3Int pos, byte id, int waterY)
     {
 
-        ChunkCoord chunkCoord = world.GetChunkCoord(new Vector2(pos.x, pos.z));
+        Vector2Int chunkCoord = world.GetChunkCoord(new Vector2(pos.x, pos.z));
 
         int yPr = ColumnCheck(world, new Vector2Int(pos.x, pos.z));
 
@@ -374,23 +374,23 @@ class RandomHills : IWorldGenerator
         if (yPr == 0 || pos.y == yPr)
         {
 
-            world.Chunks[chunkCoord.x, chunkCoord.z].voxelMap[xCh, pos.y, zCh] = id;
+            world.Chunks[chunkCoord.x, chunkCoord.y].voxelMap[xCh, pos.y, zCh] = id;
 
             for (int y1 = pos.y - 1; y1 > 0; --y1)
             {
 
-                world.Chunks[chunkCoord.x, chunkCoord.z].voxelMap[xCh, y1, zCh] = 2;
+                world.Chunks[chunkCoord.x, chunkCoord.y].voxelMap[xCh, y1, zCh] = 2;
 
             }
 
             for (int y1 = pos.y + 1; y1 <= waterY; ++y1)
             {
 
-                world.Chunks[chunkCoord.x, chunkCoord.z].voxelMap[xCh, y1, zCh] = 9;
+                world.Chunks[chunkCoord.x, chunkCoord.y].voxelMap[xCh, y1, zCh] = 9;
 
             }
 
-            world.Chunks[chunkCoord.x, chunkCoord.z].voxelMap[xCh, 0, zCh] = 1;
+            world.Chunks[chunkCoord.x, chunkCoord.y].voxelMap[xCh, 0, zCh] = 1;
 
         }
 
@@ -399,7 +399,7 @@ class RandomHills : IWorldGenerator
     private int ColumnCheck(World world, Vector2Int pos)
     {
 
-        ChunkCoord chunkCoord = world.GetChunkCoord(new Vector2(pos.x, pos.y));
+        Vector2Int chunkCoord = world.GetChunkCoord(new Vector2(pos.x, pos.y));
 
         for (int y = world.WorldAttributes.ChunkHeight - 1; y > 0; --y)
         {
@@ -407,7 +407,7 @@ class RandomHills : IWorldGenerator
             int xCh = pos.x % world.WorldAttributes.ChunkWidth;
             int zCh = pos.y % world.WorldAttributes.ChunkWidth;
 
-            if (world.BlocksAttributes.Blocktypes[world.Chunks[chunkCoord.x, chunkCoord.z].voxelMap[xCh, y, zCh]].isSolid)
+            if (world.BlocksAttributes.Blocktypes[world.Chunks[chunkCoord.x, chunkCoord.y].voxelMap[xCh, y, zCh]].isSolid)
             {
 
                 return y;

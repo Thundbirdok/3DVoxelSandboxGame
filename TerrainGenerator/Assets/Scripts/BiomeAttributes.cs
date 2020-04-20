@@ -6,31 +6,39 @@ using UnityEngine;
 public class BiomeAttributes
 {
 
-	public string biomeName;
+    public string biomeName;
 
-	[SerializeField]
-	private int solidGroundHeight;
+    [SerializeField]
+    private byte mainVoxel;
 
-	[SerializeField]
-	private int biomeHeight;
+    [SerializeField]
+    private byte secondVoxel;
 
-	[SerializeField]
-	private int groundDepthMin;
+    [SerializeField]
+    private int solidGroundHeight;
 
-	[SerializeField]
-	private int groundDepthMax;
+    [SerializeField]
+    private int biomeHeight;
 
-	[SerializeField]
-	private float biomeScale;
+    [SerializeField]
+    private int groundDepthMin;
 
-	[SerializeField]
-	private int octavesNumber;
+    [SerializeField]
+    private int groundDepthMax;
 
-	public int SolidGroundHeight { get => solidGroundHeight; }
-	public int BiomeHeight { get => biomeHeight; }
-	public int GroundDepthMin { get => groundDepthMin; }
-	public int GroundDepthMax { get => groundDepthMax; }
-	public float BiomeScale { get => biomeScale; }
-	public int OctavesNumber { get => octavesNumber; }
-	
+    [SerializeField]
+    private float biomeScale;
+
+    [SerializeField]
+    private int octavesNumber;
+
+    public byte MainVoxel { get => mainVoxel; set => mainVoxel = value; }
+    public byte SecondVoxel { get => secondVoxel; set => secondVoxel = value; }
+    public int SolidGroundHeight { get => solidGroundHeight; }
+    public int BiomeHeight { get => biomeHeight; }
+    public int GroundDepthMin { get => groundDepthMin; }
+    public int GroundDepthMax { get => groundDepthMax; }
+    public float BiomeScale { get => biomeScale; }
+    public int OctavesNumber { get => octavesNumber; }
+    
 }

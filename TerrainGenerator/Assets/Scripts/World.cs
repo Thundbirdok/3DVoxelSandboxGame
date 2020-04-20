@@ -16,12 +16,16 @@ public class World : MonoBehaviour
 	public BlocksAttributes BlocksAttributes { get => blocksAttributes; }
     public Chunk[,] Chunks { get; private set; }
 
+	public int[,] Bioms;
+
 	private IWorldGenerator generator;
 
     private void Start()
 	{
 
 		Chunks = new Chunk[WorldAttributes.WorldSizeInChunks, WorldAttributes.WorldSizeInChunks];
+
+		Bioms = new int[WorldAttributes.WorldSizeInBlocks, WorldAttributes.WorldSizeInBlocks];
 
 		generator = new FullRandom();
 
@@ -68,18 +72,18 @@ public class World : MonoBehaviour
 
 	}
 
-	public void CreateChunk(ChunkCoord coord)
+	public void CreateChunk(Vector2Int coord)
 	{
 
-		if (Chunks[coord.x, coord.z] == null) {
+		if (Chunks[coord.x, coord.y] == null) {
 
-			Chunks[coord.x, coord.z] = new Chunk(new ChunkCoord(coord.x, coord.z), this, WorldAttributes, BlocksAttributes);
+			Chunks[coord.x, coord.y] = new Chunk(new Vector2Int(coord.x, coord.y), this, WorldAttributes, BlocksAttributes);
 
 		}
 		else
 		{
 
-			Chunks[coord.x, coord.z].Clear();
+			Chunks[coord.x, coord.y].Clear();
 
 		}
 
@@ -113,51 +117,60 @@ public class World : MonoBehaviour
 
 	}
 	
-	public ChunkCoord GetChunkCoord(Vector3 pos)
+	public Vector2Int GetChunkCoord(Vector3 pos)
 	{
 
 		int x = Mathf.FloorToInt(pos.x / WorldAttributes.ChunkWidth);
 		int z = Mathf.FloorToInt(pos.z / WorldAttributes.ChunkWidth);
 
-		return new ChunkCoord(x, z);
+		return new Vector2Int(x, z);
 
 	}
 
-	public ChunkCoord GetChunkCoord(Vector2 pos)
+	public Vector2Int GetChunkCoord(Vector2 pos)
 	{
 
 		int _x = Mathf.FloorToInt(pos.x / WorldAttributes.ChunkWidth);
 		int _z = Mathf.FloorToInt(pos.y / WorldAttributes.ChunkWidth);
 
-		return new ChunkCoord(_x, _z);
+		return new Vector2Int(_x, _z);
 
 	}
 
-}
-
-public class ChunkCoord
-{
-
-	public int x;
-	public int z;
-
-	public ChunkCoord(int _x, int _z)
+	public Vector2Int GetInChunkCoord(Vector3 pos)
 	{
 
-		x = _x;
-		z = _z;
+		int x = Mathf.FloorToInt(pos.x % WorldAttributes.ChunkWidth);
+		int z = Mathf.FloorToInt(pos.z % WorldAttributes.ChunkWidth);
+
+		return new Vector2Int(x, z);
 
 	}
 
-	public bool Equals(ChunkCoord other)
+	public Vector2Int GetInChunkCoord(Vector2 pos)
 	{
 
-		if (other == null)
-			return false;
-		else if (other.x == x && other.z == z)
-			return true;
-		else
-			return false;
+		int _x = Mathf.FloorToInt(pos.x % WorldAttributes.ChunkWidth);
+		int _z = Mathf.FloorToInt(pos.y % WorldAttributes.ChunkWidth);
+
+		return new Vector2Int(_x, _z);
+
+	}
+
+	internal void UpdateChunks()
+	{
+
+		for (int x = 0; x < WorldAttributes.WorldSizeInChunks; ++x)
+		{
+
+			for (int z = 0; z < WorldAttributes.WorldSizeInChunks; ++z)
+			{
+
+				Chunks[x, z].Update();
+
+			}
+
+		}
 
 	}
 
