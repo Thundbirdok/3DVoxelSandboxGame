@@ -57,7 +57,7 @@ public class Map : MonoBehaviour
                 for (int z = 0; z < world.WorldAttributes.WorldSizeInBlocks; ++z)
                 {
 
-                    Color c = GetTopBlockColor(x, z);
+                    Color c = GetTopBlockColor(new Vector2Int(x, z));
 
                     int n = z * widthOfBlockInMap * MapTexture.width + x * widthOfBlockInMap;
 
@@ -101,7 +101,7 @@ public class Map : MonoBehaviour
                         for (int m = 0; m < widthOfPixelInMap; ++m)
                         {
 
-                            Color c = GetTopBlockColor(x * widthOfPixelInMap + k, y * widthOfPixelInMap + m);
+                            Color c = GetTopBlockColor(new Vector2Int(x * widthOfPixelInMap + k, y * widthOfPixelInMap + m));
 
                             r += c.r;
                             g += c.g;
@@ -127,9 +127,10 @@ public class Map : MonoBehaviour
 
     }
 
-    private Color GetTopBlockColor(int x, int z)
+    private Color GetTopBlockColor(Vector2Int coord)
     {
-        if (!world.IsVoxelInWorld(x, z))
+
+        if (!world.IsVoxelInWorld(coord))
         {
             return Color.black;
         }
@@ -137,9 +138,9 @@ public class Map : MonoBehaviour
         for (int y = world.WorldAttributes.ChunkHeight - 1; y >= 0; --y)
         {
 
-            int blockIndex = world.Chunks[x / world.WorldAttributes.ChunkWidth,
-                z / world.WorldAttributes.ChunkWidth].voxelMap[x % world.WorldAttributes.ChunkWidth,
-                y, z % world.WorldAttributes.ChunkWidth];
+            int blockIndex = world.Chunks[coord.x / world.WorldAttributes.ChunkWidth,
+                coord.y / world.WorldAttributes.ChunkWidth].Voxels[coord.x % world.WorldAttributes.ChunkWidth,
+                y, coord.y % world.WorldAttributes.ChunkWidth];
 
             if (world.BlocksAttributes.Blocktypes[blockIndex].isSolid)
             {

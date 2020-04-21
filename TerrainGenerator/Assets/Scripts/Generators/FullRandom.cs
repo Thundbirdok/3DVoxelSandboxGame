@@ -30,19 +30,19 @@ class FullRandom : IWorldGenerator
                         {
                             case 0:
 
-                                world.Chunks[x, z].voxelMap[x1, y, z1] = 3;
+                                world.Chunks[x, z].Voxels[x1, y, z1] = 3;
 
                                 break;
 
                             case 1:
 
-                                world.Chunks[x, z].voxelMap[x1, y, z1] = 6;
+                                world.Chunks[x, z].Voxels[x1, y, z1] = 6;
 
                                 break;
 
                             case 2:
 
-                                world.Chunks[x, z].voxelMap[x1, y, z1] = 9;
+                                world.Chunks[x, z].Voxels[x1, y, z1] = 9;
 
                                 break;
                         }
@@ -50,11 +50,11 @@ class FullRandom : IWorldGenerator
                         for (int y1 = y - 1; y1 > 0; --y1)
                         {
 
-                            world.Chunks[x, z].voxelMap[x1, y1, z1] = 2;
+                            world.Chunks[x, z].Voxels[x1, y1, z1] = 2;
 
                         }
 
-                        world.Chunks[x, z].voxelMap[x1, 0, z1] = 1;
+                        world.Chunks[x, z].Voxels[x1, 0, z1] = 1;
 
                     }
 

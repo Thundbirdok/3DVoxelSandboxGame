@@ -89,10 +89,12 @@ public class World : MonoBehaviour
 
 	}
 
-	public bool IsVoxelInWorld(int x, int y, int z)
+	public bool IsVoxelInWorld(Vector3 pos)
 	{
 
-		if (x < WorldAttributes.WorldSizeInBlocks && z < WorldAttributes.WorldSizeInBlocks && y < WorldAttributes.ChunkHeight)
+		if (pos.x < WorldAttributes.WorldSizeInBlocks 
+			&& pos.z < WorldAttributes.WorldSizeInBlocks 
+			&& pos.y < WorldAttributes.ChunkHeight && pos.x >= 0 && pos.y >= 0 && pos.z >= 0)
 		{
 
 			return true;
@@ -103,10 +105,10 @@ public class World : MonoBehaviour
 
 	}
 
-	public bool IsVoxelInWorld(int x, int z)
+	public bool IsVoxelInWorld(Vector2 pos)
 	{
 
-		if (x < WorldAttributes.WorldSizeInBlocks && z < WorldAttributes.WorldSizeInBlocks)
+		if (pos.x < WorldAttributes.WorldSizeInBlocks && pos.y < WorldAttributes.WorldSizeInBlocks && pos.x >= 0 && pos.y >= 0)
 		{
 
 			return true;
@@ -114,6 +116,30 @@ public class World : MonoBehaviour
 		}
 
 		return false;
+
+	}
+
+	public int GetTopBlockHeight(Vector2 pos)
+	{
+
+		Vector2Int ChunkCoord = GetChunkCoord(pos);
+		Vector2Int InChunkCoord = GetInChunkCoord(pos);
+
+		int y;
+
+		for (y = WorldAttributes.ChunkHeight - 1; y > 0; --y)
+		{
+
+			if (Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] != 0 && Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] != 9)
+			{
+
+				break;
+
+			}
+
+		}
+
+		return y;
 
 	}
 	

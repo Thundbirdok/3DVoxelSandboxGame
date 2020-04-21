@@ -298,20 +298,20 @@ class RandomHills : IWorldGenerator
         if (yPr != 0 && pos.y != yPr)
         {
 
-            if (!world.BlocksAttributes.Blocktypes[world.Chunks[chunkCoord.x, chunkCoord.y].voxelMap[xCh, yPr, zCh]].isLiquid)
+            if (!world.BlocksAttributes.Blocktypes[world.Chunks[chunkCoord.x, chunkCoord.y].Voxels[xCh, yPr, zCh]].isLiquid)
             {
 
                 if (Random.Range(0, 2) > 0)
                 {
 
-                    world.Chunks[chunkCoord.x, chunkCoord.y].voxelMap[xCh, (pos.y + yPr) / 2, zCh] = id;
+                    world.Chunks[chunkCoord.x, chunkCoord.y].Voxels[xCh, (pos.y + yPr) / 2, zCh] = id;
 
                 }
                 else
                 {
 
-                    world.Chunks[chunkCoord.x, chunkCoord.y].voxelMap[xCh, (pos.y + yPr) / 2, zCh]
-                        = world.Chunks[chunkCoord.x, chunkCoord.x].voxelMap[xCh, yPr, zCh];
+                    world.Chunks[chunkCoord.x, chunkCoord.y].Voxels[xCh, (pos.y + yPr) / 2, zCh]
+                        = world.Chunks[chunkCoord.x, chunkCoord.x].Voxels[xCh, yPr, zCh];
 
                 }
 
@@ -323,7 +323,7 @@ class RandomHills : IWorldGenerator
                     for (int y1 = (pos.y + yPr) / 2 - 1; y1 >= yPr; --y1)
                     {
 
-                        world.Chunks[chunkCoord.x, chunkCoord.y].voxelMap[xCh, y1, zCh] = 2;
+                        world.Chunks[chunkCoord.x, chunkCoord.y].Voxels[xCh, y1, zCh] = 2;
 
                     }
 
@@ -334,7 +334,7 @@ class RandomHills : IWorldGenerator
                     for (int y1 = (pos.y + yPr) / 2 + 1; y1 <= yPr; ++y1)
                     {
 
-                        world.Chunks[chunkCoord.x, chunkCoord.y].voxelMap[xCh, y1, zCh] = 0;
+                        world.Chunks[chunkCoord.x, chunkCoord.y].Voxels[xCh, y1, zCh] = 0;
 
                     }
 
@@ -346,16 +346,16 @@ class RandomHills : IWorldGenerator
         else
         {
 
-            world.Chunks[chunkCoord.x, chunkCoord.y].voxelMap[xCh, pos.y, zCh] = id;
+            world.Chunks[chunkCoord.x, chunkCoord.y].Voxels[xCh, pos.y, zCh] = id;
 
             for (int y1 = pos.y - 1; y1 > 0; --y1)
             {
 
-                world.Chunks[chunkCoord.x, chunkCoord.y].voxelMap[xCh, y1, zCh] = 2;
+                world.Chunks[chunkCoord.x, chunkCoord.y].Voxels[xCh, y1, zCh] = 2;
 
             }
 
-            world.Chunks[chunkCoord.x, chunkCoord.y].voxelMap[xCh, 0, zCh] = 1;
+            world.Chunks[chunkCoord.x, chunkCoord.y].Voxels[xCh, 0, zCh] = 1;
 
         }
 
@@ -374,23 +374,23 @@ class RandomHills : IWorldGenerator
         if (yPr == 0 || pos.y == yPr)
         {
 
-            world.Chunks[chunkCoord.x, chunkCoord.y].voxelMap[xCh, pos.y, zCh] = id;
+            world.Chunks[chunkCoord.x, chunkCoord.y].Voxels[xCh, pos.y, zCh] = id;
 
             for (int y1 = pos.y - 1; y1 > 0; --y1)
             {
 
-                world.Chunks[chunkCoord.x, chunkCoord.y].voxelMap[xCh, y1, zCh] = 2;
+                world.Chunks[chunkCoord.x, chunkCoord.y].Voxels[xCh, y1, zCh] = 2;
 
             }
 
             for (int y1 = pos.y + 1; y1 <= waterY; ++y1)
             {
 
-                world.Chunks[chunkCoord.x, chunkCoord.y].voxelMap[xCh, y1, zCh] = 9;
+                world.Chunks[chunkCoord.x, chunkCoord.y].Voxels[xCh, y1, zCh] = 9;
 
             }
 
-            world.Chunks[chunkCoord.x, chunkCoord.y].voxelMap[xCh, 0, zCh] = 1;
+            world.Chunks[chunkCoord.x, chunkCoord.y].Voxels[xCh, 0, zCh] = 1;
 
         }
 
@@ -407,7 +407,7 @@ class RandomHills : IWorldGenerator
             int xCh = pos.x % world.WorldAttributes.ChunkWidth;
             int zCh = pos.y % world.WorldAttributes.ChunkWidth;
 
-            if (world.BlocksAttributes.Blocktypes[world.Chunks[chunkCoord.x, chunkCoord.y].voxelMap[xCh, y, zCh]].isSolid)
+            if (world.BlocksAttributes.Blocktypes[world.Chunks[chunkCoord.x, chunkCoord.y].Voxels[xCh, y, zCh]].isSolid)
             {
 
                 return y;

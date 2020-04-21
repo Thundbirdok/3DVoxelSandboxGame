@@ -20,7 +20,7 @@ public class Chunk
 	private List<int> triangles = new List<int>();
 	private List<Vector2> uvs = new List<Vector2>();
 
-	public byte[,,] voxelMap;
+	public byte[,,] Voxels;
 
 	public Chunk(Vector2Int _coord, World _world, WorldAttributes _worldAttributes, BlocksAttributes _blocksAttributes)
 	{
@@ -32,7 +32,7 @@ public class Chunk
 		chunkObject = new GameObject();
 		chunkObject.transform.position = new Vector3(coord.x * worldAttributes.ChunkWidth, 0f, coord.y * worldAttributes.ChunkWidth);
 
-		voxelMap = new byte[worldAttributes.ChunkWidth, worldAttributes.ChunkHeight, worldAttributes.ChunkWidth];		
+		Voxels = new byte[worldAttributes.ChunkWidth, worldAttributes.ChunkHeight, worldAttributes.ChunkWidth];		
 
 		meshRenderer = chunkObject.AddComponent<MeshRenderer>();
 		meshFilter = chunkObject.AddComponent<MeshFilter>();        
@@ -68,7 +68,7 @@ public class Chunk
 				for (int k = 0; k < worldAttributes.ChunkWidth; ++k)
 				{
 
-					voxelMap[i, j, k] = 0;
+					Voxels[i, j, k] = 0;
 
 				}
 
@@ -123,7 +123,7 @@ public class Chunk
 
 		}
 
-		return blocksAttributes.Blocktypes[voxelMap[x, y, z]].isSolid;
+		return blocksAttributes.Blocktypes[Voxels[x, y, z]].isSolid;
 
 	}
 
@@ -139,7 +139,7 @@ public class Chunk
 				if (!CheckVoxel(pos + VoxelData.faceChecks[p]))
 				{
 
-					byte blockID = voxelMap[(int)pos.x, (int)pos.y, (int)pos.z];
+					byte blockID = Voxels[(int)pos.x, (int)pos.y, (int)pos.z];
 
 					vertices.Add(pos + VoxelData.voxelVerts[VoxelData.voxelTris[p, 0]]);
 					vertices.Add(pos + VoxelData.voxelVerts[VoxelData.voxelTris[p, 1]]);
