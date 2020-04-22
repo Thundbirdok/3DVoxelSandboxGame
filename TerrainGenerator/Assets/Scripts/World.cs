@@ -27,7 +27,7 @@ public class World : MonoBehaviour
 
 		Bioms = new int[WorldAttributes.WorldSizeInBlocks, WorldAttributes.WorldSizeInBlocks];
 
-		generator = new FullRandom();
+		generator = new PerlinNoise();
 
 		GenerateWorld(); 
 
