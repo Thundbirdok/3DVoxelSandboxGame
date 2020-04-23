@@ -16,6 +16,8 @@ MonoBehaviour:
   chunkHeight: 64
   powerOfTwoOfWorldSizeInChunks: 4
   worldScale: 0.25
+  riverDepth: 2
+  riverPart: 20
   biomeAttributes:
   - biomeName: Ocean
     mainVoxel: 6

@@ -388,7 +388,7 @@ public class PerlinNoise : IWorldGenerator
                     else if (world.Bioms[x, z] == -1)
                     {
 
-                        SetRiverPart(new Vector2Int(x, z), world, 20);
+                        SetRiverPart(new Vector2Int(x, z), world);
 
                     }
 
@@ -453,11 +453,11 @@ public class PerlinNoise : IWorldGenerator
 
     }
 
-    private void SetRiverPart(Vector2Int start, World world, int ColumnNumber)
+    private void SetRiverPart(Vector2Int start, World world)
     {
 
         int avrgY = 0;
-        int counter = ColumnNumber;
+        int counter = world.WorldAttributes.RiverPart;
 
         Queue<Vector2Int> columns = new Queue<Vector2Int>();
         Queue<Vector2Int> checkedColumns = new Queue<Vector2Int>();
@@ -492,7 +492,7 @@ public class PerlinNoise : IWorldGenerator
 
         }
 
-        avrgY /= ColumnNumber;
+        avrgY /= world.WorldAttributes.RiverPart;
 
         while (checkedColumns.Count != 0)
         {
@@ -504,7 +504,7 @@ public class PerlinNoise : IWorldGenerator
 
             int blockHeight = GetTopBlockHeight(pos, world);
 
-            if (blockHeight >= avrgY + 4)
+            if (blockHeight >= avrgY + world.WorldAttributes.RiverDepth)
             {
 
                 world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, blockHeight + 1, InChunkCoord.y] = 9;
@@ -513,7 +513,7 @@ public class PerlinNoise : IWorldGenerator
             else
             {
 
-                for (int y = avrgY + 4; y > 0 && world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] == 0; --y)
+                for (int y = avrgY + world.WorldAttributes.RiverDepth; y > 0 && world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] == 0; --y)
                 {
 
                     world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] = 9;
