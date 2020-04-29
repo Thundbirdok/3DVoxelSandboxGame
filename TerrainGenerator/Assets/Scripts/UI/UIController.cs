@@ -20,7 +20,10 @@ public class UIController : MonoBehaviour
     public void Awake()
     {
 
-        MapScript = Map.GetComponent<Map>();
+        Menu.SetActive(false);
+        Map.SetActive(false);
+
+        MapScript = Map.GetComponent<Map>();        
 
     }
 
@@ -108,7 +111,7 @@ public class UIController : MonoBehaviour
     public void GenerateWorldFullRandom()
     {
 
-        World.GenerateWorldRandomHills();
+        World.GenerateWorldFullRandom();
 
         MapScript.CreateMap();
 
@@ -118,6 +121,15 @@ public class UIController : MonoBehaviour
     {        
 
         World.GenerateWorldRandomHills();
+
+        MapScript.CreateMap();
+
+    }
+
+    public void GenerateWorldPerlinNoise()
+    {
+
+        World.GenerateWorldPerlinNoise();
 
         MapScript.CreateMap();
 

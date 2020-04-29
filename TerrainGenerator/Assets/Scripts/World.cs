@@ -16,6 +16,8 @@ public class World : MonoBehaviour
 	public BlocksAttributes BlocksAttributes { get => blocksAttributes; }
     public Chunk[,] Chunks { get; private set; }
 
+	public int[,] Bioms;
+
 	private IWorldGenerator generator;
 
     private void Start()
@@ -23,7 +25,9 @@ public class World : MonoBehaviour
 
 		Chunks = new Chunk[WorldAttributes.WorldSizeInChunks, WorldAttributes.WorldSizeInChunks];
 
-		generator = new FullRandom();
+		Bioms = new int[WorldAttributes.WorldSizeInBlocks, WorldAttributes.WorldSizeInBlocks];
+
+		generator = new PerlinNoise();
 
 		GenerateWorld(); 
 
@@ -52,6 +56,15 @@ public class World : MonoBehaviour
 
 	}
 
+	public void GenerateWorldPerlinNoise()
+	{
+
+		generator = new PerlinNoise();
+
+		GenerateWorld();
+
+	}
+
 	private void GenerateWorld()
 	{
 
@@ -59,27 +72,29 @@ public class World : MonoBehaviour
 
 	}
 
-	public void CreateChunk(ChunkCoord coord)
+	public void CreateChunk(Vector2Int coord)
 	{
 
-		if (Chunks[coord.x, coord.z] == null) {
+		if (Chunks[coord.x, coord.y] == null) {
 
-			Chunks[coord.x, coord.z] = new Chunk(new ChunkCoord(coord.x, coord.z), this, WorldAttributes, BlocksAttributes);
+			Chunks[coord.x, coord.y] = new Chunk(new Vector2Int(coord.x, coord.y), this, WorldAttributes, BlocksAttributes);
 
 		}
 		else
 		{
 
-			Chunks[coord.x, coord.z].Clear();
+			Chunks[coord.x, coord.y].Clear();
 
 		}
 
 	}
 
-	public bool IsVoxelInWorld(int x, int y, int z)
+	public bool IsVoxelInWorld(Vector3 pos)
 	{
 
-		if (x < WorldAttributes.WorldSizeInBlocks && z < WorldAttributes.WorldSizeInBlocks && y < WorldAttributes.ChunkHeight)
+		if (pos.x < WorldAttributes.WorldSizeInBlocks 
+			&& pos.z < WorldAttributes.WorldSizeInBlocks 
+			&& pos.y < WorldAttributes.ChunkHeight && pos.x >= 0 && pos.y >= 0 && pos.z >= 0)
 		{
 
 			return true;
@@ -90,10 +105,10 @@ public class World : MonoBehaviour
 
 	}
 
-	public bool IsVoxelInWorld(int x, int z)
+	public bool IsVoxelInWorld(Vector2 pos)
 	{
 
-		if (x < WorldAttributes.WorldSizeInBlocks && z < WorldAttributes.WorldSizeInBlocks)
+		if (pos.x < WorldAttributes.WorldSizeInBlocks && pos.y < WorldAttributes.WorldSizeInBlocks && pos.x >= 0 && pos.y >= 0)
 		{
 
 			return true;
@@ -101,54 +116,87 @@ public class World : MonoBehaviour
 		}
 
 		return false;
+
+	}
+
+	public int GetTopBlockHeight(Vector2 pos)
+	{
+
+		Vector2Int ChunkCoord = GetChunkCoord(pos);
+		Vector2Int InChunkCoord = GetInChunkCoord(pos);
+
+		int y;
+
+		for (y = WorldAttributes.ChunkHeight - 1; y > 0; --y)
+		{
+
+			if (Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] != 0 && Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] != 9)
+			{
+
+				break;
+
+			}
+
+		}
+
+		return y;
 
 	}
 	
-	public ChunkCoord GetChunkCoord(Vector3 coord)
+	public Vector2Int GetChunkCoord(Vector3 pos)
 	{
 
-		int x = Mathf.FloorToInt(coord.x / WorldAttributes.ChunkWidth);
-		int z = Mathf.FloorToInt(coord.z / WorldAttributes.ChunkWidth);
+		int x = Mathf.FloorToInt(pos.x / WorldAttributes.ChunkWidth);
+		int z = Mathf.FloorToInt(pos.z / WorldAttributes.ChunkWidth);
 
-		return new ChunkCoord(x, z);
+		return new Vector2Int(x, z);
 
 	}
 
-	public ChunkCoord GetChunkCoord(int x, int z)
+	public Vector2Int GetChunkCoord(Vector2 pos)
 	{
 
-		int _x = x / WorldAttributes.ChunkWidth;
-		int _z = z / WorldAttributes.ChunkWidth;
+		int _x = Mathf.FloorToInt(pos.x / WorldAttributes.ChunkWidth);
+		int _z = Mathf.FloorToInt(pos.y / WorldAttributes.ChunkWidth);
 
-		return new ChunkCoord(_x, _z);
+		return new Vector2Int(_x, _z);
 
 	}
 
-}
-
-public class ChunkCoord
-{
-
-	public int x;
-	public int z;
-
-	public ChunkCoord(int _x, int _z)
+	public Vector2Int GetInChunkCoord(Vector3 pos)
 	{
 
-		x = _x;
-		z = _z;
+		int x = Mathf.FloorToInt(pos.x % WorldAttributes.ChunkWidth);
+		int z = Mathf.FloorToInt(pos.z % WorldAttributes.ChunkWidth);
+
+		return new Vector2Int(x, z);
 
 	}
 
-	public bool Equals(ChunkCoord other)
+	public Vector2Int GetInChunkCoord(Vector2 pos)
 	{
 
-		if (other == null)
-			return false;
-		else if (other.x == x && other.z == z)
-			return true;
-		else
-			return false;
+		int _x = Mathf.FloorToInt(pos.x % WorldAttributes.ChunkWidth);
+		int _z = Mathf.FloorToInt(pos.y % WorldAttributes.ChunkWidth);
+
+		return new Vector2Int(_x, _z);
+
+	}
+
+	internal void UpdateChunks()
+	{
+
+		for (int x = 0; x < WorldAttributes.WorldSizeInChunks; ++x)
+		{
+
+			for (int z = 0; z < WorldAttributes.WorldSizeInChunks; ++z)
+			{
+
+				Chunks[x, z].Update();
+
+			}
+
+		}
 
 	}
 
