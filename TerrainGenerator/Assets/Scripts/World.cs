@@ -27,7 +27,7 @@ public class World : MonoBehaviour
 
 		Bioms = new int[WorldAttributes.WorldSizeInBlocks, WorldAttributes.WorldSizeInBlocks];
 
-		generator = new PerlinNoise();
+		generator = new Voronoi();
 
 		GenerateWorld(); 
 
@@ -60,6 +60,15 @@ public class World : MonoBehaviour
 	{
 
 		generator = new PerlinNoise();
+
+		GenerateWorld();
+
+	}
+
+	internal void GenerateWorldVoronoiDiagram()
+	{
+
+		generator = new Voronoi();
 
 		GenerateWorld();
 
@@ -117,9 +126,9 @@ public class World : MonoBehaviour
 
 		return false;
 
-	}
+	}    
 
-	public int GetTopBlockHeight(Vector2 pos)
+    public int GetTopBlockHeight(Vector2 pos)
 	{
 
 		Vector2Int ChunkCoord = GetChunkCoord(pos);

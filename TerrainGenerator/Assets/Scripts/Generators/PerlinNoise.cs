@@ -428,7 +428,7 @@ public class PerlinNoise : IWorldGenerator
             if (world.IsVoxelInWorld(pos) && world.Bioms[pos.x, pos.y] != 0 && world.Bioms[pos.x, pos.y] != -1)
             {
 
-                if (GetTopBlockHeight(pos, world) < waterHeight)
+                if (world.GetTopBlockHeight(pos) < waterHeight)
                 {
 
                     world.Bioms[pos.x, pos.y] = 0;
@@ -478,7 +478,7 @@ public class PerlinNoise : IWorldGenerator
 
                 world.Bioms[pos.x, pos.y] = -2;
 
-                avrgY += GetTopBlockHeight(pos, world);
+                avrgY += world.GetTopBlockHeight(pos);
 
                 columns.Enqueue(new Vector2Int(pos.x - 1, pos.y));
                 columns.Enqueue(new Vector2Int(pos.x + 1, pos.y));

@@ -135,4 +135,13 @@ public class UIController : MonoBehaviour
 
     }
 
+    public void GenerateWorldVoronoiDiagram()
+    {
+
+        World.GenerateWorldVoronoiDiagram();
+
+        MapScript.CreateMap();
+
+    }
+
 }
