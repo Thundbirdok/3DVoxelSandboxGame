@@ -7,26 +7,30 @@ using UnityEngine;
 class Voronoi : IWorldGenerator
 {
 
-    void IWorldGenerator.GenerateWorld(World world)
+    World world;
+
+    void IWorldGenerator.GenerateWorld(World _world)
     {
 
-        InitChunks(world);
+        world = _world;
 
-        List<VoronoiDiagram.GraphEdge> Edges = SetBioms(world);
+        InitChunks();
 
-        BuildTerrain(world);
+        List<VoronoiDiagram.GraphEdge> Edges = SetBioms();
 
-        SmoothingBorders(Edges, world);
+        BuildTerrain();
 
-        AddWater(Edges, world);
+        SmoothingBorders(Edges);
 
-        AddSoil(world);
+        AddWater(Edges);
+
+        AddSoil();
 
         world.UpdateChunks();
 
     }
 
-    private void InitChunks(World world)
+    private void InitChunks()
     {
 
         for (int x = 0; x < world.WorldAttributes.WorldSizeInChunks; ++x)
@@ -43,68 +47,33 @@ class Voronoi : IWorldGenerator
 
     }
 
-    private List<VoronoiDiagram.GraphEdge> SetBioms(World world)
+    private List<VoronoiDiagram.GraphEdge> SetBioms()
     {
 
-        List<VoronoiDiagram.GraphEdge> Edges = SetVoronoiDiagram(world);
+        List<VoronoiDiagram.GraphEdge> Edges = SetVoronoiDiagram();
 
-        PutBioms(world);
+        PutBioms();
 
-        HideEdges(Edges, world);
+        HideEdges(Edges);
 
         return Edges;
 
     }
 
-    private void HideEdges(List<VoronoiDiagram.GraphEdge> Edges, World world)
+    private void HideEdges(List<VoronoiDiagram.GraphEdge> Edges)
     {
 
         foreach (var edge in Edges)
         {
 
-            double x = edge.x2 - edge.x1;
-            double y = edge.y2 - edge.y1;
+            int biomeA, biomeB;
 
-            Vector2 normal = Vector2.Perpendicular(new Vector2((float)x, (float)y)).normalized;
-
-            Vector2 middle = new Vector2((float)((edge.x2 + edge.x1) / 2), (float)((edge.y2 + edge.y1) / 2));
-
-            Vector2 A = middle + (normal * 10);
-            Vector2 B = middle + (normal * -10);
-
-            int biomeA;
-            int biomeB;
-
-            if (world.IsVoxelInWorld(A))
-            {
-
-                biomeA = world.Bioms[Mathf.FloorToInt(A.x), Mathf.FloorToInt(A.y)];
-
-            }
-            else
-            {
-
-                biomeA = 0;
-
-            }
-
-            if (world.IsVoxelInWorld(B))
-            {
-
-                biomeB = world.Bioms[Mathf.FloorToInt(B.x), Mathf.FloorToInt(B.y)];
-
-            }
-            else
-            {
-
-                biomeB = 0;
-
-            }
+            GetBorderingBioms(edge, out biomeA, out biomeB);
 
             if (biomeA == biomeB && biomeA != -1)
             {
 
-                DrawLine(edge, world, biomeA);
+                DrawLine(edge, biomeA);
 
             }
             else
@@ -113,19 +82,19 @@ class Voronoi : IWorldGenerator
                 if (biomeA != -1)
                 {
 
-                    DrawLine(edge, world, biomeA);
+                    DrawLine(edge, biomeA);
 
                 }
                 else if (biomeB != -1)
                 {
 
-                    DrawLine(edge, world, biomeB);
+                    DrawLine(edge, biomeB);
 
                 }
                 else
                 {
 
-                    DrawLine(edge, world, 0);
+                    DrawLine(edge, 0);
 
                 }
 
@@ -135,17 +104,17 @@ class Voronoi : IWorldGenerator
 
     }
 
-    private List<VoronoiDiagram.GraphEdge> SetVoronoiDiagram(World world)
+    private List<VoronoiDiagram.GraphEdge> SetVoronoiDiagram()
     {
 
         InitBioms(world);
 
         VoronoiDiagram voronoi = new VoronoiDiagram(10);
 
-        double[] xVal = new double[/*world.WorldAttributes...*/25];
-        double[] yVal = new double[25];
+        double[] xVal = new double[world.WorldAttributes.BiomeNumber];
+        double[] yVal = new double[world.WorldAttributes.BiomeNumber];
 
-        for (int i = 0; i < 25; ++i)
+        for (int i = 0; i < world.WorldAttributes.BiomeNumber; ++i)
         {
 
             xVal[i] = Random.Range(0, world.WorldAttributes.WorldSizeInBlocks);
@@ -172,7 +141,7 @@ class Voronoi : IWorldGenerator
         foreach (var edge in ClearedEdges)
         {
 
-            DrawLine(edge, world, -1);
+            DrawLine(edge, -1);
 
         }
 
@@ -197,101 +166,41 @@ class Voronoi : IWorldGenerator
 
     }
 
-    private void DrawLine(VoronoiDiagram.GraphEdge edge, World world, int biome)
+    private void DrawLine(VoronoiDiagram.GraphEdge edge, int biome)
     {
 
-        Vector2 begin = new Vector2((float)edge.x1, (float)edge.y1);
-        Vector2 end = new Vector2((float)edge.x2, (float)edge.y2);
+        Vector2 A = new Vector2((float)edge.x1, (float)edge.y1);
+        Vector2 B = new Vector2((float)edge.x2, (float)edge.y2);
 
         do
         {
 
-            DrawPoint(Vector2Int.FloorToInt(begin), world, biome);
+            DrawPoint(Vector2Int.FloorToInt(A), world.WorldAttributes.BoarderBrushRadius, biome);
 
-            begin = Vector2.MoveTowards(begin, end, 1f);
+            A = Vector2.MoveTowards(A, B, 1f);
 
-        } while (begin != end);
+        } while (A != B);
 
     }
 
-    private void DrawPoint(Vector2Int pos, World world, int biome)
+    private void DrawPoint(Vector2Int center, int radius, int biome)
     {
 
-        Vector2Int sidePoint1 = new Vector2Int(pos.x - 1, pos.y);
-        Vector2Int sidePoint2 = new Vector2Int(pos.x + 1, pos.y);
-        Vector2Int sidePoint3 = new Vector2Int(pos.x, pos.y - 1);
-        Vector2Int sidePoint4 = new Vector2Int(pos.x, pos.y + 1);
-        Vector2Int sidePoint5 = new Vector2Int(pos.x - 1, pos.y - 1);
-        Vector2Int sidePoint6 = new Vector2Int(pos.x - 1, pos.y + 1);
-        Vector2Int sidePoint7 = new Vector2Int(pos.x + 1, pos.y - 1);
-        Vector2Int sidePoint8 = new Vector2Int(pos.x + 1, pos.y + 1);
-
-        if (world.IsVoxelInWorld(pos))
+        foreach (var point in Brush(center, radius))
         {
 
-            world.Bioms[pos.x, pos.y] = biome;
+            if (world.IsVoxelInWorld(point))
+            {
 
-        }
+                world.Bioms[point.x, point.y] = biome;
 
-        if (world.IsVoxelInWorld(sidePoint1))
-        {
-
-            world.Bioms[sidePoint1.x, sidePoint1.y] = biome;
-
-        }
-
-        if (world.IsVoxelInWorld(sidePoint2))
-        {
-
-            world.Bioms[sidePoint2.x, sidePoint2.y] = biome;
-
-        }
-
-        if (world.IsVoxelInWorld(sidePoint3))
-        {
-
-            world.Bioms[sidePoint3.x, sidePoint3.y] = biome;
-
-        }
-
-        if (world.IsVoxelInWorld(sidePoint4))
-        {
-
-            world.Bioms[sidePoint4.x, sidePoint4.y] = biome;
-
-        }
-
-        if (world.IsVoxelInWorld(sidePoint5))
-        {
-
-            world.Bioms[sidePoint5.x, sidePoint5.y] = biome;
-
-        }
-
-        if (world.IsVoxelInWorld(sidePoint6))
-        {
-
-            world.Bioms[sidePoint6.x, sidePoint6.y] = biome;
-
-        }
-
-        if (world.IsVoxelInWorld(sidePoint7))
-        {
-
-            world.Bioms[sidePoint7.x, sidePoint7.y] = biome;
-
-        }
-
-        if (world.IsVoxelInWorld(sidePoint8))
-        {
-
-            world.Bioms[sidePoint8.x, sidePoint8.y] = biome;
+            }
 
         }
 
     }
 
-    private void PutBioms(World world)
+    private void PutBioms()
     {
 
         for (int x = 0; x < world.WorldAttributes.WorldSizeInBlocks; ++x)
@@ -303,7 +212,7 @@ class Voronoi : IWorldGenerator
                 if (world.Bioms[x, z] == -2)
                 {
 
-                    FillBorder(world, new Vector2Int(x, z), Random.Range(0, world.WorldAttributes.BiomeAttributes.Length));
+                    FillBorder(new Vector2Int(x, z), Random.Range(0, world.WorldAttributes.BiomeAttributes.Length));
 
                 }
 
@@ -313,7 +222,7 @@ class Voronoi : IWorldGenerator
 
     }
 
-    private void FillBorder(World world, Vector2Int start, int biome)
+    private void FillBorder(Vector2Int start, int biome)
     {
 
         Stack<Vector2Int> stack = new Stack<Vector2Int>();
@@ -345,7 +254,7 @@ class Voronoi : IWorldGenerator
 
     }
 
-    private void BuildTerrain(World world)
+    private void BuildTerrain()
     {
 
         for (int x = 0; x < world.WorldAttributes.WorldSizeInBlocks; ++x)
@@ -364,7 +273,7 @@ class Voronoi : IWorldGenerator
 
                 }
 
-                SetColumn(new Vector2Int(x, z), world, world.WorldAttributes.BiomeAttributes[biome]);
+                SetColumn(new Vector2Int(x, z), world.WorldAttributes.BiomeAttributes[biome]);
 
             }
 
@@ -372,7 +281,7 @@ class Voronoi : IWorldGenerator
 
     }
 
-    private int GetTerrainHeight(Vector2 pos, World world, BiomeAttributes biome)
+    private int GetTerrainHeight(Vector2 pos, BiomeAttributes biome)
     {
 
         int terrainHeight = biome.SolidGroundHeight;
@@ -388,10 +297,10 @@ class Voronoi : IWorldGenerator
 
     }
 
-    private void SetColumn(Vector2Int ColumnPos, World world, BiomeAttributes biome)
+    private void SetColumn(Vector2Int ColumnPos, BiomeAttributes biome)
     {
 
-        int terrainHeight = GetTerrainHeight(ColumnPos, world, biome);
+        int terrainHeight = GetTerrainHeight(ColumnPos, biome);
 
         if (world.Bioms[ColumnPos.x, ColumnPos.y] == -1)
         {
@@ -418,92 +327,30 @@ class Voronoi : IWorldGenerator
 
     }
 
-    private void SmoothingBorders(List<VoronoiDiagram.GraphEdge> Edges, World world)
+    private void SmoothingBorders(List<VoronoiDiagram.GraphEdge> Edges)
     {
-
-        //for (int x = 0; x < world.WorldAttributes.WorldSizeInBlocks; ++x)
-        //{
-
-        //    for (int z = 0; z < world.WorldAttributes.WorldSizeInBlocks; ++z)
-        //    {
-
-        //        if (world.Bioms[x, z] == 0)
-        //        {
-
-        //            SmoothingColumn(new Vector2(x, z), world);
-
-        //            SmoothingColumn(new Vector2(x - 1, z - 1), world);
-        //            SmoothingColumn(new Vector2(x + 1, z - 1), world);
-        //            SmoothingColumn(new Vector2(x - 1, z + 1), world);
-        //            SmoothingColumn(new Vector2(x + 1, z + 1), world);
-
-        //        }
-
-        //    }
-
-        //}
 
         foreach (var edge in Edges)
         {
 
-            double x = edge.x2 - edge.x1;
-            double y = edge.y2 - edge.y1;
+            int biomeA, biomeB;
 
-            Vector2 normal = Vector2.Perpendicular(new Vector2((float)x, (float)y)).normalized;
-
-            Vector2 middle = new Vector2((float)((edge.x2 + edge.x1) / 2), (float)((edge.y2 + edge.y1) / 2));
-
-            Vector2 A = middle + (normal * 10);
-            Vector2 B = middle + (normal * -10);
-
-            int biomeA;
-            int biomeB;
-
-            if (world.IsVoxelInWorld(A))
-            {
-
-                biomeA = world.Bioms[Mathf.FloorToInt(A.x), Mathf.FloorToInt(A.y)];
-
-            }
-            else
-            {
-
-                biomeA = 0;
-
-            }
-
-            if (world.IsVoxelInWorld(B))
-            {
-
-                biomeB = world.Bioms[Mathf.FloorToInt(B.x), Mathf.FloorToInt(B.y)];
-
-            }
-            else
-            {
-
-                biomeB = 0;
-
-            }
+            GetBorderingBioms(edge, out biomeA, out biomeB);
 
             if (biomeA != biomeB)
             {
 
-                Vector2 begin = new Vector2((float)edge.x1, (float)edge.y1);
-                Vector2 end = new Vector2((float)edge.x2, (float)edge.y2);
+                Vector2 A = new Vector2((float)edge.x1, (float)edge.y1);
+                Vector2 B = new Vector2((float)edge.x2, (float)edge.y2);
 
                 do
                 {
 
-                    SmoothingColumn(new Vector2(begin.x, begin.y), world);
+                    SmoothingPoint(Vector2Int.FloorToInt(A), world.WorldAttributes.SmoothingBrushRadius);
 
-                    SmoothingColumn(new Vector2(begin.x - 1, begin.y - 1), world);
-                    SmoothingColumn(new Vector2(begin.x + 1, begin.y - 1), world);
-                    SmoothingColumn(new Vector2(begin.x - 1, begin.y + 1), world);
-                    SmoothingColumn(new Vector2(begin.x + 1, begin.y + 1), world);
+                    A = Vector2.MoveTowards(A, B, 1f);
 
-                    begin = Vector2.MoveTowards(begin, end, 1f);
-
-                } while (begin != end);
+                } while (A != B);
 
             }
 
@@ -511,7 +358,7 @@ class Voronoi : IWorldGenerator
 
     }
 
-    private void SmoothingColumn(Vector2 ColumnPos, World world)
+    private void SmoothingColumn(Vector2Int ColumnPos)
     {
 
         if (!world.IsVoxelInWorld(ColumnPos))
@@ -521,31 +368,30 @@ class Voronoi : IWorldGenerator
 
         }
 
-        int avrgY;
+        int avrgHeight = 0;
+        int count = 0;
 
         Vector2Int ChunkCoord = world.GetChunkCoord(ColumnPos);
         Vector2Int InChunkCoord = world.GetInChunkCoord(ColumnPos);
 
-        avrgY = GetTopBlockHeight(ColumnPos, world);
-        avrgY += GetTopBlockHeight(new Vector2(ColumnPos.x - 1, ColumnPos.y), world);
-        avrgY += GetTopBlockHeight(new Vector2(ColumnPos.x + 1, ColumnPos.y), world);
-        avrgY += GetTopBlockHeight(new Vector2(ColumnPos.x, ColumnPos.y - 1), world);
-        avrgY += GetTopBlockHeight(new Vector2(ColumnPos.x, ColumnPos.y + 1), world);
-        avrgY += GetTopBlockHeight(new Vector2(ColumnPos.x - 1, ColumnPos.y - 1), world);
-        avrgY += GetTopBlockHeight(new Vector2(ColumnPos.x - 1, ColumnPos.y + 1), world);
-        avrgY += GetTopBlockHeight(new Vector2(ColumnPos.x + 1, ColumnPos.y - 1), world);
-        avrgY += GetTopBlockHeight(new Vector2(ColumnPos.x + 1, ColumnPos.y + 1), world);
+        foreach (var column in Brush(ColumnPos, world.WorldAttributes.SmoothingCheckBrushRadius))
+        {
 
-        avrgY /= 9;
+            avrgHeight += GetTopBlockHeight(column);
+            ++count;
 
-        for (int y = world.WorldAttributes.ChunkHeight - 1; y > avrgY; --y)
+        }
+
+        avrgHeight = Mathf.RoundToInt((float)avrgHeight / count);
+
+        for (int y = world.WorldAttributes.ChunkHeight - 1; y > avrgHeight; --y)
         {
 
             world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] = 0;
 
         }
 
-        for (int y = avrgY; y > 0 && world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] == 0; --y)
+        for (int y = avrgHeight; y > 0 && world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] == 0; --y)
         {
 
             world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] = 2;
@@ -554,14 +400,25 @@ class Voronoi : IWorldGenerator
 
     }
 
-    private int GetTopBlockHeight(Vector2 pos, World world)
+    private void SmoothingPoint(Vector2Int center, int radius)
+    {
+
+        foreach (var pos in Brush(center, radius))
+        {
+
+            SmoothingColumn(pos);
+
+        }
+
+    }
+
+    private int GetTopBlockHeight(Vector2 pos)
     {
 
         if (world.IsVoxelInWorld(pos))
         {
 
-            return world.GetTopBlockHeight(pos);
-
+            return world.GetTopSoilBlockHeight(pos);
 
         }
         else
@@ -573,10 +430,8 @@ class Voronoi : IWorldGenerator
 
     }
 
-    private void AddWater(List<VoronoiDiagram.GraphEdge> Edges, World world)
+    private void AddWater(List<VoronoiDiagram.GraphEdge> Edges)
     {
-
-        int waterHeight = 25;
 
         for (int x = 0; x < world.WorldAttributes.WorldSizeInBlocks; ++x)
         {
@@ -587,7 +442,7 @@ class Voronoi : IWorldGenerator
                 if (world.Bioms[x, z] == 0)
                 {
 
-                    AddWaterColumn(new Vector2Int(x, z), world, waterHeight);
+                    AddWaterColumn(new Vector2Int(x, z), world.WorldAttributes.OceanHeight);
 
                 }
 
@@ -598,44 +453,9 @@ class Voronoi : IWorldGenerator
         foreach (var edge in Edges)
         {
 
-            double x = edge.x2 - edge.x1;
-            double y = edge.y2 - edge.y1;
+            int biomeA, biomeB;
 
-            Vector2 normal = Vector2.Perpendicular(new Vector2((float)x, (float)y)).normalized;
-
-            Vector2 middle = new Vector2((float)((edge.x2 + edge.x1) / 2), (float)((edge.y2 + edge.y1) / 2));
-
-            Vector2 A = middle + (normal * 10);
-            Vector2 B = middle + (normal * -10);
-
-            int biomeA;
-            int biomeB;
-
-            if (world.IsVoxelInWorld(A))
-            {
-
-                biomeA = world.Bioms[Mathf.FloorToInt(A.x), Mathf.FloorToInt(A.y)];
-
-            }
-            else
-            {
-
-                biomeA = 0;
-
-            }
-
-            if (world.IsVoxelInWorld(B))
-            {
-
-                biomeB = world.Bioms[Mathf.FloorToInt(B.x), Mathf.FloorToInt(B.y)];
-
-            }
-            else
-            {
-
-                biomeB = 0;
-
-            }
+            GetBorderingBioms(edge, out biomeA, out biomeB);
 
             if (biomeA != biomeB)
             {
@@ -646,7 +466,7 @@ class Voronoi : IWorldGenerator
                 do
                 {
 
-                    SetRiverPart(Vector2Int.FloorToInt(begin), world);
+                    SetRiverPoint(Vector2Int.FloorToInt(begin));
 
                     begin = Vector2.MoveTowards(begin, end, 1f);
 
@@ -658,7 +478,7 @@ class Voronoi : IWorldGenerator
 
     }
 
-    private void AddWaterColumn(Vector2Int start, World world, int waterHeight)
+    private void AddWaterColumn(Vector2Int start, int waterHeight)
     {
 
         Vector2Int ChunkCoord = world.GetChunkCoord(start);
@@ -666,7 +486,9 @@ class Voronoi : IWorldGenerator
 
         Stack<Vector2Int> stack = new Stack<Vector2Int>();
 
-        for (int y = waterHeight; y > 0 && world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] == 0; --y)
+        for (int y = waterHeight; y > 0
+            && world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] == 0
+            || world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] == 9; --y)
         {
 
             world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] = 9;
@@ -683,18 +505,20 @@ class Voronoi : IWorldGenerator
 
             Vector2Int pos = stack.Pop();
 
-            ChunkCoord = world.GetChunkCoord(pos);
-            InChunkCoord = world.GetInChunkCoord(pos);
-
             if (world.IsVoxelInWorld(pos) && world.Bioms[pos.x, pos.y] != 0)
             {
 
-                if (world.GetTopBlockHeight(pos) < waterHeight)
+                ChunkCoord = world.GetChunkCoord(pos);
+                InChunkCoord = world.GetInChunkCoord(pos);
+
+                if (world.GetTopSoilBlockHeight(pos) < waterHeight)
                 {
 
                     world.Bioms[pos.x, pos.y] = 0;
 
-                    for (int y = waterHeight; y > 0 && world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] == 0; --y)
+                    for (int y = waterHeight; y > 0
+                        && world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] == 0
+                        || world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] == 9; --y)
                     {
 
                         world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] = 9;
@@ -714,7 +538,7 @@ class Voronoi : IWorldGenerator
 
     }
 
-    private void SetRiverPart(Vector2Int center, World world)
+    private void SetRiverPoint(Vector2Int center)
     {
 
         if (!world.IsVoxelInWorld(center))
@@ -723,23 +547,17 @@ class Voronoi : IWorldGenerator
             return;
 
         }
-        
-        Queue<Vector2Int> checkedColumns;
 
-        CheckRiverColumn(center, 2, world, out checkedColumns);
+        int centerHeight = world.WorldAttributes.OceanHeight - world.WorldAttributes.RiverDepth;
 
-        int centerHeight = 25 - world.WorldAttributes.RiverDepth;
-
-        while (checkedColumns.Count != 0)
+        foreach (var pos in Brush(center, world.WorldAttributes.RiverBrushRadius))
         {
-
-            Vector2Int pos = checkedColumns.Dequeue();
 
             float distance = Vector2Int.Distance(center, pos);
 
-            int height = Mathf.RoundToInt(distance * distance * 0.25f) + centerHeight;
+            int height = Mathf.RoundToInt(distance * distance * world.WorldAttributes.RiverBrushScale) + centerHeight;
 
-            int blockHeight = GetTopBlockHeight(pos, world);
+            int blockHeight = world.GetTopSoilBlockHeight(pos);
 
             if (blockHeight > height)
             {
@@ -756,78 +574,13 @@ class Voronoi : IWorldGenerator
 
             }
 
-            AddWaterColumn(pos, world, 25);
+            AddWaterColumn(pos, world.WorldAttributes.OceanHeight);
 
         }
 
     }
 
-    private void CheckRiverColumn(Vector2Int center, int radius, World world, out Queue<Vector2Int> checkedColumns)
-    {
-
-        checkedColumns = new Queue<Vector2Int>();
-
-        if (world.IsVoxelInWorld(center))
-        {
-
-            checkedColumns.Enqueue(center);
-
-        }
-
-        for (int r = 1; r <= radius; ++r)
-        {
-
-            for (int k = -r; k <= r; ++k)
-            {
-
-                Vector2Int pos = new Vector2Int(center.x + k, center.y + r);
-
-                if (world.IsVoxelInWorld(pos))
-                {
-
-                    checkedColumns.Enqueue(pos);
-
-                }
-
-                pos = new Vector2Int(center.x + k, center.y - r);
-
-                if (world.IsVoxelInWorld(pos))
-                {
-
-                    checkedColumns.Enqueue(pos);
-
-                }
-
-            }
-
-            for (int k = -r + 1; k < r; ++k)
-            {
-
-                Vector2Int pos = new Vector2Int(center.x + r, center.y + k);
-
-                if (world.IsVoxelInWorld(pos))
-                {
-
-                    checkedColumns.Enqueue(pos);
-
-                }
-
-                pos = new Vector2Int(center.x - r, center.y + k);
-
-                if (world.IsVoxelInWorld(pos))
-                {
-
-                    checkedColumns.Enqueue(pos);
-
-                }
-
-            }
-
-        }
-
-    }
-
-    private void AddSoil(World world)
+    private void AddSoil()
     {
 
         for (int x = 0; x < world.WorldAttributes.WorldSizeInBlocks; ++x)
@@ -845,7 +598,7 @@ class Voronoi : IWorldGenerator
 
                 }
 
-                AddSoilInColumn(new Vector2(x, z), world, world.WorldAttributes.BiomeAttributes[biome]);
+                AddSoilInColumn(new Vector2(x, z), world.WorldAttributes.BiomeAttributes[biome]);
 
             }
 
@@ -853,7 +606,7 @@ class Voronoi : IWorldGenerator
 
     }
 
-    private void AddSoilInColumn(Vector2 ColumnPos, World world, BiomeAttributes biome)
+    private void AddSoilInColumn(Vector2 ColumnPos, BiomeAttributes biome)
     {
 
         Vector2Int ChunkCoord = world.GetChunkCoord(ColumnPos);
@@ -861,16 +614,120 @@ class Voronoi : IWorldGenerator
 
         int y;
 
-        int terrainHeight = world.GetTopBlockHeight(ColumnPos);
+        int terrainHeight = world.GetTopSoilBlockHeight(ColumnPos);
 
         world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, terrainHeight, InChunkCoord.y] = biome.MainVoxel;
 
-        int groundDepth = UnityEngine.Random.Range(biome.GroundDepthMin, biome.GroundDepthMax + 1);
+        int groundDepth = Random.Range(biome.GroundDepthMin, biome.GroundDepthMax + 1);
 
         for (y = terrainHeight - 1; y > terrainHeight - groundDepth && y > 0; --y)
         {
 
             world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] = biome.SecondVoxel;
+
+        }
+
+    }
+
+    private IEnumerable<Vector2Int> Brush(Vector2Int center, int radius)
+    {
+
+        if (world.IsVoxelInWorld(center))
+        {
+
+            yield return center;
+
+        }
+
+        for (int r = 1; r <= radius; ++r)
+        {
+
+            for (int k = -r; k <= r; ++k)
+            {
+
+                Vector2Int pos = new Vector2Int(center.x + k, center.y + r);
+
+                if (world.IsVoxelInWorld(pos))
+                {
+
+                    yield return pos;
+
+                }
+
+                pos = new Vector2Int(center.x + k, center.y - r);
+
+                if (world.IsVoxelInWorld(pos))
+                {
+
+                    yield return pos;
+
+                }
+
+            }
+
+            for (int k = -r + 1; k < r; ++k)
+            {
+
+                Vector2Int pos = new Vector2Int(center.x + r, center.y + k);
+
+                if (world.IsVoxelInWorld(pos))
+                {
+
+                    yield return pos;
+
+                }
+
+                pos = new Vector2Int(center.x - r, center.y + k);
+
+                if (world.IsVoxelInWorld(pos))
+                {
+
+                    yield return pos;
+
+                }
+
+            }
+
+        }
+
+    }
+
+    private void GetBorderingBioms(VoronoiDiagram.GraphEdge edge, out int biomeA, out int biomeB)
+    {
+
+        double x = edge.x2 - edge.x1;
+        double y = edge.y2 - edge.y1;
+
+        Vector2 normal = Vector2.Perpendicular(new Vector2((float)x, (float)y)).normalized;
+
+        Vector2 middle = new Vector2((float)((edge.x2 + edge.x1) / 2), (float)((edge.y2 + edge.y1) / 2));
+
+        Vector2 A = middle + (normal * world.WorldAttributes.CheckBiomeDistance);
+        Vector2 B = middle + (normal * -world.WorldAttributes.CheckBiomeDistance);
+
+        if (world.IsVoxelInWorld(A))
+        {
+
+            biomeA = world.Bioms[Mathf.FloorToInt(A.x), Mathf.FloorToInt(A.y)];
+
+        }
+        else
+        {
+
+            biomeA = 0;
+
+        }
+
+        if (world.IsVoxelInWorld(B))
+        {
+
+            biomeB = world.Bioms[Mathf.FloorToInt(B.x), Mathf.FloorToInt(B.y)];
+
+        }
+        else
+        {
+
+            biomeB = 0;
 
         }
 

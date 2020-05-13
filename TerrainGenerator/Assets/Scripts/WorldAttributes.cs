@@ -15,7 +15,25 @@ public class WorldAttributes : ScriptableObject
 	private int powerOfTwoOfWorldSizeInChunks;
 
 	[SerializeField]
+	private int biomeNumber;
+
+	[SerializeField]
+	private int boarderBrushRadius;
+
+	[SerializeField]
 	private float worldScale;
+
+	[SerializeField]
+	private int checkBiomeDistance;
+
+	[SerializeField]
+	private int smoothingBrushRadius;
+
+	[SerializeField]
+	private int smoothingCheckBrushRadius;
+
+	[SerializeField]
+	private int oceanHeight;
 
 	[SerializeField]
 	private int riverDepth;
@@ -24,15 +42,29 @@ public class WorldAttributes : ScriptableObject
 	private int riverPart;
 
 	[SerializeField]
+	private int riverBrushRadius;
+
+	[SerializeField]
+	private float riverBrushScale;
+
+	[SerializeField]
 	private BiomeAttributes[] biomeAttributes;
 
 	public int ChunkWidth { get => chunkWidth; }
 	public int ChunkHeight { get => chunkHeight; }
 	public int WorldSizeInChunks { get => 1 << powerOfTwoOfWorldSizeInChunks; }	
 	public int WorldSizeInBlocks { get => WorldSizeInChunks * chunkWidth; }
+	public int BiomeNumber { get => biomeNumber; }
+	public int BoarderBrushRadius { get => boarderBrushRadius; }
 	public float WorldScale { get => worldScale; }
+	public int CheckBiomeDistance { get => checkBiomeDistance; }
+	public int SmoothingBrushRadius { get => smoothingBrushRadius; }
+	public int SmoothingCheckBrushRadius { get => smoothingCheckBrushRadius; }
+	public int OceanHeight { get => oceanHeight; }
 	public int RiverDepth { get => riverDepth; }
 	public int RiverPart { get => riverPart; }
-	public BiomeAttributes[] BiomeAttributes { get => biomeAttributes; set => biomeAttributes = value; }
+	public int RiverBrushRadius { get => riverBrushRadius; }
+	public float RiverBrushScale { get => riverBrushScale; }
+	public BiomeAttributes[] BiomeAttributes { get => biomeAttributes; }
 	
 }

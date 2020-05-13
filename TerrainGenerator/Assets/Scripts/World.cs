@@ -128,7 +128,7 @@ public class World : MonoBehaviour
 
 	}    
 
-    public int GetTopBlockHeight(Vector2 pos)
+    public int GetTopSoilBlockHeight(Vector2 pos)
 	{
 
 		Vector2Int ChunkCoord = GetChunkCoord(pos);
@@ -151,7 +151,31 @@ public class World : MonoBehaviour
 		return y;
 
 	}
-	
+
+	public int GetTopNonAirBlockHeight(Vector2 pos)
+	{
+
+		Vector2Int ChunkCoord = GetChunkCoord(pos);
+		Vector2Int InChunkCoord = GetInChunkCoord(pos);
+
+		int y;
+
+		for (y = WorldAttributes.ChunkHeight - 1; y > 0; --y)
+		{
+
+			if (Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] != 0)
+			{
+
+				break;
+
+			}
+
+		}
+
+		return y;
+
+	}
+
 	public Vector2Int GetChunkCoord(Vector3 pos)
 	{
 

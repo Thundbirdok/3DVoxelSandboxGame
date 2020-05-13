@@ -319,7 +319,7 @@ public class PerlinNoise : IWorldGenerator
         if (world.IsVoxelInWorld(pos))
         {
 
-            return world.GetTopBlockHeight(pos);
+            return world.GetTopSoilBlockHeight(pos);
 
 
         }
@@ -395,7 +395,7 @@ public class PerlinNoise : IWorldGenerator
             if (world.IsVoxelInWorld(pos) && world.Bioms[pos.x, pos.y] != 0 && world.Bioms[pos.x, pos.y] != -1)
             {
 
-                if (world.GetTopBlockHeight(pos) < waterHeight)
+                if (world.GetTopSoilBlockHeight(pos) < waterHeight)
                 {
 
                     world.Bioms[pos.x, pos.y] = 0;
@@ -445,7 +445,7 @@ public class PerlinNoise : IWorldGenerator
 
                 world.Bioms[pos.x, pos.y] = -2;
 
-                avrgY += world.GetTopBlockHeight(pos);
+                avrgY += world.GetTopSoilBlockHeight(pos);
 
                 columns.Enqueue(new Vector2Int(pos.x - 1, pos.y));
                 columns.Enqueue(new Vector2Int(pos.x + 1, pos.y));
@@ -527,7 +527,7 @@ public class PerlinNoise : IWorldGenerator
 
         int y;
 
-        int terrainHeight = world.GetTopBlockHeight(ColumnPos);
+        int terrainHeight = world.GetTopSoilBlockHeight(ColumnPos);
 
         world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, terrainHeight, InChunkCoord.y] = biome.MainVoxel;
 

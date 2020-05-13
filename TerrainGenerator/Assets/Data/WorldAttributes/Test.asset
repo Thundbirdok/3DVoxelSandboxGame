@@ -15,9 +15,17 @@ MonoBehaviour:
   chunkWidth: 16
   chunkHeight: 64
   powerOfTwoOfWorldSizeInChunks: 4
+  biomeNumber: 25
+  boarderBrushRadius: 3
   worldScale: 0.25
+  checkBiomeDistance: 10
+  smoothingBrushRadius: 4
+  smoothingCheckBrushRadius: 2
+  oceanHeight: 25
   riverDepth: 4
   riverPart: 20
+  riverBrushRadius: 3
+  riverBrushScale: 0.25
   biomeAttributes:
   - biomeName: Ocean
     mainVoxel: 6
