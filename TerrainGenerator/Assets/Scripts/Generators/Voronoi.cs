@@ -12,7 +12,15 @@ class Voronoi : IWorldGenerator
 
         InitChunks(world);
 
-        SetBioms(world);
+        List<VoronoiDiagram.GraphEdge> Edges = SetBioms(world);
+
+        BuildTerrain(world);
+
+        SmoothingBorders(Edges, world);
+
+        AddWater(Edges, world);
+
+        AddSoil(world);
 
         world.UpdateChunks();
 
@@ -35,7 +43,7 @@ class Voronoi : IWorldGenerator
 
     }
 
-    private void SetBioms(World world)
+    private List<VoronoiDiagram.GraphEdge> SetBioms(World world)
     {
 
         List<VoronoiDiagram.GraphEdge> Edges = SetVoronoiDiagram(world);
@@ -44,43 +52,7 @@ class Voronoi : IWorldGenerator
 
         HideEdges(Edges, world);
 
-        ///
-
-        for (int x = 0; x < world.WorldAttributes.WorldSizeInBlocks; ++x)
-        {
-
-            for (int z = 0; z < world.WorldAttributes.WorldSizeInBlocks; ++z)
-            {
-
-                Vector2Int ChunkCoord = world.GetChunkCoord(new Vector2(x, z));
-                Vector2Int InChunkCoord = world.GetInChunkCoord(new Vector2(x, z));
-
-                if (world.Bioms[x, z] == 0)
-                {
-
-                    world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, 1, InChunkCoord.y] = 9;
-
-                }
-                else if (world.Bioms[x, z] == 1)
-                {
-
-                    world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, 1, InChunkCoord.y] = world.WorldAttributes.BiomeAttributes[1].MainVoxel;
-
-                }
-                else if (world.Bioms[x, z] == 2)
-                {
-
-                    world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, 1, InChunkCoord.y] = world.WorldAttributes.BiomeAttributes[2].MainVoxel;
-
-                }
-
-                world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, 0, InChunkCoord.y] = 1;
-
-            }
-
-        }
-
-        ///
+        return Edges;
 
     }
 
@@ -93,7 +65,7 @@ class Voronoi : IWorldGenerator
             double x = edge.x2 - edge.x1;
             double y = edge.y2 - edge.y1;
 
-            Vector2 normal = Vector2.Perpendicular(new Vector2((float)x, (float)y)).normalized;                       
+            Vector2 normal = Vector2.Perpendicular(new Vector2((float)x, (float)y)).normalized;
 
             Vector2 middle = new Vector2((float)((edge.x2 + edge.x1) / 2), (float)((edge.y2 + edge.y1) / 2));
 
@@ -231,16 +203,14 @@ class Voronoi : IWorldGenerator
         Vector2 begin = new Vector2((float)edge.x1, (float)edge.y1);
         Vector2 end = new Vector2((float)edge.x2, (float)edge.y2);
 
-        DrawPoint(Vector2Int.FloorToInt(begin), world, biome);
-
-        while (begin != end)
+        do
         {
-
-            begin = Vector2.MoveTowards(begin, end, 1f);
 
             DrawPoint(Vector2Int.FloorToInt(begin), world, biome);
 
-        }
+            begin = Vector2.MoveTowards(begin, end, 1f);
+
+        } while (begin != end);
 
     }
 
@@ -370,6 +340,537 @@ class Voronoi : IWorldGenerator
                 stack.Push(new Vector2Int(pos.x + 1, pos.y + 1));
 
             }
+
+        }
+
+    }
+
+    private void BuildTerrain(World world)
+    {
+
+        for (int x = 0; x < world.WorldAttributes.WorldSizeInBlocks; ++x)
+        {
+
+            for (int z = 0; z < world.WorldAttributes.WorldSizeInBlocks; ++z)
+            {
+
+                int biome = world.Bioms[x, z];
+
+                if (biome < 0)
+                {
+
+                    biome = 0;
+                    world.Bioms[x, z] = biome;
+
+                }
+
+                SetColumn(new Vector2Int(x, z), world, world.WorldAttributes.BiomeAttributes[biome]);
+
+            }
+
+        }
+
+    }
+
+    private int GetTerrainHeight(Vector2 pos, World world, BiomeAttributes biome)
+    {
+
+        int terrainHeight = biome.SolidGroundHeight;
+
+        for (int i = 0; i < biome.OctavesNumber; ++i)
+        {
+
+            terrainHeight += Mathf.FloorToInt((1 / Mathf.Pow(2, i)) * biome.BiomeHeight * Noise.Get2DPerlin(world, pos, i, biome.BiomeScale * Mathf.Pow(2, i)));
+
+        }
+
+        return terrainHeight;
+
+    }
+
+    private void SetColumn(Vector2Int ColumnPos, World world, BiomeAttributes biome)
+    {
+
+        int terrainHeight = GetTerrainHeight(ColumnPos, world, biome);
+
+        if (world.Bioms[ColumnPos.x, ColumnPos.y] == -1)
+        {
+
+            terrainHeight -= 4;
+
+        }
+
+        Vector2Int ChunkCoord = world.GetChunkCoord(ColumnPos);
+        Vector2Int InChunkPos = world.GetInChunkCoord(ColumnPos);
+
+        int y;
+
+        world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkPos.x, terrainHeight, InChunkPos.y] = 2;
+
+        for (y = terrainHeight - 1; y > 0; --y)
+        {
+
+            world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkPos.x, y, InChunkPos.y] = 2;
+
+        }
+
+        world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkPos.x, 0, InChunkPos.y] = 1;
+
+    }
+
+    private void SmoothingBorders(List<VoronoiDiagram.GraphEdge> Edges, World world)
+    {
+
+        //for (int x = 0; x < world.WorldAttributes.WorldSizeInBlocks; ++x)
+        //{
+
+        //    for (int z = 0; z < world.WorldAttributes.WorldSizeInBlocks; ++z)
+        //    {
+
+        //        if (world.Bioms[x, z] == 0)
+        //        {
+
+        //            SmoothingColumn(new Vector2(x, z), world);
+
+        //            SmoothingColumn(new Vector2(x - 1, z - 1), world);
+        //            SmoothingColumn(new Vector2(x + 1, z - 1), world);
+        //            SmoothingColumn(new Vector2(x - 1, z + 1), world);
+        //            SmoothingColumn(new Vector2(x + 1, z + 1), world);
+
+        //        }
+
+        //    }
+
+        //}
+
+        foreach (var edge in Edges)
+        {
+
+            double x = edge.x2 - edge.x1;
+            double y = edge.y2 - edge.y1;
+
+            Vector2 normal = Vector2.Perpendicular(new Vector2((float)x, (float)y)).normalized;
+
+            Vector2 middle = new Vector2((float)((edge.x2 + edge.x1) / 2), (float)((edge.y2 + edge.y1) / 2));
+
+            Vector2 A = middle + (normal * 10);
+            Vector2 B = middle + (normal * -10);
+
+            int biomeA;
+            int biomeB;
+
+            if (world.IsVoxelInWorld(A))
+            {
+
+                biomeA = world.Bioms[Mathf.FloorToInt(A.x), Mathf.FloorToInt(A.y)];
+
+            }
+            else
+            {
+
+                biomeA = 0;
+
+            }
+
+            if (world.IsVoxelInWorld(B))
+            {
+
+                biomeB = world.Bioms[Mathf.FloorToInt(B.x), Mathf.FloorToInt(B.y)];
+
+            }
+            else
+            {
+
+                biomeB = 0;
+
+            }
+
+            if (biomeA != biomeB)
+            {
+
+                Vector2 begin = new Vector2((float)edge.x1, (float)edge.y1);
+                Vector2 end = new Vector2((float)edge.x2, (float)edge.y2);
+
+                do
+                {
+
+                    SmoothingColumn(new Vector2(begin.x, begin.y), world);
+
+                    SmoothingColumn(new Vector2(begin.x - 1, begin.y - 1), world);
+                    SmoothingColumn(new Vector2(begin.x + 1, begin.y - 1), world);
+                    SmoothingColumn(new Vector2(begin.x - 1, begin.y + 1), world);
+                    SmoothingColumn(new Vector2(begin.x + 1, begin.y + 1), world);
+
+                    begin = Vector2.MoveTowards(begin, end, 1f);
+
+                } while (begin != end);
+
+            }
+
+        }
+
+    }
+
+    private void SmoothingColumn(Vector2 ColumnPos, World world)
+    {
+
+        if (!world.IsVoxelInWorld(ColumnPos))
+        {
+
+            return;
+
+        }
+
+        int avrgY;
+
+        Vector2Int ChunkCoord = world.GetChunkCoord(ColumnPos);
+        Vector2Int InChunkCoord = world.GetInChunkCoord(ColumnPos);
+
+        avrgY = GetTopBlockHeight(ColumnPos, world);
+        avrgY += GetTopBlockHeight(new Vector2(ColumnPos.x - 1, ColumnPos.y), world);
+        avrgY += GetTopBlockHeight(new Vector2(ColumnPos.x + 1, ColumnPos.y), world);
+        avrgY += GetTopBlockHeight(new Vector2(ColumnPos.x, ColumnPos.y - 1), world);
+        avrgY += GetTopBlockHeight(new Vector2(ColumnPos.x, ColumnPos.y + 1), world);
+        avrgY += GetTopBlockHeight(new Vector2(ColumnPos.x - 1, ColumnPos.y - 1), world);
+        avrgY += GetTopBlockHeight(new Vector2(ColumnPos.x - 1, ColumnPos.y + 1), world);
+        avrgY += GetTopBlockHeight(new Vector2(ColumnPos.x + 1, ColumnPos.y - 1), world);
+        avrgY += GetTopBlockHeight(new Vector2(ColumnPos.x + 1, ColumnPos.y + 1), world);
+
+        avrgY /= 9;
+
+        for (int y = world.WorldAttributes.ChunkHeight - 1; y > avrgY; --y)
+        {
+
+            world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] = 0;
+
+        }
+
+        for (int y = avrgY; y > 0 && world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] == 0; --y)
+        {
+
+            world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] = 2;
+
+        }
+
+    }
+
+    private int GetTopBlockHeight(Vector2 pos, World world)
+    {
+
+        if (world.IsVoxelInWorld(pos))
+        {
+
+            return world.GetTopBlockHeight(pos);
+
+
+        }
+        else
+        {
+
+            return 0;
+
+        }
+
+    }
+
+    private void AddWater(List<VoronoiDiagram.GraphEdge> Edges, World world)
+    {
+
+        int waterHeight = 25;
+
+        for (int x = 0; x < world.WorldAttributes.WorldSizeInBlocks; ++x)
+        {
+
+            for (int z = 0; z < world.WorldAttributes.WorldSizeInBlocks; ++z)
+            {
+
+                if (world.Bioms[x, z] == 0)
+                {
+
+                    AddWaterColumn(new Vector2Int(x, z), world, waterHeight);
+
+                }
+
+            }
+
+        }
+
+        foreach (var edge in Edges)
+        {
+
+            double x = edge.x2 - edge.x1;
+            double y = edge.y2 - edge.y1;
+
+            Vector2 normal = Vector2.Perpendicular(new Vector2((float)x, (float)y)).normalized;
+
+            Vector2 middle = new Vector2((float)((edge.x2 + edge.x1) / 2), (float)((edge.y2 + edge.y1) / 2));
+
+            Vector2 A = middle + (normal * 10);
+            Vector2 B = middle + (normal * -10);
+
+            int biomeA;
+            int biomeB;
+
+            if (world.IsVoxelInWorld(A))
+            {
+
+                biomeA = world.Bioms[Mathf.FloorToInt(A.x), Mathf.FloorToInt(A.y)];
+
+            }
+            else
+            {
+
+                biomeA = 0;
+
+            }
+
+            if (world.IsVoxelInWorld(B))
+            {
+
+                biomeB = world.Bioms[Mathf.FloorToInt(B.x), Mathf.FloorToInt(B.y)];
+
+            }
+            else
+            {
+
+                biomeB = 0;
+
+            }
+
+            if (biomeA != biomeB)
+            {
+
+                Vector2 begin = new Vector2((float)edge.x1, (float)edge.y1);
+                Vector2 end = new Vector2((float)edge.x2, (float)edge.y2);
+
+                do
+                {
+
+                    SetRiverPart(Vector2Int.FloorToInt(begin), world);
+
+                    begin = Vector2.MoveTowards(begin, end, 1f);
+
+                } while (begin != end);
+
+            }
+
+        }
+
+    }
+
+    private void AddWaterColumn(Vector2Int start, World world, int waterHeight)
+    {
+
+        Vector2Int ChunkCoord = world.GetChunkCoord(start);
+        Vector2Int InChunkCoord = world.GetInChunkCoord(start);
+
+        Stack<Vector2Int> stack = new Stack<Vector2Int>();
+
+        for (int y = waterHeight; y > 0 && world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] == 0; --y)
+        {
+
+            world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] = 9;
+
+        }
+
+        stack.Push(new Vector2Int(start.x - 1, start.y));
+        stack.Push(new Vector2Int(start.x + 1, start.y));
+        stack.Push(new Vector2Int(start.x, start.y - 1));
+        stack.Push(new Vector2Int(start.x, start.y + 1));
+
+        while (stack.Count != 0)
+        {
+
+            Vector2Int pos = stack.Pop();
+
+            ChunkCoord = world.GetChunkCoord(pos);
+            InChunkCoord = world.GetInChunkCoord(pos);
+
+            if (world.IsVoxelInWorld(pos) && world.Bioms[pos.x, pos.y] != 0)
+            {
+
+                if (world.GetTopBlockHeight(pos) < waterHeight)
+                {
+
+                    world.Bioms[pos.x, pos.y] = 0;
+
+                    for (int y = waterHeight; y > 0 && world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] == 0; --y)
+                    {
+
+                        world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] = 9;
+
+                    }
+
+                    stack.Push(new Vector2Int(pos.x - 1, pos.y));
+                    stack.Push(new Vector2Int(pos.x + 1, pos.y));
+                    stack.Push(new Vector2Int(pos.x, pos.y - 1));
+                    stack.Push(new Vector2Int(pos.x, pos.y + 1));
+
+                }
+
+            }
+
+        }
+
+    }
+
+    private void SetRiverPart(Vector2Int center, World world)
+    {
+
+        if (!world.IsVoxelInWorld(center))
+        {
+
+            return;
+
+        }
+        
+        Queue<Vector2Int> checkedColumns;
+
+        CheckRiverColumn(center, 2, world, out checkedColumns);
+
+        int centerHeight = 25 - world.WorldAttributes.RiverDepth;
+
+        while (checkedColumns.Count != 0)
+        {
+
+            Vector2Int pos = checkedColumns.Dequeue();
+
+            float distance = Vector2Int.Distance(center, pos);
+
+            int height = Mathf.RoundToInt(distance * distance * 0.25f) + centerHeight;
+
+            int blockHeight = GetTopBlockHeight(pos, world);
+
+            if (blockHeight > height)
+            {
+
+                Vector2Int ChunkCoord = world.GetChunkCoord(pos);
+                Vector2Int InChunkCoord = world.GetInChunkCoord(pos);
+
+                for (int y = blockHeight; y > height; --y)
+                {
+
+                    world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] = 0;
+
+                }
+
+            }
+
+            AddWaterColumn(pos, world, 25);
+
+        }
+
+    }
+
+    private void CheckRiverColumn(Vector2Int center, int radius, World world, out Queue<Vector2Int> checkedColumns)
+    {
+
+        checkedColumns = new Queue<Vector2Int>();
+
+        if (world.IsVoxelInWorld(center))
+        {
+
+            checkedColumns.Enqueue(center);
+
+        }
+
+        for (int r = 1; r <= radius; ++r)
+        {
+
+            for (int k = -r; k <= r; ++k)
+            {
+
+                Vector2Int pos = new Vector2Int(center.x + k, center.y + r);
+
+                if (world.IsVoxelInWorld(pos))
+                {
+
+                    checkedColumns.Enqueue(pos);
+
+                }
+
+                pos = new Vector2Int(center.x + k, center.y - r);
+
+                if (world.IsVoxelInWorld(pos))
+                {
+
+                    checkedColumns.Enqueue(pos);
+
+                }
+
+            }
+
+            for (int k = -r + 1; k < r; ++k)
+            {
+
+                Vector2Int pos = new Vector2Int(center.x + r, center.y + k);
+
+                if (world.IsVoxelInWorld(pos))
+                {
+
+                    checkedColumns.Enqueue(pos);
+
+                }
+
+                pos = new Vector2Int(center.x - r, center.y + k);
+
+                if (world.IsVoxelInWorld(pos))
+                {
+
+                    checkedColumns.Enqueue(pos);
+
+                }
+
+            }
+
+        }
+
+    }
+
+    private void AddSoil(World world)
+    {
+
+        for (int x = 0; x < world.WorldAttributes.WorldSizeInBlocks; ++x)
+        {
+
+            for (int z = 0; z < world.WorldAttributes.WorldSizeInBlocks; ++z)
+            {
+
+                int biome = world.Bioms[x, z];
+
+                if (biome == -1 || biome == -2)
+                {
+
+                    biome = 0;
+
+                }
+
+                AddSoilInColumn(new Vector2(x, z), world, world.WorldAttributes.BiomeAttributes[biome]);
+
+            }
+
+        }
+
+    }
+
+    private void AddSoilInColumn(Vector2 ColumnPos, World world, BiomeAttributes biome)
+    {
+
+        Vector2Int ChunkCoord = world.GetChunkCoord(ColumnPos);
+        Vector2Int InChunkCoord = world.GetInChunkCoord(ColumnPos);
+
+        int y;
+
+        int terrainHeight = world.GetTopBlockHeight(ColumnPos);
+
+        world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, terrainHeight, InChunkCoord.y] = biome.MainVoxel;
+
+        int groundDepth = UnityEngine.Random.Range(biome.GroundDepthMin, biome.GroundDepthMax + 1);
+
+        for (y = terrainHeight - 1; y > terrainHeight - groundDepth && y > 0; --y)
+        {
+
+            world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] = biome.SecondVoxel;
 
         }
 
