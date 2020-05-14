@@ -15,3 +15,9 @@ MonoBehaviour:
   chunkWidth: 16
   chunkHeight: 256
   powerOfTwoOfWorldSizeInChunks: 6
+  biomeAttributes:
+  - biomeName: Plain
+    solidGroundHeight: 20
+    biomeHeight: 0
+    biomeScale: 0
+    octavesNumber: 0
