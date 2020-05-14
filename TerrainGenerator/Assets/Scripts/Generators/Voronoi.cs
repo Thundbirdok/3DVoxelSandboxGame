@@ -109,12 +109,12 @@ class Voronoi : IWorldGenerator
 
         InitBioms(world);
 
-        VoronoiDiagram voronoi = new VoronoiDiagram(10);
+        VoronoiDiagram voronoi = new VoronoiDiagram(world.WorldAttributes.SitesMinDistance);
 
-        double[] xVal = new double[world.WorldAttributes.BiomeNumber];
-        double[] yVal = new double[world.WorldAttributes.BiomeNumber];
+        double[] xVal = new double[world.WorldAttributes.SitesNumber];
+        double[] yVal = new double[world.WorldAttributes.SitesNumber];
 
-        for (int i = 0; i < world.WorldAttributes.BiomeNumber; ++i)
+        for (int i = 0; i < world.WorldAttributes.SitesNumber; ++i)
         {
 
             xVal[i] = Random.Range(0, world.WorldAttributes.WorldSizeInBlocks);
@@ -337,7 +337,7 @@ class Voronoi : IWorldGenerator
 
             GetBorderingBioms(edge, out biomeA, out biomeB);
 
-            if (biomeA != biomeB)
+            if (biomeA != biomeB && (biomeA == 0 || biomeB == 0))
             {
 
                 Vector2 A = new Vector2((float)edge.x1, (float)edge.y1);
@@ -346,7 +346,7 @@ class Voronoi : IWorldGenerator
                 do
                 {
 
-                    SmoothingPoint(Vector2Int.FloorToInt(A), world.WorldAttributes.SmoothingBrushRadius);
+                    SmoothingPoint(Vector2Int.FloorToInt(A), world.WorldAttributes.SmoothingBrushRadius + world.WorldAttributes.BoarderBrushRadius);
 
                     A = Vector2.MoveTowards(A, B, 1f);
 
@@ -377,26 +377,54 @@ class Voronoi : IWorldGenerator
         foreach (var column in Brush(ColumnPos, world.WorldAttributes.SmoothingCheckBrushRadius))
         {
 
-            avrgHeight += GetTopBlockHeight(column);
+            avrgHeight += world.GetTopSoilBlockHeight(column);
             ++count;
 
         }
 
         avrgHeight = Mathf.RoundToInt((float)avrgHeight / count);
 
-        for (int y = world.WorldAttributes.ChunkHeight - 1; y > avrgHeight; --y)
+        int topSoilBlock = world.GetTopSoilBlockHeight(ColumnPos);
+        int topNonAirBlock = world.GetTopNonAirBlockHeight(ColumnPos);
+
+        if (avrgHeight < topSoilBlock)
         {
 
-            world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] = 0;
+            if (topSoilBlock != topNonAirBlock)
+            {
+
+                for (int y = topSoilBlock; y > avrgHeight; --y)
+                {
+
+                    world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] = 9;
+
+                }
+
+            }
+            else
+            {
+
+                for (int y = topSoilBlock; y > avrgHeight; --y)
+                {
+
+                    world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] = 0;
+
+                }
+
+            }
 
         }
-
-        for (int y = avrgHeight; y > 0 && world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] == 0; --y)
+        else
         {
 
-            world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] = 2;
+            for (int y = avrgHeight; y > 0 && world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] == 0; --y)
+            {
 
-        }
+                world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] = 2;
+
+            }
+
+        }        
 
     }
 
@@ -445,6 +473,21 @@ class Voronoi : IWorldGenerator
                     AddWaterColumn(new Vector2Int(x, z), world.WorldAttributes.OceanHeight);
 
                 }
+                else
+                {
+
+                    Vector2Int pos = new Vector2Int(x, z);
+
+                    float riverNoise = Noise.Get2DPerlin(world, pos, 1f, world.WorldAttributes.WorldScale);
+
+                    if (0.54f < riverNoise && 0.55f > riverNoise)
+                    {
+
+                        SetRiverPoint(Vector2Int.FloorToInt(pos));
+
+                    }
+
+                }
 
             }
 
@@ -457,7 +500,7 @@ class Voronoi : IWorldGenerator
 
             GetBorderingBioms(edge, out biomeA, out biomeB);
 
-            if (biomeA != biomeB)
+            if (biomeA != biomeB && biomeA != 0 && biomeB != 0)
             {
 
                 Vector2 begin = new Vector2((float)edge.x1, (float)edge.y1);
@@ -548,9 +591,14 @@ class Voronoi : IWorldGenerator
 
         }
 
-        int centerHeight = world.WorldAttributes.OceanHeight - world.WorldAttributes.RiverDepth;
+        int minHeight;
+        Queue<Vector2Int> checkedRiverColumns;
 
-        foreach (var pos in Brush(center, world.WorldAttributes.RiverBrushRadius))
+        CheckRiverColumns(center, out checkedRiverColumns, out minHeight);
+
+        int centerHeight = minHeight - world.WorldAttributes.RiverDepth;
+
+        foreach (var pos in checkedRiverColumns)
         {
 
             float distance = Vector2Int.Distance(center, pos);
@@ -574,7 +622,48 @@ class Voronoi : IWorldGenerator
 
             }
 
+        }
+
+        foreach (var pos in Brush(center, world.WorldAttributes.RiverBrushRadius + world.WorldAttributes.SmoothingBrushRadius))
+        {
+
+            if (!checkedRiverColumns.Contains(pos) && world.Bioms[pos.x, pos.y] != 0)
+            {
+
+                SmoothingColumn(pos);
+
+            }
+
+        }
+
+        foreach (var pos in checkedRiverColumns)
+        {
+
             AddWaterColumn(pos, world.WorldAttributes.OceanHeight);
+
+        }
+
+    }
+
+    private void CheckRiverColumns(Vector2Int center, out Queue<Vector2Int> checkedColumns, out int minHeight)
+    {
+
+        minHeight = world.WorldAttributes.ChunkHeight;
+        checkedColumns = new Queue<Vector2Int>();
+
+        foreach (var pos in Brush(center, world.WorldAttributes.RiverBrushRadius))
+        {
+
+            checkedColumns.Enqueue(pos);
+
+            int blockHeight = world.GetTopNonAirBlockHeight(pos);
+
+            if (minHeight > blockHeight)
+            {
+
+                minHeight = blockHeight;
+
+            }
 
         }
 
@@ -590,13 +679,6 @@ class Voronoi : IWorldGenerator
             {
 
                 int biome = world.Bioms[x, z];
-
-                if (biome == -1 || biome == -2)
-                {
-
-                    biome = 0;
-
-                }
 
                 AddSoilInColumn(new Vector2(x, z), world.WorldAttributes.BiomeAttributes[biome]);
 
