@@ -12,7 +12,7 @@ public class Chunk
 	private MeshRenderer meshRenderer;
 	private MeshFilter meshFilter;
 
-	public ChunkCoord coord;
+	public Vector2Int coord;
 	private GameObject chunkObject;
 
 	private int vertexIndex = 0;
@@ -20,9 +20,9 @@ public class Chunk
 	private List<int> triangles = new List<int>();
 	private List<Vector2> uvs = new List<Vector2>();
 
-	public byte[,,] voxelMap;
+	public byte[,,] Voxels;
 
-	public Chunk(ChunkCoord _coord, World _world, WorldAttributes _worldAttributes, BlocksAttributes _blocksAttributes)
+	public Chunk(Vector2Int _coord, World _world, WorldAttributes _worldAttributes, BlocksAttributes _blocksAttributes)
 	{
 
 		worldAttributes = _worldAttributes;
@@ -30,9 +30,9 @@ public class Chunk
 
 		coord = _coord;
 		chunkObject = new GameObject();
-		chunkObject.transform.position = new Vector3(coord.x * worldAttributes.ChunkWidth, 0f, coord.z * worldAttributes.ChunkWidth);
+		chunkObject.transform.position = new Vector3(coord.x * worldAttributes.ChunkWidth, 0f, coord.y * worldAttributes.ChunkWidth);
 
-		voxelMap = new byte[worldAttributes.ChunkWidth, worldAttributes.ChunkHeight, worldAttributes.ChunkWidth];
+		Voxels = new byte[worldAttributes.ChunkWidth, worldAttributes.ChunkHeight, worldAttributes.ChunkWidth];		
 
 		meshRenderer = chunkObject.AddComponent<MeshRenderer>();
 		meshFilter = chunkObject.AddComponent<MeshFilter>();        
@@ -40,18 +40,55 @@ public class Chunk
 		chunkObject.transform.SetParent(_world.transform);
 		meshRenderer.material = blocksAttributes.Material;
 
-		chunkObject.name = coord.x + ", " + coord.z;
+		chunkObject.name = coord.x + ", " + coord.y;
 
 	}
 	
-	public void Update ()
+	private void ClearMeshData()
 	{
-		CreateMeshData();
-		CreateMesh();
+
+		vertexIndex = 0;
+		vertices.Clear();
+		triangles.Clear();
+		uvs.Clear();
+
 	}
 
-	private void CreateMeshData()
+	public void Clear()
 	{
+
+		ClearMeshData();
+
+		for (int i = 0; i < worldAttributes.ChunkWidth; ++i)
+		{
+
+			for (int j = 0; j < worldAttributes.ChunkHeight; ++j)
+			{
+
+				for (int k = 0; k < worldAttributes.ChunkWidth; ++k)
+				{
+
+					Voxels[i, j, k] = 0;
+
+				}
+
+			}
+
+		}
+
+	}
+
+	public void Update ()
+	{
+
+		ClearMeshData();
+		UpdateChunk();
+		CreateMesh();
+
+	}
+
+	private void UpdateChunk()
+	{		
 
 		for (int y = 0; y < worldAttributes.ChunkHeight; ++y)
 		{
@@ -62,7 +99,7 @@ public class Chunk
 				for (int z = 0; z < worldAttributes.ChunkWidth; ++z)
 				{
 
-					AddVoxelDataToChunk(new Vector3(x, y, z));
+					UpdateMeshData(new Vector3(x, y, z));
 
 				}
 
@@ -86,11 +123,11 @@ public class Chunk
 
 		}
 
-		return blocksAttributes.Blocktypes[voxelMap[x, y, z]].isSolid;
+		return blocksAttributes.Blocktypes[Voxels[x, y, z]].isSolid;
 
 	}
 
-	private void AddVoxelDataToChunk(Vector3 pos)
+	private void UpdateMeshData(Vector3 pos)
 	{
 
 		if (CheckVoxel(pos))
@@ -102,7 +139,7 @@ public class Chunk
 				if (!CheckVoxel(pos + VoxelData.faceChecks[p]))
 				{
 
-					byte blockID = voxelMap[(int)pos.x, (int)pos.y, (int)pos.z];
+					byte blockID = Voxels[(int)pos.x, (int)pos.y, (int)pos.z];
 
 					vertices.Add(pos + VoxelData.voxelVerts[VoxelData.voxelTris[p, 0]]);
 					vertices.Add(pos + VoxelData.voxelVerts[VoxelData.voxelTris[p, 1]]);
