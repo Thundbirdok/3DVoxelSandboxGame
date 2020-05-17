@@ -4,7 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-class Voronoi : IWorldGenerator
+class VoronoiPerlinNoiseGenerator : IWorldGenerator
 {
 
     World world;
@@ -289,7 +289,7 @@ class Voronoi : IWorldGenerator
         for (int i = 0; i < biome.OctavesNumber; ++i)
         {
 
-            terrainHeight += Mathf.FloorToInt((1 / Mathf.Pow(2, i)) * biome.BiomeHeight * Noise.Get2DPerlin(world, pos, i, biome.BiomeScale * Mathf.Pow(2, i)));
+            terrainHeight += Mathf.FloorToInt((1 / Mathf.Pow(2, i)) * biome.BiomeHeight * PerlinNoise.Get2DPerlin(world, pos, i, biome.BiomeScale * Mathf.Pow(2, i)));
 
         }
 
@@ -440,24 +440,6 @@ class Voronoi : IWorldGenerator
 
     }
 
-    private int GetTopBlockHeight(Vector2 pos)
-    {
-
-        if (world.IsVoxelInWorld(pos))
-        {
-
-            return world.GetTopSoilBlockHeight(pos);
-
-        }
-        else
-        {
-
-            return 0;
-
-        }
-
-    }
-
     private void AddWater(List<VoronoiDiagram.GraphEdge> Edges)
     {
 
@@ -478,7 +460,7 @@ class Voronoi : IWorldGenerator
 
                     Vector2Int pos = new Vector2Int(x, z);
 
-                    float riverNoise = Noise.Get2DPerlin(world, pos, 1f, world.WorldAttributes.WorldScale);
+                    float riverNoise = PerlinNoise.Get2DPerlin(world, pos, 1f, world.WorldAttributes.WorldScale);
 
                     if (0.54f < riverNoise && 0.55f > riverNoise)
                     {

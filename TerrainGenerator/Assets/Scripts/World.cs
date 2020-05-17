@@ -27,7 +27,7 @@ public class World : MonoBehaviour
 
 		Bioms = new int[WorldAttributes.WorldSizeInBlocks, WorldAttributes.WorldSizeInBlocks];
 
-		generator = new Voronoi();
+		generator = new VoronoiDiamondSquareGenerator();
 
 		GenerateWorld(); 
 
@@ -59,16 +59,25 @@ public class World : MonoBehaviour
 	public void GenerateWorldPerlinNoise()
 	{
 
-		generator = new PerlinNoise();
+		generator = new PerlinNoiseGenerator();
 
 		GenerateWorld();
 
 	}
 
-	internal void GenerateWorldVoronoiDiagram()
+	internal void GenerateWorldVoronoiPerlinNoise()
 	{
 
-		generator = new Voronoi();
+		generator = new VoronoiPerlinNoiseGenerator();
+
+		GenerateWorld();
+
+	}
+
+	internal void GenerateWorldVoronoiDiamondSquare()
+	{
+
+		generator = new VoronoiDiamondSquareGenerator();
 
 		GenerateWorld();
 

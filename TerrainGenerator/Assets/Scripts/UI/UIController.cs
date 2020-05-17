@@ -135,10 +135,19 @@ public class UIController : MonoBehaviour
 
     }
 
-    public void GenerateWorldVoronoiDiagram()
+    public void GenerateWorldVoronoiPerlinNoise()
     {
 
-        World.GenerateWorldVoronoiDiagram();
+        World.GenerateWorldVoronoiPerlinNoise();
+
+        MapScript.CreateMap();
+
+    }
+
+    public void GenerateWorldVoronoiDiamondSquare()
+    {
+
+        World.GenerateWorldVoronoiDiamondSquare();
 
         MapScript.CreateMap();
 
