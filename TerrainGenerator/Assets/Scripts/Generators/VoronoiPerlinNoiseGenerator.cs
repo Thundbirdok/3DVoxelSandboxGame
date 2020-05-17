@@ -9,20 +9,25 @@ class VoronoiPerlinNoiseGenerator : IWorldGenerator
 
     World world;
 
+    int[,] heightMap;
+    int[,] waterMap;
+
     void IWorldGenerator.GenerateWorld(World _world)
     {
 
         world = _world;
 
-        InitChunks();
+        Init();
 
         List<VoronoiDiagram.GraphEdge> Edges = SetBioms();
 
-        BuildTerrain();
+        SetHeightMap();        
 
-        SmoothingBorders(Edges);
+        SmoothingBorders(Edges);        
 
         AddWater(Edges);
+
+        BuildTerrain();
 
         AddSoil();
 
@@ -30,8 +35,10 @@ class VoronoiPerlinNoiseGenerator : IWorldGenerator
 
     }
 
-    private void InitChunks()
+    private void Init()
     {
+
+        waterMap = new int[world.WorldAttributes.WorldSizeInBlocks, world.WorldAttributes.WorldSizeInBlocks];
 
         for (int x = 0; x < world.WorldAttributes.WorldSizeInChunks; ++x)
         {
@@ -40,6 +47,8 @@ class VoronoiPerlinNoiseGenerator : IWorldGenerator
             {
 
                 world.CreateChunk(new Vector2Int(x, z));
+
+                waterMap[x, z] = 0;
 
             }
 
@@ -254,35 +263,29 @@ class VoronoiPerlinNoiseGenerator : IWorldGenerator
 
     }
 
-    private void BuildTerrain()
-    {
+    private void SetHeightMap()
+    {        
+
+        heightMap = new int[world.WorldAttributes.WorldSizeInBlocks, world.WorldAttributes.WorldSizeInBlocks];
 
         for (int x = 0; x < world.WorldAttributes.WorldSizeInBlocks; ++x)
         {
 
             for (int z = 0; z < world.WorldAttributes.WorldSizeInBlocks; ++z)
-            {
+            {                
 
-                int biome = world.Bioms[x, z];
-
-                if (biome < 0)
-                {
-
-                    biome = 0;
-                    world.Bioms[x, z] = biome;
-
-                }
-
-                SetColumn(new Vector2Int(x, z), world.WorldAttributes.BiomeAttributes[biome]);
+                heightMap[x, z] = GetTerrainHeight(new Vector2Int(x, z));
 
             }
 
         }
 
-    }
+    }   
 
-    private int GetTerrainHeight(Vector2 pos, BiomeAttributes biome)
+    private int GetTerrainHeight(Vector2Int pos)
     {
+
+        BiomeAttributes biome = world.WorldAttributes.BiomeAttributes[world.Bioms[pos.x, pos.y]];
 
         int terrainHeight = biome.SolidGroundHeight;
 
@@ -294,36 +297,6 @@ class VoronoiPerlinNoiseGenerator : IWorldGenerator
         }
 
         return terrainHeight;
-
-    }
-
-    private void SetColumn(Vector2Int ColumnPos, BiomeAttributes biome)
-    {
-
-        int terrainHeight = GetTerrainHeight(ColumnPos, biome);
-
-        if (world.Bioms[ColumnPos.x, ColumnPos.y] == -1)
-        {
-
-            terrainHeight -= 4;
-
-        }
-
-        Vector2Int ChunkCoord = world.GetChunkCoord(ColumnPos);
-        Vector2Int InChunkPos = world.GetInChunkCoord(ColumnPos);
-
-        int y;
-
-        world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkPos.x, terrainHeight, InChunkPos.y] = 2;
-
-        for (y = terrainHeight - 1; y > 0; --y)
-        {
-
-            world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkPos.x, y, InChunkPos.y] = 2;
-
-        }
-
-        world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkPos.x, 0, InChunkPos.y] = 1;
 
     }
 
@@ -358,10 +331,10 @@ class VoronoiPerlinNoiseGenerator : IWorldGenerator
 
     }
 
-    private void SmoothingColumn(Vector2Int ColumnPos)
+    private void SmoothingColumn(Vector2Int pos)
     {
 
-        if (!world.IsVoxelInWorld(ColumnPos))
+        if (!world.IsVoxelInWorld(pos))
         {
 
             return;
@@ -371,60 +344,68 @@ class VoronoiPerlinNoiseGenerator : IWorldGenerator
         int avrgHeight = 0;
         int count = 0;
 
-        Vector2Int ChunkCoord = world.GetChunkCoord(ColumnPos);
-        Vector2Int InChunkCoord = world.GetInChunkCoord(ColumnPos);
-
-        foreach (var column in Brush(ColumnPos, world.WorldAttributes.SmoothingCheckBrushRadius))
+        foreach (var column in Brush(pos, world.WorldAttributes.SmoothingCheckBrushRadius))
         {
 
-            avrgHeight += world.GetTopSoilBlockHeight(column);
+            avrgHeight += heightMap[column.x, column.y];
             ++count;
 
         }
 
         avrgHeight = Mathf.RoundToInt((float)avrgHeight / count);
 
-        int topSoilBlock = world.GetTopSoilBlockHeight(ColumnPos);
-        int topNonAirBlock = world.GetTopNonAirBlockHeight(ColumnPos);
-
-        if (avrgHeight < topSoilBlock)
+        if (waterMap[pos.x, pos.y] != 0)
         {
 
-            if (topSoilBlock != topNonAirBlock)
+            waterMap[pos.x, pos.y] += heightMap[pos.x, pos.y] - avrgHeight;
+
+            if (waterMap[pos.x, pos.y] < 0)
             {
 
-                for (int y = topSoilBlock; y > avrgHeight; --y)
-                {
-
-                    world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] = 9;
-
-                }
-
-            }
-            else
-            {
-
-                for (int y = topSoilBlock; y > avrgHeight; --y)
-                {
-
-                    world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] = 0;
-
-                }
+                waterMap[pos.x, pos.y] = 0;
 
             }
 
         }
-        else
+        else if (avrgHeight < heightMap[pos.x, pos.y])
         {
 
-            for (int y = avrgHeight; y > 0 && world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] == 0; --y)
+            if (world.IsVoxelInWorld(new Vector2Int(pos.x - 1, pos.y)) && avrgHeight < heightMap[pos.x - 1, pos.y] + waterMap[pos.x - 1, pos.y] && waterMap[pos.x - 1, pos.y] != 0)
             {
 
-                world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] = 2;
+                waterMap[pos.x, pos.y] = heightMap[pos.x - 1, pos.y] + waterMap[pos.x - 1, pos.y] - avrgHeight;
+
+                world.Bioms[pos.x, pos.y] = 0;
+
+            }
+            else if (world.IsVoxelInWorld(new Vector2Int(pos.x + 1, pos.y)) && avrgHeight < heightMap[pos.x + 1, pos.y] + waterMap[pos.x + 1, pos.y] && waterMap[pos.x + 1, pos.y] != 0)
+            {
+
+                waterMap[pos.x, pos.y] = heightMap[pos.x + 1, pos.y] + waterMap[pos.x + 1, pos.y] - avrgHeight;
+
+                world.Bioms[pos.x, pos.y] = 0;
+
+            }
+            else if (world.IsVoxelInWorld(new Vector2Int(pos.x, pos.y - 1)) && avrgHeight < heightMap[pos.x, pos.y - 1] + waterMap[pos.x, pos.y - 1] && waterMap[pos.x, pos.y - 1] != 0)
+            {
+
+                waterMap[pos.x, pos.y] = heightMap[pos.x, pos.y - 1] + waterMap[pos.x, pos.y - 1] - avrgHeight;
+
+                world.Bioms[pos.x, pos.y] = 0;
+
+            }
+            else if (world.IsVoxelInWorld(new Vector2Int(pos.x, pos.y + 1)) && avrgHeight < heightMap[pos.x, pos.y + 1] + waterMap[pos.x, pos.y + 1] && waterMap[pos.x, pos.y + 1] != 0)
+            {
+
+                waterMap[pos.x, pos.y] = heightMap[pos.x, pos.y + 1] + waterMap[pos.x, pos.y + 1] - avrgHeight;
+
+                world.Bioms[pos.x, pos.y] = 0;
 
             }
 
-        }        
+        }
+
+        heightMap[pos.x, pos.y] = avrgHeight;
 
     }
 
@@ -506,17 +487,12 @@ class VoronoiPerlinNoiseGenerator : IWorldGenerator
     private void AddWaterColumn(Vector2Int start, int waterHeight)
     {
 
-        Vector2Int ChunkCoord = world.GetChunkCoord(start);
-        Vector2Int InChunkCoord = world.GetInChunkCoord(start);
-
         Stack<Vector2Int> stack = new Stack<Vector2Int>();
 
-        for (int y = waterHeight; y > 0
-            && world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] == 0
-            || world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] == 9; --y)
+        if (heightMap[start.x, start.y] < waterHeight)
         {
 
-            world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] = 9;
+            waterMap[start.x, start.y] = waterHeight - heightMap[start.x, start.y];
 
         }
 
@@ -533,22 +509,12 @@ class VoronoiPerlinNoiseGenerator : IWorldGenerator
             if (world.IsVoxelInWorld(pos) && world.Bioms[pos.x, pos.y] != 0)
             {
 
-                ChunkCoord = world.GetChunkCoord(pos);
-                InChunkCoord = world.GetInChunkCoord(pos);
-
-                if (world.GetTopSoilBlockHeight(pos) < waterHeight)
+                if (heightMap[pos.x, pos.y] < waterHeight)
                 {
 
                     world.Bioms[pos.x, pos.y] = 0;
 
-                    for (int y = waterHeight; y > 0
-                        && world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] == 0
-                        || world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] == 9; --y)
-                    {
-
-                        world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] = 9;
-
-                    }
+                    waterMap[pos.x, pos.y] = waterHeight - heightMap[pos.x, pos.y];
 
                     stack.Push(new Vector2Int(pos.x - 1, pos.y));
                     stack.Push(new Vector2Int(pos.x + 1, pos.y));
@@ -587,20 +553,10 @@ class VoronoiPerlinNoiseGenerator : IWorldGenerator
 
             int height = Mathf.RoundToInt(distance * distance * world.WorldAttributes.RiverBrushScale) + centerHeight;
 
-            int blockHeight = world.GetTopSoilBlockHeight(pos);
-
-            if (blockHeight > height)
+            if (heightMap[pos.x, pos.y] > height)
             {
 
-                Vector2Int ChunkCoord = world.GetChunkCoord(pos);
-                Vector2Int InChunkCoord = world.GetInChunkCoord(pos);
-
-                for (int y = blockHeight; y > height; --y)
-                {
-
-                    world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] = 0;
-
-                }
+                heightMap[pos.x, pos.y] = height;
 
             }
 
@@ -638,12 +594,46 @@ class VoronoiPerlinNoiseGenerator : IWorldGenerator
 
             checkedColumns.Enqueue(pos);
 
-            int blockHeight = world.GetTopNonAirBlockHeight(pos);
-
-            if (minHeight > blockHeight)
+            if (minHeight > heightMap[pos.x, pos.y] + waterMap[pos.x, pos.y])
             {
 
-                minHeight = blockHeight;
+                minHeight = heightMap[pos.x, pos.y] + waterMap[pos.x, pos.y];
+
+            }
+
+        }
+
+    }
+
+    private void BuildTerrain()
+    {
+
+        for (int x = 0; x < world.WorldAttributes.WorldSizeInBlocks; ++x)
+        {
+
+            for (int z = 0; z < world.WorldAttributes.WorldSizeInBlocks; ++z)
+            {
+
+                Vector2Int pos = new Vector2Int(x, z);
+
+                Vector2Int ChunkCoord = world.GetChunkCoord(pos);
+                Vector2Int InChunkCoord = world.GetInChunkCoord(pos);
+
+                for (int y = heightMap[x, z] + waterMap[x, z]; y > 0 && y > heightMap[x, z]; --y)
+                {
+
+                    world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] = 9;
+
+                }
+
+                for (int y = heightMap[x, z]; y > 0; --y)
+                {
+
+                    world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] = 2;
+
+                }
+
+                world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, 0, InChunkCoord.y] = 1;
 
             }
 
@@ -662,7 +652,7 @@ class VoronoiPerlinNoiseGenerator : IWorldGenerator
 
                 int biome = world.Bioms[x, z];
 
-                AddSoilInColumn(new Vector2(x, z), world.WorldAttributes.BiomeAttributes[biome]);
+                AddSoilInColumn(new Vector2Int(x, z), world.WorldAttributes.BiomeAttributes[biome]);
 
             }
 
@@ -670,21 +660,28 @@ class VoronoiPerlinNoiseGenerator : IWorldGenerator
 
     }
 
-    private void AddSoilInColumn(Vector2 ColumnPos, BiomeAttributes biome)
+    private void AddSoilInColumn(Vector2Int pos, BiomeAttributes biome)
     {
 
-        Vector2Int ChunkCoord = world.GetChunkCoord(ColumnPos);
-        Vector2Int InChunkCoord = world.GetInChunkCoord(ColumnPos);
+        Vector2Int ChunkCoord = world.GetChunkCoord(pos);
+        Vector2Int InChunkCoord = world.GetInChunkCoord(pos);
 
         int y;
 
-        int terrainHeight = world.GetTopSoilBlockHeight(ColumnPos);
+        int terrainHeight = heightMap[pos.x, pos.y];
+
+        if (terrainHeight >= world.WorldAttributes.ChunkHeight || terrainHeight < 0)
+        {
+
+            Debug.Log(pos.x + " " + pos.y + " " + heightMap[pos.x, pos.y]);
+
+        }
 
         world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, terrainHeight, InChunkCoord.y] = biome.MainVoxel;
 
         int groundDepth = Random.Range(biome.GroundDepthMin, biome.GroundDepthMax + 1);
 
-        for (y = terrainHeight - 1; y > terrainHeight - groundDepth && y > 0; --y)
+        for (y = heightMap[pos.x, pos.y] - 1; y > heightMap[pos.x, pos.y] - groundDepth && y > 0; --y)
         {
 
             world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] = biome.SecondVoxel;
