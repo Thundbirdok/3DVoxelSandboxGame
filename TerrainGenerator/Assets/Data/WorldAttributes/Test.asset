@@ -49,7 +49,7 @@ MonoBehaviour:
   - biomeName: Desert
     mainVoxel: 6
     secondVoxel: 6
-    solidGroundHeight: 22
+    solidGroundHeight: 20
     biomeHeight: 10
     groundDepthMin: 10
     groundDepthMax: 20
