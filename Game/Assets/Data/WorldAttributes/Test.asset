@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ca17223260e49f42b74f645795b8bd9, type: 3}
+  m_Name: Test
+  m_EditorClassIdentifier: 
+  chunkWidth: 16
+  chunkHeight: 64
+  powerOfTwoOfWorldSizeInChunks: 4
+  sitesNumber: 10
+  sitesMinDistance: 10
+  boarderBrushRadius: 3
+  worldScale: 0.25
+  checkBiomeDistance: 20
+  smoothingBrushRadius: 2
+  smoothingCheckBrushRadius: 2
+  oceanHeight: 25
+  riverDepth: 4
+  riverPart: 20
+  riverBrushRadius: 3
+  riverBrushScale: 0.5
+  biomeAttributes:
+  - biomeName: Ocean
+    mainVoxel: 6
+    secondVoxel: 6
+    solidGroundHeight: 6
+    biomeHeight: 8
+    groundDepthMin: 0
+    groundDepthMax: 2
+    biomeScale: 0.3
+    octavesNumber: 3
+  - biomeName: Plain
+    mainVoxel: 3
+    secondVoxel: 4
+    solidGroundHeight: 23
+    biomeHeight: 10
+    groundDepthMin: 2
+    groundDepthMax: 6
+    biomeScale: 0.2
+    octavesNumber: 3
+  - biomeName: Desert
+    mainVoxel: 6
+    secondVoxel: 6
+    solidGroundHeight: 22
+    biomeHeight: 10
+    groundDepthMin: 10
+    groundDepthMax: 20
+    biomeScale: 0.5
+    octavesNumber: 2
