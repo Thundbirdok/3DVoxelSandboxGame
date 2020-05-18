@@ -90,53 +90,27 @@ public class World : MonoBehaviour
 
 		return false;
 
-	}    
-
-    public int GetTopSoilBlockHeight(Vector2 pos)
-	{
-
-		Vector2Int ChunkCoord = GetChunkCoord(pos);
-		Vector2Int InChunkCoord = GetInChunkCoord(pos);
-
-		int y;
-
-		for (y = WorldAttributes.ChunkHeight - 1; y > 0; --y)
-		{
-
-			if (Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] != 0 && Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] != 9)
-			{
-
-				break;
-
-			}
-
-		}
-
-		return y;
-
 	}
 
-	public int GetTopNonAirBlockHeight(Vector2 pos)
+	public bool IsVoxelSolid(Vector3 pos)
 	{
 
 		Vector2Int ChunkCoord = GetChunkCoord(pos);
 		Vector2Int InChunkCoord = GetInChunkCoord(pos);
 
-		int y;
+		return blocksAttributes.Blocktypes[Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, Mathf.FloorToInt(pos.y), InChunkCoord.y]].isSolid;
 
-		for (y = WorldAttributes.ChunkHeight - 1; y > 0; --y)
-		{
+	}
+	public bool IsVoxelSolid(float x, float y, float z)
+	{
 
-			if (Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] != 0)
-			{
+		int xChunk, zChunk;
+		int xInChunk, zInChunk;
 
-				break;
+		GetChunkCoord(x, z, out xChunk, out zChunk);
+		GetInChunkCoord(x, z, out xInChunk, out zInChunk);
 
-			}
-
-		}
-
-		return y;
+		return blocksAttributes.Blocktypes[Chunks[xChunk, zChunk].Voxels[xInChunk, Mathf.FloorToInt(y), zInChunk]].isSolid;
 
 	}
 
@@ -147,6 +121,14 @@ public class World : MonoBehaviour
 		int z = Mathf.FloorToInt(pos.z / WorldAttributes.ChunkWidth);
 
 		return new Vector2Int(x, z);
+
+	}
+
+	public void GetChunkCoord(float x, float z, out int xChunk, out int zChunk)
+	{
+
+		xChunk = Mathf.FloorToInt(x / WorldAttributes.ChunkWidth);
+		zChunk = Mathf.FloorToInt(z / WorldAttributes.ChunkWidth);		
 
 	}
 
@@ -167,6 +149,14 @@ public class World : MonoBehaviour
 		int z = Mathf.FloorToInt(pos.z % WorldAttributes.ChunkWidth);
 
 		return new Vector2Int(x, z);
+
+	}
+
+	public void GetInChunkCoord(float x, float z, out int xInChunk, out int zInChunk)
+	{
+
+		xInChunk = Mathf.FloorToInt(x % WorldAttributes.ChunkWidth);
+		zInChunk = Mathf.FloorToInt(z % WorldAttributes.ChunkWidth);		
 
 	}
 
