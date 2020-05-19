@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour
-{    
+{
 
     [SerializeField]
     private Transform cam;
@@ -28,6 +30,7 @@ public class Player : MonoBehaviour
 
     private bool isAlive;
 
+    //Movement
     private bool isGrounded;
     private bool isSprinting;
     private bool jumpRequest;
@@ -37,19 +40,32 @@ public class Player : MonoBehaviour
     private float mouseHorizontal;
     private float mouseVertical;
     private Vector3 velocity;
-    private float verticalMomentum = 0;    
+    private float verticalMomentum = 0;
 
+    /// <summary>
+    /// Chunks that in player view and active
+    /// </summary>
     private List<Vector2Int> ChunksInView;
 
     private Vector2Int CurrentChunkCoord;
-    private Vector2Int PreviousChunkCoord;    
+    private Vector2Int PreviousChunkCoord;
+
+    //Create and Destroy
+    public Transform highlightBlock;
+    public Transform placeBlock;
+    public float checkIncrement = 0.1f;
+    public float reach = 8f;
+
+    public TextMeshProUGUI selectedBlockText;
+    public byte selectedBlockIndex = 1;
 
     private void Start()
     {
 
         ChunksInView = new List<Vector2Int>();
 
-        CheckChunksInViewDistance();
+        Cursor.lockState = CursorLockMode.Locked;
+        selectedBlockText.text = world.BlocksAttributes.Blocktypes[selectedBlockIndex].blockName + " block selected";
 
     }
 
@@ -57,7 +73,7 @@ public class Player : MonoBehaviour
     {
 
         CheckWorldBounds();
-        CalculateVelocity();        
+        CalculateVelocity();
 
         if (jumpRequest)
         {
@@ -70,12 +86,14 @@ public class Player : MonoBehaviour
         cam.Rotate(Vector3.right * -mouseVertical);
         transform.Translate(velocity, Space.World);
 
-    }    
+    }
 
     private void Update()
     {
 
         GetPlayerInputs();
+
+        placeCursorBlocks();
 
         CurrentChunkCoord = world.GetChunkCoord(transform.position);
 
@@ -143,13 +161,13 @@ public class Player : MonoBehaviour
         if (velocity.y < 0)
         {
 
-            velocity.y = checkDownSpeed(velocity.y);
+            velocity.y = CheckDownSpeed(velocity.y);
 
         }
         else if (velocity.y > 0)
         {
 
-            velocity.y = checkUpSpeed(velocity.y);
+            velocity.y = CheckUpSpeed(velocity.y);
 
         }
 
@@ -184,9 +202,101 @@ public class Player : MonoBehaviour
 
         }
 
+        float scroll = Input.GetAxis("Mouse ScrollWheel");
+
+        if (scroll != 0)
+        {
+
+            if (scroll > 0)
+            {
+
+                selectedBlockIndex++;
+
+            }
+            else
+            {
+
+                selectedBlockIndex--;
+
+            }
+
+            if (selectedBlockIndex > (byte)(world.BlocksAttributes.Blocktypes.Length - 1))
+            {
+
+                selectedBlockIndex = 1;
+
+            }
+
+            if (selectedBlockIndex < 1)
+            {
+
+                selectedBlockIndex = (byte)(world.BlocksAttributes.Blocktypes.Length - 1);
+
+            }
+
+            selectedBlockText.text = world.BlocksAttributes.Blocktypes[selectedBlockIndex].blockName + " block selected";
+
+        }
+
+        if (highlightBlock.gameObject.activeSelf)
+        {
+
+            // Destroy block.
+            if (Input.GetMouseButtonDown(0))
+            {
+
+                world.EditVoxel(highlightBlock.position, 0);
+
+            }
+
+            // Place block.
+            if (Input.GetMouseButtonDown(1))
+            {
+
+                world.EditVoxel(placeBlock.position, selectedBlockIndex);
+
+            }
+
+        }
+
     }
 
-    private float checkDownSpeed(float downSpeed)
+    private void placeCursorBlocks()
+    {
+
+        float step = checkIncrement;
+        Vector3 lastPos = new Vector3();
+
+        while (step < reach)
+        {
+
+            Vector3 pos = cam.position + (cam.forward * step);
+
+            if (world.IsVoxelSolid(pos))
+            {
+
+                highlightBlock.position = Vector3Int.FloorToInt(pos);
+                placeBlock.position = lastPos;
+
+                highlightBlock.gameObject.SetActive(true);
+                placeBlock.gameObject.SetActive(true);
+
+                return;
+
+            }
+
+            lastPos = new Vector3(Mathf.FloorToInt(pos.x), Mathf.FloorToInt(pos.y), Mathf.FloorToInt(pos.z));
+
+            step += checkIncrement;
+
+        }
+
+        highlightBlock.gameObject.SetActive(false);
+        placeBlock.gameObject.SetActive(false);
+
+    }
+
+    private float CheckDownSpeed(float downSpeed)
     {
 
         if (
@@ -213,14 +323,14 @@ public class Player : MonoBehaviour
 
     }
 
-    private float checkUpSpeed(float upSpeed)
+    private float CheckUpSpeed(float upSpeed)
     {
 
         if (
-            world.IsVoxelSolid(transform.position.x - playerWidth, transform.position.y + 2f + upSpeed, transform.position.z - playerWidth) ||
-            world.IsVoxelSolid(transform.position.x + playerWidth, transform.position.y + 2f + upSpeed, transform.position.z - playerWidth) ||
-            world.IsVoxelSolid(transform.position.x + playerWidth, transform.position.y + 2f + upSpeed, transform.position.z + playerWidth) ||
-            world.IsVoxelSolid(transform.position.x - playerWidth, transform.position.y + 2f + upSpeed, transform.position.z + playerWidth)
+            world.IsVoxelSolid(transform.position.x - playerWidth, transform.position.y + 1.8f + upSpeed, transform.position.z - playerWidth) ||
+            world.IsVoxelSolid(transform.position.x + playerWidth, transform.position.y + 1.8f + upSpeed, transform.position.z - playerWidth) ||
+            world.IsVoxelSolid(transform.position.x + playerWidth, transform.position.y + 1.8f + upSpeed, transform.position.z + playerWidth) ||
+            world.IsVoxelSolid(transform.position.x - playerWidth, transform.position.y + 1.8f + upSpeed, transform.position.z + playerWidth)
            )
         {
 
@@ -342,6 +452,8 @@ public class Player : MonoBehaviour
 
         isAlive = true;
 
+        CheckChunksInViewDistance();
+
     }
 
     private void CheckWorldBounds()
@@ -377,7 +489,7 @@ public class Player : MonoBehaviour
 
     void CheckChunksInViewDistance()
     {
-        
+
         if (!isAlive)
         {
 
@@ -398,7 +510,7 @@ public class Player : MonoBehaviour
 
                 Vector2Int chunkCoord = new Vector2Int(x, z);
 
-                // If the current chunk is in the world...
+                // If the current chunk is in the world add in view
                 if (world.IsChunkInWorld(chunkCoord))
                 {
 
@@ -409,11 +521,21 @@ public class Player : MonoBehaviour
                 }
 
                 // Check through previously active chunks to see if this chunk is there. If it is, remove it from the list.
-                for (int i = 0; i < previouslyActiveChunks.Count; i++)
+                for (int i = 0; i < previouslyActiveChunks.Count;)
                 {
 
                     if (previouslyActiveChunks[i].Equals(chunkCoord))
+                    {
+
                         previouslyActiveChunks.RemoveAt(i);
+
+                    }
+                    else
+                    {
+
+                        ++i;
+
+                    }
 
                 }
 
@@ -426,8 +548,8 @@ public class Player : MonoBehaviour
         {
 
             world.Chunks[chunk.x, chunk.y].isActive = false;
-            
-            for (int i = 0; i < ChunksInView.Count; )
+
+            for (int i = 0; i < ChunksInView.Count;)
             {
 
                 if (world.Chunks[chunk.x, chunk.y].Equals(ChunksInView[i]))

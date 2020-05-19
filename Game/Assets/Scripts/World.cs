@@ -35,9 +35,7 @@ public class World : MonoBehaviour
 
 		generator = new VoronoiPerlinNoiseGenerator();
 
-		GenerateWorld();
-
-		player.Spawn(spawnPosition);
+		GenerateWorld();		
 
 	}
 
@@ -53,6 +51,8 @@ public class World : MonoBehaviour
 
 		generator.GenerateWorld(this);
 
+		player.Spawn(spawnPosition);
+
 	}
 
 	public void CreateChunk(Vector2Int coord)
@@ -60,7 +60,7 @@ public class World : MonoBehaviour
 
 		if (Chunks[coord.x, coord.y] == null) {
 
-			Chunks[coord.x, coord.y] = new Chunk(new Vector2Int(coord.x, coord.y), this, WorldAttributes, BlocksAttributes);
+			Chunks[coord.x, coord.y] = new Chunk(new Vector2Int(coord.x, coord.y), this);
 
 		}
 		else
@@ -141,7 +141,7 @@ public class World : MonoBehaviour
 		}
 
 		GetChunkCoord(x, z, out xChunk, out zChunk);
-		GetInChunkCoord(x, z, out xInChunk, out zInChunk);		
+		GetInChunkCoord(x, z, out xInChunk, out zInChunk);
 
 		return blocksAttributes.Blocktypes[Chunks[xChunk, zChunk].Voxels[xInChunk, Mathf.FloorToInt(y), zInChunk]].isSolid;
 
@@ -200,6 +200,22 @@ public class World : MonoBehaviour
 		int _z = Mathf.FloorToInt(pos.y % WorldAttributes.ChunkWidth);
 
 		return new Vector2Int(_x, _z);
+
+	}
+
+	public void EditVoxel(Vector3 pos, byte newID)
+	{
+
+		if (!IsVoxelInWorld(pos))
+		{
+
+			return;
+
+		}
+
+		Vector2Int ChunkCoord = GetChunkCoord(pos);
+
+		Chunks[ChunkCoord.x, ChunkCoord.y].EditVoxel(pos, newID);
 
 	}
 
