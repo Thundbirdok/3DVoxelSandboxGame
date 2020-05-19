@@ -145,7 +145,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9113190}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 64, y: 64, z: 64}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1616302746}
@@ -164,13 +164,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98a33a14a6f66094494087857dcaa13d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isGrounded: 0
-  isSprinting: 0
+  cam: {fileID: 1616302746}
+  world: {fileID: 50123750}
   walkSpeed: 3
   sprintSpeed: 6
   jumpForce: 5
   gravity: 9.8
   playerWidth: 0.15
+  ViewDistanceInChunks: 2
 --- !u!1 &28143140
 GameObject:
   m_ObjectHideFlags: 0
@@ -252,6 +253,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61dd1392ea590934383ce7ac4e3fd4dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 9113192}
+  spawnPosition: {x: 64, y: 64, z: 64}
   worldAttributes: {fileID: 11400000, guid: 33106321b6a6fe543b4094227e97d955, type: 2}
   blocksAttributes: {fileID: 11400000, guid: 1dcba7852861e3d468a35c719585c0b1, type: 2}
 --- !u!4 &50123751
@@ -1088,7 +1091,7 @@ GameObject:
   - component: {fileID: 1616302744}
   - component: {fileID: 1616302743}
   m_Layer: 0
-  m_Name: Main Camera
+  m_Name: Camera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

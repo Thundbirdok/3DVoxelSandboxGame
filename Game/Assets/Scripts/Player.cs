@@ -1,43 +1,63 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Player : MonoBehaviour
-{
+{    
 
-    public bool isGrounded;
-    public bool isSprinting;
-
+    [SerializeField]
     private Transform cam;
+    [SerializeField]
     private World world;
 
-    public float walkSpeed = 3f;
-    public float sprintSpeed = 6f;
-    public float jumpForce = 5f;
-    public float gravity = 9.8f;
+    [SerializeField]
+    private float walkSpeed;
+    [SerializeField]
+    private float sprintSpeed;
+    [SerializeField]
+    private float jumpForce;
+    [SerializeField]
+    private float gravity;
 
-    public float playerWidth = 0.15f;    
+    [SerializeField]
+    private float playerWidth;
+
+    [SerializeField]
+    private int ViewDistanceInChunks;
+
+    private bool isAlive;
+
+    private bool isGrounded;
+    private bool isSprinting;
+    private bool jumpRequest;
 
     private float horizontal;
     private float vertical;
     private float mouseHorizontal;
     private float mouseVertical;
     private Vector3 velocity;
-    private float verticalMomentum = 0;
-    private bool jumpRequest;
+    private float verticalMomentum = 0;    
+
+    private List<Vector2Int> ChunksInView;
+
+    private Vector2Int CurrentChunkCoord;
+    private Vector2Int PreviousChunkCoord;    
 
     private void Start()
     {
 
-        cam = GameObject.Find("Main Camera").transform;
-        world = GameObject.Find("World").GetComponent<World>();
+        ChunksInView = new List<Vector2Int>();
+
+        CheckChunksInViewDistance();
 
     }
 
     private void FixedUpdate()
     {
 
-        CalculateVelocity();
+        CheckWorldBounds();
+        CalculateVelocity();        
 
         if (jumpRequest)
         {
@@ -50,12 +70,22 @@ public class Player : MonoBehaviour
         cam.Rotate(Vector3.right * -mouseVertical);
         transform.Translate(velocity, Space.World);
 
-    }
+    }    
 
     private void Update()
     {
 
         GetPlayerInputs();
+
+        CurrentChunkCoord = world.GetChunkCoord(transform.position);
+
+        // Only update the chunks if the player has moved from the chunk they were previously on.
+        if (!CurrentChunkCoord.Equals(PreviousChunkCoord))
+        {
+
+            CheckChunksInViewDistance();
+
+        }
 
     }
 
@@ -298,6 +328,120 @@ public class Player : MonoBehaviour
             {
 
                 return false;
+
+            }
+
+        }
+
+    }
+
+    public void Spawn(Vector3 pos)
+    {
+
+        transform.position = pos;
+
+        isAlive = true;
+
+    }
+
+    private void CheckWorldBounds()
+    {
+
+        if (transform.position.x <= 1)
+        {
+
+            transform.position += new Vector3(1, 0, 0);
+
+        }
+        else if (transform.position.x >= world.WorldAttributes.WorldSizeInBlocks - 1)
+        {
+
+            transform.position += new Vector3(-1, 0, 0);
+
+        }
+
+        if (transform.position.z <= 1)
+        {
+
+            transform.position += new Vector3(0, 0, 1);
+
+        }
+        else if (transform.position.z >= world.WorldAttributes.WorldSizeInBlocks - 1)
+        {
+
+            transform.position += new Vector3(0, 0, -1);
+
+        }
+
+    }
+
+    void CheckChunksInViewDistance()
+    {
+        
+        if (!isAlive)
+        {
+
+            return;
+
+        }
+
+        PreviousChunkCoord = CurrentChunkCoord;
+
+        List<Vector2Int> previouslyActiveChunks = new List<Vector2Int>(ChunksInView);
+
+        // Loop through all chunks currently within view distance of the player.
+        for (int x = CurrentChunkCoord.x - ViewDistanceInChunks; x <= CurrentChunkCoord.x + ViewDistanceInChunks; ++x)
+        {
+
+            for (int z = CurrentChunkCoord.y - ViewDistanceInChunks; z <= CurrentChunkCoord.y + ViewDistanceInChunks; ++z)
+            {
+
+                Vector2Int chunkCoord = new Vector2Int(x, z);
+
+                // If the current chunk is in the world...
+                if (world.IsChunkInWorld(chunkCoord))
+                {
+
+                    world.Chunks[x, z].isActive = true;
+
+                    ChunksInView.Add(chunkCoord);
+
+                }
+
+                // Check through previously active chunks to see if this chunk is there. If it is, remove it from the list.
+                for (int i = 0; i < previouslyActiveChunks.Count; i++)
+                {
+
+                    if (previouslyActiveChunks[i].Equals(chunkCoord))
+                        previouslyActiveChunks.RemoveAt(i);
+
+                }
+
+            }
+
+        }
+
+        // Any chunks left in the previousActiveChunks list are no longer in the player's view distance, so loop through and disable them.
+        foreach (Vector2Int chunk in previouslyActiveChunks)
+        {
+
+            world.Chunks[chunk.x, chunk.y].isActive = false;
+            
+            for (int i = 0; i < ChunksInView.Count; )
+            {
+
+                if (world.Chunks[chunk.x, chunk.y].Equals(ChunksInView[i]))
+                {
+
+                    ChunksInView.RemoveAt(i);
+
+                }
+                else
+                {
+
+                    ++i;
+
+                }
 
             }
 

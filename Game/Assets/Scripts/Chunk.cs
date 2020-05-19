@@ -22,6 +22,29 @@ public class Chunk
 
 	public byte[,,] Voxels;
 
+	private bool _isActive;
+
+	public bool isActive
+	{
+
+		get { return _isActive; }
+
+		set
+		{
+
+			_isActive = value;
+
+			if (chunkObject != null)
+			{
+
+				chunkObject.SetActive(value);
+
+			}
+
+		}
+
+	}
+
 	public Chunk(Vector2Int _coord, World _world, WorldAttributes _worldAttributes, BlocksAttributes _blocksAttributes)
 	{
 
@@ -41,6 +64,8 @@ public class Chunk
 		meshRenderer.material = blocksAttributes.Material;
 
 		chunkObject.name = coord.x + ", " + coord.y;
+
+		isActive = false;
 
 	}
 	

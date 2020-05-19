@@ -7,6 +7,12 @@ public class World : MonoBehaviour
 {
 
 	[SerializeField]
+	private Player player;
+
+	[SerializeField]
+	private Vector3 spawnPosition;
+
+	[SerializeField]
 	private WorldAttributes worldAttributes;
 	[SerializeField]
 	private BlocksAttributes blocksAttributes;
@@ -18,9 +24,9 @@ public class World : MonoBehaviour
 
 	public int[,] Bioms;
 
-	private IWorldGenerator generator;
+	private IWorldGenerator generator;	
 
-    private void Start()
+	private void Start()
 	{
 
 		Chunks = new Chunk[WorldAttributes.WorldSizeInChunks, WorldAttributes.WorldSizeInChunks];
@@ -29,12 +35,16 @@ public class World : MonoBehaviour
 
 		generator = new VoronoiPerlinNoiseGenerator();
 
-		GenerateWorld(); 
+		GenerateWorld();
+
+		player.Spawn(spawnPosition);
 
 	}
 
 	private void Update()
-	{		
+	{
+
+		
 
 	}	
 
@@ -59,6 +69,21 @@ public class World : MonoBehaviour
 			Chunks[coord.x, coord.y].Clear();
 
 		}
+
+	}
+
+	public bool IsChunkInWorld(Vector2 pos)
+	{
+
+		if (pos.x < WorldAttributes.WorldSizeInChunks			
+			&& pos.y < WorldAttributes.WorldSizeInChunks && pos.x >= 0 && pos.y >= 0)
+		{
+
+			return true;
+
+		}
+
+		return false;
 
 	}
 
@@ -101,14 +126,22 @@ public class World : MonoBehaviour
 		return blocksAttributes.Blocktypes[Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, Mathf.FloorToInt(pos.y), InChunkCoord.y]].isSolid;
 
 	}
+
 	public bool IsVoxelSolid(float x, float y, float z)
 	{
 
 		int xChunk, zChunk;
 		int xInChunk, zInChunk;
+		
+		if (x >= WorldAttributes.WorldSizeInBlocks && y >= WorldAttributes.ChunkHeight && z >= WorldAttributes.WorldSizeInBlocks && x < 0 && y < 0 && z < 0)
+		{
+
+			return true;
+
+		}
 
 		GetChunkCoord(x, z, out xChunk, out zChunk);
-		GetInChunkCoord(x, z, out xInChunk, out zInChunk);
+		GetInChunkCoord(x, z, out xInChunk, out zInChunk);		
 
 		return blocksAttributes.Blocktypes[Chunks[xChunk, zChunk].Voxels[xInChunk, Mathf.FloorToInt(y), zInChunk]].isSolid;
 
