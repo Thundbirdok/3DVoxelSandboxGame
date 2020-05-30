@@ -84,11 +84,15 @@ public class UIController : MonoBehaviour
         if (isShow)
         {
 
+            Cursor.lockState = CursorLockMode.Locked;
+
             Continue();
 
         }
         else
         {
+
+            Cursor.lockState = CursorLockMode.None;
 
             ShowMenu();
 
@@ -101,6 +105,8 @@ public class UIController : MonoBehaviour
 
         if (!isShow)
         {
+
+            Cursor.lockState = CursorLockMode.None;
 
             ShowMap();
 

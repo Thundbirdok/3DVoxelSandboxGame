@@ -114,7 +114,7 @@ MonoBehaviour:
   m_MinSize: {x: 713, y: 494}
   m_MaxSize: {x: 18008, y: 14044}
   vertical: 0
-  controlID: 88
+  controlID: 158
 --- !u!114 &6
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -139,7 +139,7 @@ MonoBehaviour:
   m_MinSize: {x: 436, y: 494}
   m_MaxSize: {x: 14006, y: 14044}
   vertical: 1
-  controlID: 89
+  controlID: 55
 --- !u!114 &7
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -164,7 +164,7 @@ MonoBehaviour:
   m_MinSize: {x: 406, y: 222}
   m_MaxSize: {x: 8006, y: 4022}
   vertical: 0
-  controlID: 32
+  controlID: 56
 --- !u!114 &8
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -242,7 +242,7 @@ MonoBehaviour:
   m_MinSize: {x: 436, y: 272}
   m_MaxSize: {x: 14006, y: 10022}
   vertical: 0
-  controlID: 90
+  controlID: 138
 --- !u!114 &11
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -358,9 +358,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: 460.1422, y: -146.76688, z: 580.28815}
+    m_Target: {x: -391.8933, y: -164.69022, z: 430.2732}
     speed: 2
-    m_Value: {x: 460.1422, y: -146.76688, z: 580.28815}
+    m_Value: {x: -391.8933, y: -164.69022, z: 430.2732}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -389,9 +389,9 @@ MonoBehaviour:
       speed: 2
       m_Value: 0
   m_Rotation:
-    m_Target: {x: -0.14296426, y: -0.26074177, z: 0.040625963, w: -0.9564517}
+    m_Target: {x: -0.14301951, y: 0.5016352, z: -0.08807507, w: -0.8516026}
     speed: 2
-    m_Value: {x: -0.14296426, y: -0.26074174, z: 0.04062596, w: -0.95645165}
+    m_Value: {x: -0.14278948, y: 0.49909195, z: -0.087638274, w: -0.85019875}
   m_Size:
     m_Target: 620.20557
     speed: 2
@@ -567,19 +567,19 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets
+    - Assets/Data/WorldAttributes
   m_ViewMode: 1
   m_StartGridSize: 64
   m_LastFolders:
-  - Assets
+  - Assets/Data/WorldAttributes
   m_LastFoldersGridSize: -1
   m_LastProjectPath: E:\Projects\3DVoxelSandboxGame\TerrainGenerator
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
     scrollPos: {x: 0, y: 0}
-    m_SelectedIDs: 162d0000
-    m_LastClickedID: 11542
+    m_SelectedIDs: 38300000
+    m_LastClickedID: 12344
     m_ExpandedIDs: 00000000162d0000ea2d00001e2e000000ca9a3b
     m_RenameOverlay:
       m_UserAcceptedRename: 0
@@ -719,7 +719,7 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: 162d0000
+      m_SelectedIDs: 562d0000
       m_LastClickedID: 0
       m_ExpandedIDs: 6efbffff
       m_RenameOverlay:

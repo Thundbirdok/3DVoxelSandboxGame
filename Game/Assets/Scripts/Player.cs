@@ -55,8 +55,7 @@ public class Player : MonoBehaviour
     public Transform placeBlock;
     public float checkIncrement = 0.1f;
     public float reach = 8f;
-
-    public TextMeshProUGUI selectedBlockText;
+    
     public byte selectedBlockIndex = 1;
 
     private void Start()
@@ -64,8 +63,7 @@ public class Player : MonoBehaviour
 
         ChunksInView = new List<Vector2Int>();
 
-        Cursor.lockState = CursorLockMode.Locked;
-        selectedBlockText.text = world.BlocksAttributes.Blocktypes[selectedBlockIndex].blockName + " block selected";
+        Cursor.lockState = CursorLockMode.Locked;        
 
     }
 
@@ -200,43 +198,7 @@ public class Player : MonoBehaviour
 
             jumpRequest = true;
 
-        }
-
-        float scroll = Input.GetAxis("Mouse ScrollWheel");
-
-        if (scroll != 0)
-        {
-
-            if (scroll > 0)
-            {
-
-                selectedBlockIndex++;
-
-            }
-            else
-            {
-
-                selectedBlockIndex--;
-
-            }
-
-            if (selectedBlockIndex > (byte)(world.BlocksAttributes.Blocktypes.Length - 1))
-            {
-
-                selectedBlockIndex = 1;
-
-            }
-
-            if (selectedBlockIndex < 1)
-            {
-
-                selectedBlockIndex = (byte)(world.BlocksAttributes.Blocktypes.Length - 1);
-
-            }
-
-            selectedBlockText.text = world.BlocksAttributes.Blocktypes[selectedBlockIndex].blockName + " block selected";
-
-        }
+        }                
 
         if (highlightBlock.gameObject.activeSelf)
         {

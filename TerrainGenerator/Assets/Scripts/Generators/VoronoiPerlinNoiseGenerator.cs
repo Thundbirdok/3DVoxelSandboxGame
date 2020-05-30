@@ -424,6 +424,32 @@ class VoronoiPerlinNoiseGenerator : IWorldGenerator
     private void AddWater(List<VoronoiDiagram.GraphEdge> Edges)
     {
 
+        foreach (var edge in Edges)
+        {
+
+            int biomeA, biomeB;
+
+            GetBorderingBioms(edge, out biomeA, out biomeB);
+
+            if (biomeA != biomeB && biomeA != 0 && biomeB != 0)
+            {
+
+                Vector2 begin = new Vector2((float)edge.x1, (float)edge.y1);
+                Vector2 end = new Vector2((float)edge.x2, (float)edge.y2);
+
+                do
+                {
+
+                    SetRiverPoint(Vector2Int.FloorToInt(begin));
+
+                    begin = Vector2.MoveTowards(begin, end, 1f);
+
+                } while (begin != end);
+
+            }
+
+        }
+
         for (int x = 0; x < world.WorldAttributes.WorldSizeInBlocks; ++x)
         {
 
@@ -454,33 +480,7 @@ class VoronoiPerlinNoiseGenerator : IWorldGenerator
 
             }
 
-        }
-
-        foreach (var edge in Edges)
-        {
-
-            int biomeA, biomeB;
-
-            GetBorderingBioms(edge, out biomeA, out biomeB);
-
-            if (biomeA != biomeB && biomeA != 0 && biomeB != 0)
-            {
-
-                Vector2 begin = new Vector2((float)edge.x1, (float)edge.y1);
-                Vector2 end = new Vector2((float)edge.x2, (float)edge.y2);
-
-                do
-                {
-
-                    SetRiverPoint(Vector2Int.FloorToInt(begin));
-
-                    begin = Vector2.MoveTowards(begin, end, 1f);
-
-                } while (begin != end);
-
-            }
-
-        }
+        }        
 
     }
 

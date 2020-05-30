@@ -24,7 +24,6 @@ MonoBehaviour:
   smoothingCheckBrushRadius: 2
   oceanHeight: 25
   riverDepth: 4
-  riverPart: 20
   riverBrushRadius: 3
   riverBrushScale: 0.5
   biomeAttributes:

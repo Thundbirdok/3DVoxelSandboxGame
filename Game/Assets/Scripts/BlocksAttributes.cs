@@ -36,6 +36,8 @@ public class BlockType
 	public bool isSolid;
 	public bool isLiquid;
 
+	public Sprite Icon;
+
 	[Header("Texture Values")]
 	public int backFaceTexture;
 	public int frontFaceTexture;

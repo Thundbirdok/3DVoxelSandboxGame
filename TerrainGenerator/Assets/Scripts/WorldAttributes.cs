@@ -42,9 +42,6 @@ public class WorldAttributes : ScriptableObject
 	private int riverDepth;
 
 	[SerializeField]
-	private int riverPart;
-
-	[SerializeField]
 	private int riverBrushRadius;
 
 	[SerializeField]
@@ -66,7 +63,6 @@ public class WorldAttributes : ScriptableObject
 	public int SmoothingCheckBrushRadius { get => smoothingCheckBrushRadius; }
 	public int OceanHeight { get => oceanHeight; }
 	public int RiverDepth { get => riverDepth; }
-	public int RiverPart { get => riverPart; }
 	public int RiverBrushRadius { get => riverBrushRadius; }
 	public float RiverBrushScale { get => riverBrushScale; }
 	public BiomeAttributes[] BiomeAttributes { get => biomeAttributes; }

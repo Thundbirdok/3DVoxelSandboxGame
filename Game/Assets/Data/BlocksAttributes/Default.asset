@@ -17,6 +17,7 @@ MonoBehaviour:
   - blockName: Air
     isSolid: 0
     isLiquid: 0
+    Icon: {fileID: 0}
     backFaceTexture: 0
     frontFaceTexture: 0
     topFaceTexture: 0
@@ -26,6 +27,7 @@ MonoBehaviour:
   - blockName: Bedrock
     isSolid: 1
     isLiquid: 0
+    Icon: {fileID: 1668631880078830459, guid: da7f4993bf9ff7e4fa973e8d95990d69, type: 3}
     backFaceTexture: 9
     frontFaceTexture: 9
     topFaceTexture: 9
@@ -35,6 +37,7 @@ MonoBehaviour:
   - blockName: Stone
     isSolid: 1
     isLiquid: 0
+    Icon: {fileID: 2531585740214343497, guid: da7f4993bf9ff7e4fa973e8d95990d69, type: 3}
     backFaceTexture: 0
     frontFaceTexture: 0
     topFaceTexture: 0
@@ -44,6 +47,7 @@ MonoBehaviour:
   - blockName: Grass
     isSolid: 1
     isLiquid: 0
+    Icon: {fileID: 5431833053050669182, guid: da7f4993bf9ff7e4fa973e8d95990d69, type: 3}
     backFaceTexture: 2
     frontFaceTexture: 2
     topFaceTexture: 7
@@ -53,6 +57,7 @@ MonoBehaviour:
   - blockName: Dirt
     isSolid: 1
     isLiquid: 0
+    Icon: {fileID: -3137509097769737148, guid: da7f4993bf9ff7e4fa973e8d95990d69, type: 3}
     backFaceTexture: 1
     frontFaceTexture: 1
     topFaceTexture: 1
@@ -62,6 +67,7 @@ MonoBehaviour:
   - blockName: Cobblestone
     isSolid: 1
     isLiquid: 0
+    Icon: {fileID: -180753191933307767, guid: da7f4993bf9ff7e4fa973e8d95990d69, type: 3}
     backFaceTexture: 8
     frontFaceTexture: 8
     topFaceTexture: 8
@@ -71,6 +77,7 @@ MonoBehaviour:
   - blockName: Sand
     isSolid: 1
     isLiquid: 0
+    Icon: {fileID: 4163173834195617304, guid: da7f4993bf9ff7e4fa973e8d95990d69, type: 3}
     backFaceTexture: 10
     frontFaceTexture: 10
     topFaceTexture: 10
@@ -80,6 +87,7 @@ MonoBehaviour:
   - blockName: Wood
     isSolid: 1
     isLiquid: 0
+    Icon: {fileID: 7101808556078131587, guid: da7f4993bf9ff7e4fa973e8d95990d69, type: 3}
     backFaceTexture: 5
     frontFaceTexture: 5
     topFaceTexture: 6
@@ -89,6 +97,7 @@ MonoBehaviour:
   - blockName: Wood Plank
     isSolid: 1
     isLiquid: 0
+    Icon: {fileID: 2633313143589470460, guid: da7f4993bf9ff7e4fa973e8d95990d69, type: 3}
     backFaceTexture: 4
     frontFaceTexture: 4
     topFaceTexture: 4
@@ -98,6 +107,7 @@ MonoBehaviour:
   - blockName: Water
     isSolid: 1
     isLiquid: 1
+    Icon: {fileID: 0}
     backFaceTexture: 11
     frontFaceTexture: 11
     topFaceTexture: 11
@@ -107,6 +117,7 @@ MonoBehaviour:
   - blockName: Coal Ore
     isSolid: 1
     isLiquid: 0
+    Icon: {fileID: 0}
     backFaceTexture: 3
     frontFaceTexture: 3
     topFaceTexture: 3
@@ -116,6 +127,7 @@ MonoBehaviour:
   - blockName: Furnace
     isSolid: 1
     isLiquid: 0
+    Icon: {fileID: 0}
     backFaceTexture: 13
     frontFaceTexture: 12
     topFaceTexture: 15
@@ -125,6 +137,7 @@ MonoBehaviour:
   - blockName: Burning Furnace
     isSolid: 1
     isLiquid: 0
+    Icon: {fileID: 0}
     backFaceTexture: 13
     frontFaceTexture: 14
     topFaceTexture: 15
