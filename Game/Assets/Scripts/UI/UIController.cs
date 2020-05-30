@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,10 +13,13 @@ public class UIController : MonoBehaviour
     private GameObject Menu;
 
     [SerializeField]
+    private GameObject Inventory;
+
+    [SerializeField]
     private GameObject Map;
     private Map MapScript;
 
-    private bool isShow;
+    public bool isShow;
 
     public void Awake()
     {
@@ -23,7 +27,7 @@ public class UIController : MonoBehaviour
         Menu.SetActive(false);
         Map.SetActive(false);
 
-        MapScript = Map.GetComponent<Map>();        
+        MapScript = Map.GetComponent<Map>();
 
     }
 
@@ -34,6 +38,13 @@ public class UIController : MonoBehaviour
         {
 
             MapButton();
+
+        }
+
+        if (Input.GetKeyDown("i"))
+        {
+
+            InventoryButton();
 
         }
 
@@ -50,7 +61,7 @@ public class UIController : MonoBehaviour
     {
 
         isShow = true;
-        Menu.SetActive(true);        
+        Menu.SetActive(true);
 
     }
 
@@ -59,6 +70,14 @@ public class UIController : MonoBehaviour
 
         isShow = true;
         Map.SetActive(true);
+
+    }
+
+    public void ShowInventory()
+    {
+
+        isShow = true;
+        Inventory.SetActive(true);
 
     }
 
@@ -109,6 +128,28 @@ public class UIController : MonoBehaviour
             Cursor.lockState = CursorLockMode.None;
 
             ShowMap();
+
+        }
+
+    }
+
+    private void InventoryButton()
+    {
+
+        if (isShow)
+        {
+
+            Cursor.lockState = CursorLockMode.Locked;
+
+            Continue();
+
+        }
+        else
+        {
+
+            Cursor.lockState = CursorLockMode.None;
+
+            ShowInventory();
 
         }
 

@@ -1,66 +1,98 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
-public class Toolbar : MonoBehaviour {
+public class Toolbar : MonoBehaviour
+{
 
     [SerializeField]
-    private World world;
+    private RectTransform highlight;
+
     [SerializeField]
     private Player player;
 
     [SerializeField]
-    private RectTransform highlight;
-    
-    public ItemSlot[] itemSlots;
+    private UIItemSlot[] slots;
 
-    int slotIndex = 0;
+    private int slotIndex = 0;
 
-    private void Start() {
+    private void Start()
+    {
 
-        world = GameObject.Find("World").GetComponent<World>();
+        byte index = 1;
 
-        foreach (ItemSlot slot in itemSlots) {
+        foreach (UIItemSlot s in slots)
+        {
 
-            slot.icon.sprite = world.BlocksAttributes.Blocktypes[slot.itemID].Icon;
-            slot.icon.enabled = true;
+            ItemStack stack = new ItemStack(index, UnityEngine.Random.Range(2, 65));
+            ItemSlot slot = new ItemSlot(s, stack);
+            ++index;
 
         }
 
     }
 
-    private void Update() {
+    private void Update()
+    {
 
         float scroll = Input.GetAxis("Mouse ScrollWheel");
 
-        if (scroll != 0) {
+        if (scroll != 0)
+        {
 
             if (scroll > 0)
+            {
+
                 --slotIndex;
+
+            }
             else
+            {
+
                 ++slotIndex;
 
-            if (slotIndex > itemSlots.Length - 1)
-                slotIndex = 0;
-            if (slotIndex < 0)
-                slotIndex = itemSlots.Length - 1;
+            }
 
-            highlight.position = itemSlots[slotIndex].icon.transform.position;
-            player.selectedBlockIndex = itemSlots[slotIndex].itemID;
+            if (slotIndex > slots.Length - 1)
+            {
+
+                slotIndex = 0;
+
+            }
+
+            if (slotIndex < 0)
+            {
+
+                slotIndex = slots.Length - 1;
+
+            }
+
+            highlight.position = slots[slotIndex].slotIcon.transform.position;
 
         }
-            
+
 
     }
 
+    internal byte GetSelectedBlockId()
+    {
 
-}
+        return slots[slotIndex].itemSlot.stack.id;
 
-[System.Serializable]
-public class ItemSlot {
+    }
 
-    public byte itemID;
-    public Image icon;
+    internal bool HasItemInSlot()
+    {
 
+        return slots[slotIndex].HasItem;
+
+    }
+
+    internal void TakeBlock(int value)
+    {
+
+        slots[slotIndex].itemSlot.Take(value);
+
+    }
 }

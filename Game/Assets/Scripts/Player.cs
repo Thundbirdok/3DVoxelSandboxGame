@@ -55,7 +55,12 @@ public class Player : MonoBehaviour
     public Transform placeBlock;
     public float checkIncrement = 0.1f;
     public float reach = 8f;
-    
+
+    [SerializeField]
+    private Toolbar toolbar;
+    [SerializeField]
+    private UIController uicontroller;
+
     public byte selectedBlockIndex = 1;
 
     private void Start()
@@ -63,35 +68,44 @@ public class Player : MonoBehaviour
 
         ChunksInView = new List<Vector2Int>();
 
-        Cursor.lockState = CursorLockMode.Locked;        
+        Cursor.lockState = CursorLockMode.Locked;
 
     }
 
     private void FixedUpdate()
     {
 
-        CheckWorldBounds();
-        CalculateVelocity();
-
-        if (jumpRequest)
+        if (!uicontroller.isShow)
         {
 
-            Jump();
+            CheckWorldBounds();
+            CalculateVelocity();
+
+            if (jumpRequest)
+            {
+
+                Jump();
+
+            }
+
+            transform.Rotate(Vector3.up * mouseHorizontal);
+            cam.Rotate(Vector3.right * -mouseVertical);
+            transform.Translate(velocity, Space.World);
 
         }
-
-        transform.Rotate(Vector3.up * mouseHorizontal);
-        cam.Rotate(Vector3.right * -mouseVertical);
-        transform.Translate(velocity, Space.World);
 
     }
 
     private void Update()
     {
 
-        GetPlayerInputs();
+        if (!uicontroller.isShow)
+        {
 
-        placeCursorBlocks();
+            GetPlayerInputs();
+            placeCursorBlocks();
+
+        }
 
         CurrentChunkCoord = world.GetChunkCoord(transform.position);
 
@@ -198,7 +212,7 @@ public class Player : MonoBehaviour
 
             jumpRequest = true;
 
-        }                
+        }
 
         if (highlightBlock.gameObject.activeSelf)
         {
@@ -213,9 +227,15 @@ public class Player : MonoBehaviour
 
             // Place block.
             if (Input.GetMouseButtonDown(1))
-            {
+            {                
 
-                world.EditVoxel(placeBlock.position, selectedBlockIndex);
+                if (toolbar.HasItemInSlot())
+                {
+
+                    world.EditVoxel(placeBlock.position, toolbar.GetSelectedBlockId());                                        
+                    toolbar.TakeBlock(1);
+
+                }
 
             }
 

@@ -6,234 +6,235 @@ using UnityEngine;
 public class World : MonoBehaviour
 {
 
-	[SerializeField]
-	private Player player;
+    [SerializeField]
+    private Player player;
 
-	[SerializeField]
-	private Vector3 spawnPosition;
+    [SerializeField]
+    private Vector3 spawnPosition;
 
-	[SerializeField]
-	private WorldAttributes worldAttributes;
-	[SerializeField]
-	private BlocksAttributes blocksAttributes;
+    [SerializeField]
+    private WorldAttributes worldAttributes;
+    [SerializeField]
+    private BlocksAttributes blocksAttributes;
 
-	public WorldAttributes WorldAttributes { get => worldAttributes; }
+    public WorldAttributes WorldAttributes { get => worldAttributes; }
 
-	public BlocksAttributes BlocksAttributes { get => blocksAttributes; }
+    public BlocksAttributes BlocksAttributes { get => blocksAttributes; }
     public Chunk[,] Chunks { get; private set; }
 
-	public int[,] Bioms;
+    public int[,] Bioms;
 
-	private IWorldGenerator generator;	
+    private IWorldGenerator generator;
 
-	private void Start()
-	{
+    private void Start()
+    {
 
-		Chunks = new Chunk[WorldAttributes.WorldSizeInChunks, WorldAttributes.WorldSizeInChunks];
+        Chunks = new Chunk[WorldAttributes.WorldSizeInChunks, WorldAttributes.WorldSizeInChunks];
 
-		Bioms = new int[WorldAttributes.WorldSizeInBlocks, WorldAttributes.WorldSizeInBlocks];
+        Bioms = new int[WorldAttributes.WorldSizeInBlocks, WorldAttributes.WorldSizeInBlocks];
 
-		generator = new VoronoiPerlinNoiseGenerator();
+        generator = new VoronoiPerlinNoiseGenerator();
 
-		GenerateWorld();		
+        GenerateWorld();
 
-	}
+    }
 
-	private void Update()
-	{
+    private void Update()
+    {
 
-		
 
-	}	
 
-	public void GenerateWorld()
-	{
+    }
 
-		generator.GenerateWorld(this);
+    public void GenerateWorld()
+    {
 
-		player.Spawn(spawnPosition);
+        generator.GenerateWorld(this);
 
-	}
+        player.Spawn(spawnPosition);
 
-	public void CreateChunk(Vector2Int coord)
-	{
+    }
 
-		if (Chunks[coord.x, coord.y] == null) {
+    public void CreateChunk(Vector2Int coord)
+    {
 
-			Chunks[coord.x, coord.y] = new Chunk(new Vector2Int(coord.x, coord.y), this);
+        if (Chunks[coord.x, coord.y] == null)
+        {
 
-		}
-		else
-		{
+            Chunks[coord.x, coord.y] = new Chunk(new Vector2Int(coord.x, coord.y), this);
 
-			Chunks[coord.x, coord.y].Clear();
+        }
+        else
+        {
 
-		}
+            Chunks[coord.x, coord.y].Clear();
 
-	}
+        }
 
-	public bool IsChunkInWorld(Vector2 pos)
-	{
+    }
 
-		if (pos.x < WorldAttributes.WorldSizeInChunks			
-			&& pos.y < WorldAttributes.WorldSizeInChunks && pos.x >= 0 && pos.y >= 0)
-		{
+    public bool IsChunkInWorld(Vector2 pos)
+    {
 
-			return true;
+        if (pos.x < WorldAttributes.WorldSizeInChunks
+            && pos.y < WorldAttributes.WorldSizeInChunks && pos.x >= 0 && pos.y >= 0)
+        {
 
-		}
+            return true;
 
-		return false;
+        }
 
-	}
+        return false;
 
-	public bool IsVoxelInWorld(Vector3 pos)
-	{
+    }
 
-		if (pos.x < WorldAttributes.WorldSizeInBlocks 
-			&& pos.z < WorldAttributes.WorldSizeInBlocks 
-			&& pos.y < WorldAttributes.ChunkHeight && pos.x >= 0 && pos.y >= 0 && pos.z >= 0)
-		{
+    public bool IsVoxelInWorld(Vector3 pos)
+    {
 
-			return true;
+        if (pos.x < WorldAttributes.WorldSizeInBlocks
+            && pos.z < WorldAttributes.WorldSizeInBlocks
+            && pos.y < WorldAttributes.ChunkHeight && pos.x >= 0 && pos.y >= 0 && pos.z >= 0)
+        {
 
-		}
+            return true;
 
-		return false;
+        }
 
-	}
+        return false;
 
-	public bool IsVoxelInWorld(Vector2 pos)
-	{
+    }
 
-		if (pos.x < WorldAttributes.WorldSizeInBlocks && pos.y < WorldAttributes.WorldSizeInBlocks && pos.x >= 0 && pos.y >= 0)
-		{
+    public bool IsVoxelInWorld(Vector2 pos)
+    {
 
-			return true;
+        if (pos.x < WorldAttributes.WorldSizeInBlocks && pos.y < WorldAttributes.WorldSizeInBlocks && pos.x >= 0 && pos.y >= 0)
+        {
 
-		}
+            return true;
 
-		return false;
+        }
 
-	}
+        return false;
 
-	public bool IsVoxelSolid(Vector3 pos)
-	{
+    }
 
-		Vector2Int ChunkCoord = GetChunkCoord(pos);
-		Vector2Int InChunkCoord = GetInChunkCoord(pos);
+    public bool IsVoxelSolid(Vector3 pos)
+    {
 
-		return blocksAttributes.Blocktypes[Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, Mathf.FloorToInt(pos.y), InChunkCoord.y]].isSolid;
+        Vector2Int ChunkCoord = GetChunkCoord(pos);
+        Vector2Int InChunkCoord = GetInChunkCoord(pos);
 
-	}
+        return blocksAttributes.Blocktypes[Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, Mathf.FloorToInt(pos.y), InChunkCoord.y]].isSolid;
 
-	public bool IsVoxelSolid(float x, float y, float z)
-	{
+    }
 
-		int xChunk, zChunk;
-		int xInChunk, zInChunk;
-		
-		if (x >= WorldAttributes.WorldSizeInBlocks && y >= WorldAttributes.ChunkHeight && z >= WorldAttributes.WorldSizeInBlocks && x < 0 && y < 0 && z < 0)
-		{
+    public bool IsVoxelSolid(float x, float y, float z)
+    {
 
-			return true;
+        int xChunk, zChunk;
+        int xInChunk, zInChunk;
 
-		}
+        if (x >= WorldAttributes.WorldSizeInBlocks && y >= WorldAttributes.ChunkHeight && z >= WorldAttributes.WorldSizeInBlocks && x < 0 && y < 0 && z < 0)
+        {
 
-		GetChunkCoord(x, z, out xChunk, out zChunk);
-		GetInChunkCoord(x, z, out xInChunk, out zInChunk);
+            return true;
 
-		return blocksAttributes.Blocktypes[Chunks[xChunk, zChunk].Voxels[xInChunk, Mathf.FloorToInt(y), zInChunk]].isSolid;
+        }
 
-	}
+        GetChunkCoord(x, z, out xChunk, out zChunk);
+        GetInChunkCoord(x, z, out xInChunk, out zInChunk);
 
-	public Vector2Int GetChunkCoord(Vector3 pos)
-	{
+        return blocksAttributes.Blocktypes[Chunks[xChunk, zChunk].Voxels[xInChunk, Mathf.FloorToInt(y), zInChunk]].isSolid;
 
-		int x = Mathf.FloorToInt(pos.x / WorldAttributes.ChunkWidth);
-		int z = Mathf.FloorToInt(pos.z / WorldAttributes.ChunkWidth);
+    }
 
-		return new Vector2Int(x, z);
+    public Vector2Int GetChunkCoord(Vector3 pos)
+    {
 
-	}
+        int x = Mathf.FloorToInt(pos.x / WorldAttributes.ChunkWidth);
+        int z = Mathf.FloorToInt(pos.z / WorldAttributes.ChunkWidth);
 
-	public void GetChunkCoord(float x, float z, out int xChunk, out int zChunk)
-	{
+        return new Vector2Int(x, z);
 
-		xChunk = Mathf.FloorToInt(x / WorldAttributes.ChunkWidth);
-		zChunk = Mathf.FloorToInt(z / WorldAttributes.ChunkWidth);		
+    }
 
-	}
+    public void GetChunkCoord(float x, float z, out int xChunk, out int zChunk)
+    {
 
-	public Vector2Int GetChunkCoord(Vector2 pos)
-	{
+        xChunk = Mathf.FloorToInt(x / WorldAttributes.ChunkWidth);
+        zChunk = Mathf.FloorToInt(z / WorldAttributes.ChunkWidth);
 
-		int _x = Mathf.FloorToInt(pos.x / WorldAttributes.ChunkWidth);
-		int _z = Mathf.FloorToInt(pos.y / WorldAttributes.ChunkWidth);
+    }
 
-		return new Vector2Int(_x, _z);
+    public Vector2Int GetChunkCoord(Vector2 pos)
+    {
 
-	}
+        int _x = Mathf.FloorToInt(pos.x / WorldAttributes.ChunkWidth);
+        int _z = Mathf.FloorToInt(pos.y / WorldAttributes.ChunkWidth);
 
-	public Vector2Int GetInChunkCoord(Vector3 pos)
-	{
+        return new Vector2Int(_x, _z);
 
-		int x = Mathf.FloorToInt(pos.x % WorldAttributes.ChunkWidth);
-		int z = Mathf.FloorToInt(pos.z % WorldAttributes.ChunkWidth);
+    }
 
-		return new Vector2Int(x, z);
+    public Vector2Int GetInChunkCoord(Vector3 pos)
+    {
 
-	}
+        int x = Mathf.FloorToInt(pos.x % WorldAttributes.ChunkWidth);
+        int z = Mathf.FloorToInt(pos.z % WorldAttributes.ChunkWidth);
 
-	public void GetInChunkCoord(float x, float z, out int xInChunk, out int zInChunk)
-	{
+        return new Vector2Int(x, z);
 
-		xInChunk = Mathf.FloorToInt(x % WorldAttributes.ChunkWidth);
-		zInChunk = Mathf.FloorToInt(z % WorldAttributes.ChunkWidth);		
+    }
 
-	}
+    public void GetInChunkCoord(float x, float z, out int xInChunk, out int zInChunk)
+    {
 
-	public Vector2Int GetInChunkCoord(Vector2 pos)
-	{
+        xInChunk = Mathf.FloorToInt(x % WorldAttributes.ChunkWidth);
+        zInChunk = Mathf.FloorToInt(z % WorldAttributes.ChunkWidth);
 
-		int _x = Mathf.FloorToInt(pos.x % WorldAttributes.ChunkWidth);
-		int _z = Mathf.FloorToInt(pos.y % WorldAttributes.ChunkWidth);
+    }
 
-		return new Vector2Int(_x, _z);
+    public Vector2Int GetInChunkCoord(Vector2 pos)
+    {
 
-	}
+        int _x = Mathf.FloorToInt(pos.x % WorldAttributes.ChunkWidth);
+        int _z = Mathf.FloorToInt(pos.y % WorldAttributes.ChunkWidth);
 
-	public void EditVoxel(Vector3 pos, byte newID)
-	{
+        return new Vector2Int(_x, _z);
 
-		if (!IsVoxelInWorld(pos))
-		{
+    }
 
-			return;
+    public void EditVoxel(Vector3 pos, byte newID)
+    {
 
-		}
+        if (!IsVoxelInWorld(pos))
+        {
 
-		Vector2Int ChunkCoord = GetChunkCoord(pos);
+            return;
 
-		Chunks[ChunkCoord.x, ChunkCoord.y].EditVoxel(pos, newID);
+        }
 
-	}
+        Vector2Int ChunkCoord = GetChunkCoord(pos);
 
-	internal void UpdateChunks()
-	{
+        Chunks[ChunkCoord.x, ChunkCoord.y].EditVoxel(pos, newID);
 
-		for (int x = 0; x < WorldAttributes.WorldSizeInChunks; ++x)
-		{
+    }
 
-			for (int z = 0; z < WorldAttributes.WorldSizeInChunks; ++z)
-			{
+    internal void UpdateChunks()
+    {
 
-				Chunks[x, z].Update();
+        for (int x = 0; x < WorldAttributes.WorldSizeInChunks; ++x)
+        {
 
-			}
+            for (int z = 0; z < WorldAttributes.WorldSizeInChunks; ++z)
+            {
 
-		}
+                Chunks[x, z].Update();
 
-	}
+            }
+
+        }
+
+    }
 
 }
