@@ -6,93 +6,96 @@ using UnityEngine;
 public class Toolbar : MonoBehaviour
 {
 
-    [SerializeField]
-    private RectTransform highlight;
+	[SerializeField]
+	private RectTransform highlight;
 
-    [SerializeField]
-    private Player player;
+	[SerializeField]
+	private Player player;
 
-    [SerializeField]
-    private UIItemSlot[] slots;
+	[SerializeField]
+	private UIItemSlot[] slots;
 
-    private int slotIndex = 0;
+	private int slotIndex = 0;
 
-    private void Start()
-    {
+	private void Start()
+	{
 
-        byte index = 1;
+		byte index = 1;
 
-        foreach (UIItemSlot s in slots)
-        {
+		foreach (UIItemSlot s in slots)
+		{
 
-            ItemStack stack = new ItemStack(index, UnityEngine.Random.Range(2, 65));
-            ItemSlot slot = new ItemSlot(s, stack);
-            ++index;
+			ItemStack stack = new ItemStack(index, UnityEngine.Random.Range(2, 65), 64);
 
-        }
+			s.PutStack(stack);
 
-    }
+			++index;
 
-    private void Update()
-    {
+		}
 
-        float scroll = Input.GetAxis("Mouse ScrollWheel");
+	}
 
-        if (scroll != 0)
-        {
+	private void Update()
+	{
 
-            if (scroll > 0)
-            {
+		float scroll = Input.GetAxis("Mouse ScrollWheel");
 
-                --slotIndex;
+		if (scroll != 0)
+		{
 
-            }
-            else
-            {
+			if (scroll > 0)
+			{
 
-                ++slotIndex;
+				--slotIndex;
 
-            }
+			}
+			else
+			{
 
-            if (slotIndex > slots.Length - 1)
-            {
+				++slotIndex;
 
-                slotIndex = 0;
+			}
 
-            }
+			if (slotIndex > slots.Length - 1)
+			{
 
-            if (slotIndex < 0)
-            {
+				slotIndex = 0;
 
-                slotIndex = slots.Length - 1;
+			}
 
-            }
+			if (slotIndex < 0)
+			{
 
-            highlight.position = slots[slotIndex].slotIcon.transform.position;
+				slotIndex = slots.Length - 1;
 
-        }
+			}
+
+			highlight.position = slots[slotIndex].SlotIcon.transform.position;
+
+		}
 
 
-    }
+	}
 
-    internal byte GetSelectedBlockId()
-    {
+	internal byte GetSelectedBlockId()
+	{
 
-        return slots[slotIndex].itemSlot.stack.id;
+		return slots[slotIndex].ID;
 
-    }
+	}
 
-    internal bool HasItemInSlot()
-    {
+	internal bool HasItemInSlot()
+	{
 
-        return slots[slotIndex].HasItem;
+		return slots[slotIndex].HasItem;
 
-    }
+	}
 
-    internal void TakeBlock(int value)
-    {
+	internal void TakeBlock(int value)
+	{
 
-        slots[slotIndex].itemSlot.Take(value);
+		slots[slotIndex].Take(value);
 
-    }
+	}
+
 }

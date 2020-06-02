@@ -6,162 +6,186 @@ using UnityEngine;
 public class UIController : MonoBehaviour
 {
 
-    [SerializeField]
-    private World World;
+	[SerializeField]
+	private World World;
 
-    [SerializeField]
-    private GameObject Menu;
+	[SerializeField]
+	private GameObject Menu;
 
-    [SerializeField]
-    private GameObject Inventory;
+	[SerializeField]
+	private GameObject GameInterface;
 
-    [SerializeField]
-    private GameObject Map;
-    private Map MapScript;
+	[SerializeField]
+	private GameObject Inventory;
 
-    public bool isShow;
+	[SerializeField]
+	private GameObject Map;
+	private Map MapScript;
 
-    public void Awake()
-    {
+	private bool isInUI;
 
-        Menu.SetActive(false);
-        Map.SetActive(false);
+	public bool IsInUI
+	{
 
-        MapScript = Map.GetComponent<Map>();
+		get { return isInUI; }
 
-    }
+		set
+		{
 
-    private void Update()
-    {
+			isInUI = value;
 
-        if (Input.GetKeyDown("m"))
-        {
+			if (isInUI)
+			{
 
-            MapButton();
+				Cursor.lockState = CursorLockMode.None;
 
-        }
+			}
+			else
+			{
 
-        if (Input.GetKeyDown("i"))
-        {
+				Cursor.lockState = CursorLockMode.Locked;
 
-            InventoryButton();
+			}
 
-        }
+		}
 
-        if (Input.GetButtonDown("Cancel"))
-        {
+	}
 
-            Cancel();
+	public void Awake()
+	{
 
-        }
+		Menu.SetActive(false);
+		Map.SetActive(false);
 
-    }
+		MapScript = Map.GetComponent<Map>();
 
-    public void ShowMenu()
-    {
+	}
 
-        isShow = true;
-        Menu.SetActive(true);
+	private void Update()
+	{
 
-    }
+		if (Input.GetKeyDown("m"))
+		{
 
-    public void ShowMap()
-    {
+			MapButton();
 
-        isShow = true;
-        Map.SetActive(true);
+		}
 
-    }
+		if (Input.GetKeyDown("i"))
+		{
 
-    public void ShowInventory()
-    {
+			InventoryButton();
 
-        isShow = true;
-        Inventory.SetActive(true);
+		}
 
-    }
+		if (Input.GetButtonDown("Cancel"))
+		{
 
-    public void Continue()
-    {
+			Cancel();
 
-        Menu.SetActive(false);
-        Map.SetActive(false);
-        isShow = false;
+		}
 
-    }
+	}
 
-    public void Exit()
-    {
+	public void ShowMenu()
+	{
 
-        Application.Quit();
+		IsInUI = true;
+		Menu.SetActive(true);
 
-    }
+	}
 
-    public void Cancel()
-    {
+	public void ShowMap()
+	{
 
-        if (isShow)
-        {
+		IsInUI = true;
+		GameInterface.SetActive(false);
+		Map.SetActive(true);
 
-            Cursor.lockState = CursorLockMode.Locked;
+	}
 
-            Continue();
+	public void ShowInventory()
+	{
 
-        }
-        else
-        {
+		IsInUI = true;
+		GameInterface.SetActive(true);
+		Inventory.SetActive(true);
 
-            Cursor.lockState = CursorLockMode.None;
+	}
 
-            ShowMenu();
+	public void Continue()
+	{
 
-        }
+		Menu.SetActive(false);
+		Map.SetActive(false);
+		Inventory.SetActive(false);
+		GameInterface.SetActive(true);
+		IsInUI = false;
 
-    }
+	}
 
-    public void MapButton()
-    {
+	public void Exit()
+	{
 
-        if (!isShow)
-        {
+		Application.Quit();
 
-            Cursor.lockState = CursorLockMode.None;
+	}
 
-            ShowMap();
+	public void Cancel()
+	{
 
-        }
+		if (IsInUI)
+		{
 
-    }
+			Continue();
 
-    private void InventoryButton()
-    {
+		}
+		else
+		{
 
-        if (isShow)
-        {
+			ShowMenu();
 
-            Cursor.lockState = CursorLockMode.Locked;
+		}
 
-            Continue();
+	}
 
-        }
-        else
-        {
+	public void MapButton()
+	{
 
-            Cursor.lockState = CursorLockMode.None;
+		if (!IsInUI)
+		{
 
-            ShowInventory();
+			ShowMap();
 
-        }
+		}
 
-    }
+	}
 
-    public void GenerateWorld()
-    {
+	private void InventoryButton()
+	{
 
-        World.GenerateWorld();
+		if (IsInUI)
+		{
 
-        MapScript.CreateMap();
+			Continue();
 
-    }
+		}
+		else
+		{
+
+			ShowInventory();
+
+		}
+
+	}
+
+	public void GenerateWorld()
+	{
+
+		World.GenerateWorld();
+
+		MapScript.CreateMap();
+
+	}
 
 }

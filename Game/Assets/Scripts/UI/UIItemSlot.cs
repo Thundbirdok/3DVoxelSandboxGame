@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -7,177 +8,306 @@ using UnityEngine.UI;
 public class UIItemSlot : MonoBehaviour
 {
 
-    public bool isLinked = false;
-    public ItemSlot itemSlot;
-    public Image slotImage;
-    public Image slotIcon;
+	private ItemSlot itemSlot;
+	[SerializeField]
+	private Image slotImage;
+	[SerializeField]
+	private Image slotIcon;
+	[SerializeField]
+	private TextMeshProUGUI slotAmount;
 
-    [SerializeField]
-    private TextMeshProUGUI slotAmount;
+	[SerializeField]
+	private World world;
 
-    World world;
+	public bool IsCreative;
 
-    private void Awake()
-    {
+	public bool HasItem
+	{
 
-        world = GameObject.Find("World").GetComponent<World>();
+		get
+		{
 
-    }
+			if (itemSlot == null)
+			{
 
-    public bool HasItem
-    {
+				return false;
 
-        get
-        {
+			}
+			else
+			{
 
-            if (itemSlot == null)
-                return false;
-            else
-                return itemSlot.HasItem;
+				return itemSlot.HasItem;
 
-        }
+			}
 
-    }
+		}
 
-    public void Link(ItemSlot _itemSlot)
-    {
+	}
 
-        itemSlot = _itemSlot;
-        isLinked = true;
-        itemSlot.LinkUISlot(this);
-        UpdateSlot();
+	public int Amount
+	{
 
-    }
+		get => !HasItem ? 0 : itemSlot.Amount;
 
-    public void UnLink()
-    {
+	}
 
-        itemSlot.unLinkUISlot();
-        itemSlot = null;
-        UpdateSlot();
+	public byte ID
+	{
 
-    }
+		get => !HasItem ? (byte)0 : itemSlot.ID;
 
-    public void UpdateSlot()
-    {
+	}
 
-        if (itemSlot != null && itemSlot.HasItem)
-        {
+	public int Size
+	{
 
-            slotIcon.sprite = world.BlocksAttributes.Blocktypes[itemSlot.stack.id].Icon;
-            slotAmount.text = itemSlot.stack.amount.ToString();
-            slotIcon.enabled = true;
-            slotAmount.enabled = true;
+		get => !HasItem ? 0 : itemSlot.Size;
 
-        }
-        else
-            Clear();
+	}    
 
-    }
+	public Image SlotIcon { get => slotIcon; }
 
-    public void Clear()
-    {
+	public UIItemSlot()
+	{
 
-        slotIcon.sprite = null;
-        slotAmount.text = "";
-        slotIcon.enabled = false;
-        slotAmount.enabled = false;
+		itemSlot = new ItemSlot();
 
-    }
+	}
 
-    private void OnDestroy()
-    {
+	public ItemStack GetStack()
+	{
 
-        if (itemSlot != null)
-            itemSlot.unLinkUISlot();
+		return new ItemStack(ID, Amount, Size);
 
-    }
+	}
+
+	public int Take(int amt)
+	{
+
+		int value = itemSlot.Take(amt);
+
+		UpdateSlot();
+
+		return value;
+
+	}
+
+	public ItemStack TakeStack()
+	{
+
+		ItemStack stack = itemSlot.TakeStack();
+
+		UpdateSlot();
+
+		return stack;
+
+	}
+
+	public int Put(int amt)
+	{
+
+		int value = itemSlot.Put(amt);
+
+		UpdateSlot();
+
+		return value;
+
+	}
+
+	public void PutStack(ItemStack _stack)
+	{
+
+		itemSlot.PutStack(_stack);
+
+		UpdateSlot();
+
+	}
+
+	public void UpdateSlot()
+	{
+
+		if (itemSlot != null && itemSlot.HasItem)
+		{
+
+			SlotIcon.sprite = world.BlocksAttributes.Blocktypes[itemSlot.ID].Icon;
+			slotAmount.text = itemSlot.Amount.ToString();
+			SlotIcon.enabled = true;
+			slotAmount.enabled = true;
+
+		}
+		else
+		{
+
+			Clear();
+
+		}
+
+	}
+
+	public void Clear()
+	{
+
+		SlotIcon.sprite = null;
+		slotAmount.text = "";
+		SlotIcon.enabled = false;
+		slotAmount.enabled = false;
+
+	}    
+
+	private void OnDestroy()
+	{
+
+		if (itemSlot != null)
+		{            
+
+			itemSlot = null;
+
+		}
+
+	}
 
 }
 
 public class ItemSlot
 {
 
-    public ItemStack stack = null;
-    private UIItemSlot uiItemSlot = null;
+	private ItemStack stack = null;         
 
-    public ItemSlot(UIItemSlot _uiItemSlot)
-    {
+	public bool HasItem
+	{
 
-        stack = null;
-        uiItemSlot = _uiItemSlot;
-        uiItemSlot.Link(this);
+		get
+		{
 
-    }
+			if (stack != null)
+			{
 
-    public ItemSlot(UIItemSlot _uiItemSlot, ItemStack _stack)
-    {
+				return true;
 
-        stack = _stack;
-        uiItemSlot = _uiItemSlot;
-        uiItemSlot.Link(this);
+			}
+			else
+			{
 
-    }
+				return false;
 
-    public void LinkUISlot(UIItemSlot uiSlot)
-    {
+			}
 
-        uiItemSlot = uiSlot;
+		}
 
-    }
+	}
 
-    public void unLinkUISlot()
-    {
+	public int Amount
+	{
 
-        uiItemSlot = null;
+		get => !HasItem ? 0 : stack.Amount;
 
-    }
+	}
 
-    public void EmptySlot()
-    {
+	public byte ID
+	{
 
-        stack = null;
-        if (uiItemSlot != null)
-            uiItemSlot.UpdateSlot();
+		get => !HasItem ? (byte)0 : stack.ID;
 
-    }
+	}
 
-    public int Take(int amt)
-    {
+	public int Size
+	{
 
-        if (amt > stack.amount)
-        {
-            int _amt = stack.amount;
-            EmptySlot();
-            return _amt;
-        }
-        else if (amt < stack.amount)
-        {
-            stack.amount -= amt;
-            uiItemSlot.UpdateSlot();
-            return amt;
-        }
-        else
-        {
-            EmptySlot();
-            return amt;
-        }
+		get => !HasItem ? 0 : stack.Size;
 
-    }
+	}    
 
-    public bool HasItem
-    {
+	public ItemSlot()
+	{
 
-        get
-        {
+		stack = null;
 
-            if (stack != null)
-                return true;
-            else
-                return false;
+	}
 
-        }
+	public void EmptySlot()
+	{
 
-    }
+		stack.Amount = 1;
+
+		stack = null;
+
+	}
+
+	public int Take(int amt)
+	{
+
+		if (amt > stack.Amount)
+		{
+
+			int _amt = stack.Amount;
+
+			EmptySlot();
+
+			return _amt;
+
+		}
+
+		if (amt < stack.Amount)
+		{
+
+			stack.Amount -= amt;            
+
+			return amt;
+
+		}
+
+		EmptySlot();
+
+		return amt;
+
+	}
+
+	public ItemStack TakeStack()
+	{
+
+		ItemStack handOver = new ItemStack(stack.ID, stack.Amount, stack.Size);
+
+		EmptySlot();
+
+		return handOver;
+
+	}
+
+	public int Put(int amt)
+	{
+		if (stack.Size - stack.Amount >= amt)
+		{
+
+			stack.Amount += amt;            
+
+			return amt;
+
+		}
+		else
+		{
+
+			int value = stack.Size - stack.Amount;
+
+			stack.Amount += value;            
+
+			return value;
+
+		}
+
+	}
+
+	public void PutStack(ItemStack _stack)
+	{
+
+		stack = _stack;        
+
+	}
+
+	~ItemSlot()
+	{
+
+		stack = null;
+
+	}
 
 }

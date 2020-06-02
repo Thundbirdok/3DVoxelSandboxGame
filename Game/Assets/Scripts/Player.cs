@@ -8,549 +8,549 @@ using UnityEngine.UI;
 public class Player : MonoBehaviour
 {
 
-    [SerializeField]
-    private Transform cam;
-    [SerializeField]
-    private World world;
+	[SerializeField]
+	private Transform cam;
+	[SerializeField]
+	private World world;
 
-    [SerializeField]
-    private float walkSpeed;
-    [SerializeField]
-    private float sprintSpeed;
-    [SerializeField]
-    private float jumpForce;
-    [SerializeField]
-    private float gravity;
+	[SerializeField]
+	private float walkSpeed;
+	[SerializeField]
+	private float sprintSpeed;
+	[SerializeField]
+	private float jumpForce;
+	[SerializeField]
+	private float gravity;
 
-    [SerializeField]
-    private float playerWidth;
+	[SerializeField]
+	private float playerWidth;
 
-    [SerializeField]
-    private int ViewDistanceInChunks;
+	[SerializeField]
+	private int ViewDistanceInChunks;
 
-    private bool isAlive;
+	private bool isAlive;
 
-    //Movement
-    private bool isGrounded;
-    private bool isSprinting;
-    private bool jumpRequest;
+	//Movement
+	private bool isGrounded;
+	private bool isSprinting;
+	private bool jumpRequest;
 
-    private float horizontal;
-    private float vertical;
-    private float mouseHorizontal;
-    private float mouseVertical;
-    private Vector3 velocity;
-    private float verticalMomentum = 0;
+	private float horizontal;
+	private float vertical;
+	private float mouseHorizontal;
+	private float mouseVertical;
+	private Vector3 velocity;
+	private float verticalMomentum = 0;
 
-    /// <summary>
-    /// Chunks that in player view and active
-    /// </summary>
-    private List<Vector2Int> ChunksInView;
+	/// <summary>
+	/// Chunks that in player view and active
+	/// </summary>
+	private List<Vector2Int> ChunksInView;
 
-    private Vector2Int CurrentChunkCoord;
-    private Vector2Int PreviousChunkCoord;
+	private Vector2Int CurrentChunkCoord;
+	private Vector2Int PreviousChunkCoord;
 
-    //Create and Destroy
-    public Transform highlightBlock;
-    public Transform placeBlock;
-    public float checkIncrement = 0.1f;
-    public float reach = 8f;
+	//Create and Destroy
+	public Transform highlightBlock;
+	public Transform placeBlock;
+	public float checkIncrement = 0.1f;
+	public float reach = 8f;
 
-    [SerializeField]
-    private Toolbar toolbar;
-    [SerializeField]
-    private UIController uicontroller;
+	[SerializeField]
+	private Toolbar toolbar;
+	[SerializeField]
+	private UIController uicontroller;
 
-    public byte selectedBlockIndex = 1;
+	public byte selectedBlockIndex = 1;
 
-    private void Start()
-    {
+	private void Start()
+	{
 
-        ChunksInView = new List<Vector2Int>();
+		ChunksInView = new List<Vector2Int>();
 
-        Cursor.lockState = CursorLockMode.Locked;
+		Cursor.lockState = CursorLockMode.Locked;
 
-    }
+	}
 
-    private void FixedUpdate()
-    {
+	private void FixedUpdate()
+	{
 
-        if (!uicontroller.isShow)
-        {
+		if (!uicontroller.IsInUI)
+		{
 
-            CheckWorldBounds();
-            CalculateVelocity();
+			CheckWorldBounds();
+			CalculateVelocity();
 
-            if (jumpRequest)
-            {
+			if (jumpRequest)
+			{
 
-                Jump();
+				Jump();
 
-            }
+			}
 
-            transform.Rotate(Vector3.up * mouseHorizontal);
-            cam.Rotate(Vector3.right * -mouseVertical);
-            transform.Translate(velocity, Space.World);
+			transform.Rotate(Vector3.up * mouseHorizontal);
+			cam.Rotate(Vector3.right * -mouseVertical);
+			transform.Translate(velocity, Space.World);
 
-        }
+		}
 
-    }
+	}
 
-    private void Update()
-    {
+	private void Update()
+	{
 
-        if (!uicontroller.isShow)
-        {
+		if (!uicontroller.IsInUI)
+		{
 
-            GetPlayerInputs();
-            placeCursorBlocks();
+			GetPlayerInputs();
+			placeCursorBlocks();
 
-        }
+		}
 
-        CurrentChunkCoord = world.GetChunkCoord(transform.position);
+		CurrentChunkCoord = world.GetChunkCoord(transform.position);
 
-        // Only update the chunks if the player has moved from the chunk they were previously on.
-        if (!CurrentChunkCoord.Equals(PreviousChunkCoord))
-        {
+		// Only update the chunks if the player has moved from the chunk they were previously on.
+		if (!CurrentChunkCoord.Equals(PreviousChunkCoord))
+		{
 
-            CheckChunksInViewDistance();
+			CheckChunksInViewDistance();
 
-        }
+		}
 
-    }
+	}
 
-    void Jump()
-    {
+	void Jump()
+	{
 
-        verticalMomentum = jumpForce;
-        isGrounded = false;
-        jumpRequest = false;
+		verticalMomentum = jumpForce;
+		isGrounded = false;
+		jumpRequest = false;
 
-    }
+	}
 
-    private void CalculateVelocity()
-    {
+	private void CalculateVelocity()
+	{
 
-        // Affect vertical momentum with gravity.
-        if (verticalMomentum > -gravity)
-        {
+		// Affect vertical momentum with gravity.
+		if (verticalMomentum > -gravity)
+		{
 
-            verticalMomentum += Time.fixedDeltaTime * -gravity;
+			verticalMomentum += Time.fixedDeltaTime * -gravity;
 
-        }
+		}
 
-        // if we're sprinting, use the sprint multiplier.
-        if (isSprinting)
-        {
+		// if we're sprinting, use the sprint multiplier.
+		if (isSprinting)
+		{
 
-            velocity = ((transform.forward * vertical) + (transform.right * horizontal)) * Time.fixedDeltaTime * sprintSpeed;
+			velocity = ((transform.forward * vertical) + (transform.right * horizontal)) * Time.fixedDeltaTime * sprintSpeed;
 
-        }
-        else
-        {
+		}
+		else
+		{
 
-            velocity = ((transform.forward * vertical) + (transform.right * horizontal)) * Time.fixedDeltaTime * walkSpeed;
+			velocity = ((transform.forward * vertical) + (transform.right * horizontal)) * Time.fixedDeltaTime * walkSpeed;
 
-        }
+		}
 
-        // Apply vertical momentum (falling/jumping).
-        velocity += Vector3.up * verticalMomentum * Time.fixedDeltaTime;
+		// Apply vertical momentum (falling/jumping).
+		velocity += Vector3.up * verticalMomentum * Time.fixedDeltaTime;
 
-        if ((velocity.z > 0 && front) || (velocity.z < 0 && back))
-        {
+		if ((velocity.z > 0 && front) || (velocity.z < 0 && back))
+		{
 
-            velocity.z = 0;
+			velocity.z = 0;
 
-        }
+		}
 
-        if ((velocity.x > 0 && right) || (velocity.x < 0 && left))
-        {
+		if ((velocity.x > 0 && right) || (velocity.x < 0 && left))
+		{
 
-            velocity.x = 0;
+			velocity.x = 0;
 
-        }
+		}
 
-        if (velocity.y < 0)
-        {
+		if (velocity.y < 0)
+		{
 
-            velocity.y = CheckDownSpeed(velocity.y);
+			velocity.y = CheckDownSpeed(velocity.y);
 
-        }
-        else if (velocity.y > 0)
-        {
+		}
+		else if (velocity.y > 0)
+		{
 
-            velocity.y = CheckUpSpeed(velocity.y);
+			velocity.y = CheckUpSpeed(velocity.y);
 
-        }
+		}
 
-    }
+	}
 
-    private void GetPlayerInputs()
-    {
+	private void GetPlayerInputs()
+	{
 
-        horizontal = Input.GetAxis("Horizontal");
-        vertical = Input.GetAxis("Vertical");
-        mouseHorizontal = Input.GetAxis("Mouse X");
-        mouseVertical = Input.GetAxis("Mouse Y");
+		horizontal = Input.GetAxis("Horizontal");
+		vertical = Input.GetAxis("Vertical");
+		mouseHorizontal = Input.GetAxis("Mouse X");
+		mouseVertical = Input.GetAxis("Mouse Y");
 
-        if (Input.GetButtonDown("Sprint") && isGrounded)
-        {
+		if (Input.GetButtonDown("Sprint") && isGrounded)
+		{
 
-            isSprinting = true;
+			isSprinting = true;
 
-        }
+		}
 
-        if (Input.GetButtonUp("Sprint") && isGrounded)
-        {
+		if (Input.GetButtonUp("Sprint") && isGrounded)
+		{
 
-            isSprinting = false;
+			isSprinting = false;
 
-        }
+		}
 
-        if (isGrounded && Input.GetButtonDown("Jump"))
-        {
+		if (isGrounded && Input.GetButtonDown("Jump"))
+		{
 
-            jumpRequest = true;
+			jumpRequest = true;
 
-        }
+		}
 
-        if (highlightBlock.gameObject.activeSelf)
-        {
+		if (highlightBlock.gameObject.activeSelf)
+		{
 
-            // Destroy block.
-            if (Input.GetMouseButtonDown(0))
-            {
+			// Destroy block.
+			if (Input.GetMouseButtonDown(0))
+			{
 
-                world.EditVoxel(highlightBlock.position, 0);
+				world.EditVoxel(highlightBlock.position, 0);
 
-            }
+			}
 
-            // Place block.
-            if (Input.GetMouseButtonDown(1))
-            {                
+			// Place block.
+			if (Input.GetMouseButtonDown(1))
+			{                
 
-                if (toolbar.HasItemInSlot())
-                {
+				if (toolbar.HasItemInSlot())
+				{
 
-                    world.EditVoxel(placeBlock.position, toolbar.GetSelectedBlockId());                                        
-                    toolbar.TakeBlock(1);
+					world.EditVoxel(placeBlock.position, toolbar.GetSelectedBlockId());                                        
+					toolbar.TakeBlock(1);
 
-                }
+				}
 
-            }
+			}
 
-        }
+		}
 
-    }
+	}
 
-    private void placeCursorBlocks()
-    {
+	private void placeCursorBlocks()
+	{
 
-        float step = checkIncrement;
-        Vector3 lastPos = new Vector3();
+		float step = checkIncrement;
+		Vector3 lastPos = new Vector3();
 
-        while (step < reach)
-        {
+		while (step < reach)
+		{
 
-            Vector3 pos = cam.position + (cam.forward * step);
+			Vector3 pos = cam.position + (cam.forward * step);
 
-            if (world.IsVoxelSolid(pos))
-            {
+			if (world.IsVoxelSolid(pos))
+			{
 
-                highlightBlock.position = Vector3Int.FloorToInt(pos);
-                placeBlock.position = lastPos;
+				highlightBlock.position = Vector3Int.FloorToInt(pos);
+				placeBlock.position = lastPos;
 
-                highlightBlock.gameObject.SetActive(true);
-                placeBlock.gameObject.SetActive(true);
+				highlightBlock.gameObject.SetActive(true);
+				placeBlock.gameObject.SetActive(true);
 
-                return;
+				return;
 
-            }
+			}
 
-            lastPos = new Vector3(Mathf.FloorToInt(pos.x), Mathf.FloorToInt(pos.y), Mathf.FloorToInt(pos.z));
+			lastPos = new Vector3(Mathf.FloorToInt(pos.x), Mathf.FloorToInt(pos.y), Mathf.FloorToInt(pos.z));
 
-            step += checkIncrement;
+			step += checkIncrement;
 
-        }
+		}
 
-        highlightBlock.gameObject.SetActive(false);
-        placeBlock.gameObject.SetActive(false);
+		highlightBlock.gameObject.SetActive(false);
+		placeBlock.gameObject.SetActive(false);
 
-    }
+	}
 
-    private float CheckDownSpeed(float downSpeed)
-    {
+	private float CheckDownSpeed(float downSpeed)
+	{
 
-        if (
-            world.IsVoxelSolid(transform.position.x - playerWidth, transform.position.y + downSpeed, transform.position.z - playerWidth) ||
-            world.IsVoxelSolid(transform.position.x + playerWidth, transform.position.y + downSpeed, transform.position.z - playerWidth) ||
-            world.IsVoxelSolid(transform.position.x + playerWidth, transform.position.y + downSpeed, transform.position.z + playerWidth) ||
-            world.IsVoxelSolid(transform.position.x - playerWidth, transform.position.y + downSpeed, transform.position.z + playerWidth)
-           )
-        {
+		if (
+			world.IsVoxelSolid(transform.position.x - playerWidth, transform.position.y + downSpeed, transform.position.z - playerWidth) ||
+			world.IsVoxelSolid(transform.position.x + playerWidth, transform.position.y + downSpeed, transform.position.z - playerWidth) ||
+			world.IsVoxelSolid(transform.position.x + playerWidth, transform.position.y + downSpeed, transform.position.z + playerWidth) ||
+			world.IsVoxelSolid(transform.position.x - playerWidth, transform.position.y + downSpeed, transform.position.z + playerWidth)
+		   )
+		{
 
-            isGrounded = true;
+			isGrounded = true;
 
-            return 0;
+			return 0;
 
-        }
-        else
-        {
+		}
+		else
+		{
 
-            isGrounded = false;
+			isGrounded = false;
 
-            return downSpeed;
+			return downSpeed;
 
-        }
+		}
 
-    }
+	}
 
-    private float CheckUpSpeed(float upSpeed)
-    {
+	private float CheckUpSpeed(float upSpeed)
+	{
 
-        if (
-            world.IsVoxelSolid(transform.position.x - playerWidth, transform.position.y + 1.8f + upSpeed, transform.position.z - playerWidth) ||
-            world.IsVoxelSolid(transform.position.x + playerWidth, transform.position.y + 1.8f + upSpeed, transform.position.z - playerWidth) ||
-            world.IsVoxelSolid(transform.position.x + playerWidth, transform.position.y + 1.8f + upSpeed, transform.position.z + playerWidth) ||
-            world.IsVoxelSolid(transform.position.x - playerWidth, transform.position.y + 1.8f + upSpeed, transform.position.z + playerWidth)
-           )
-        {
+		if (
+			world.IsVoxelSolid(transform.position.x - playerWidth, transform.position.y + 1.8f + upSpeed, transform.position.z - playerWidth) ||
+			world.IsVoxelSolid(transform.position.x + playerWidth, transform.position.y + 1.8f + upSpeed, transform.position.z - playerWidth) ||
+			world.IsVoxelSolid(transform.position.x + playerWidth, transform.position.y + 1.8f + upSpeed, transform.position.z + playerWidth) ||
+			world.IsVoxelSolid(transform.position.x - playerWidth, transform.position.y + 1.8f + upSpeed, transform.position.z + playerWidth)
+		   )
+		{
 
-            return 0;
+			return 0;
 
-        }
-        else
-        {
+		}
+		else
+		{
 
-            return upSpeed;
+			return upSpeed;
 
-        }
+		}
 
-    }
+	}
 
-    public bool front
-    {
+	public bool front
+	{
 
-        get
-        {
-            if (
-                world.IsVoxelSolid(transform.position.x, transform.position.y, transform.position.z + playerWidth) ||
-                world.IsVoxelSolid(transform.position.x, transform.position.y + 1f, transform.position.z + playerWidth)
-                )
-            {
+		get
+		{
+			if (
+				world.IsVoxelSolid(transform.position.x, transform.position.y, transform.position.z + playerWidth) ||
+				world.IsVoxelSolid(transform.position.x, transform.position.y + 1f, transform.position.z + playerWidth)
+				)
+			{
 
-                return true;
+				return true;
 
-            }
-            else
-            {
+			}
+			else
+			{
 
-                return false;
+				return false;
 
-            }
-        }
+			}
+		}
 
-    }
+	}
 
-    public bool back
-    {
+	public bool back
+	{
 
-        get
-        {
-            if (
-                world.IsVoxelSolid(transform.position.x, transform.position.y, transform.position.z - playerWidth) ||
-                world.IsVoxelSolid(transform.position.x, transform.position.y + 1f, transform.position.z - playerWidth)
-                )
-            {
+		get
+		{
+			if (
+				world.IsVoxelSolid(transform.position.x, transform.position.y, transform.position.z - playerWidth) ||
+				world.IsVoxelSolid(transform.position.x, transform.position.y + 1f, transform.position.z - playerWidth)
+				)
+			{
 
-                return true;
+				return true;
 
-            }
-            else
-            {
+			}
+			else
+			{
 
-                return false;
+				return false;
 
-            }
+			}
 
-        }
+		}
 
-    }
+	}
 
-    public bool left
-    {
+	public bool left
+	{
 
-        get
-        {
-            if (
-                world.IsVoxelSolid(transform.position.x - playerWidth, transform.position.y, transform.position.z) ||
-                world.IsVoxelSolid(transform.position.x - playerWidth, transform.position.y + 1f, transform.position.z)
-                )
-            {
+		get
+		{
+			if (
+				world.IsVoxelSolid(transform.position.x - playerWidth, transform.position.y, transform.position.z) ||
+				world.IsVoxelSolid(transform.position.x - playerWidth, transform.position.y + 1f, transform.position.z)
+				)
+			{
 
-                return true;
+				return true;
 
-            }
-            else
-            {
+			}
+			else
+			{
 
-                return false;
+				return false;
 
-            }
+			}
 
-        }
+		}
 
-    }
+	}
 
-    public bool right
-    {
+	public bool right
+	{
 
-        get
-        {
-            if (
-                world.IsVoxelSolid(transform.position.x + playerWidth, transform.position.y, transform.position.z) ||
-                world.IsVoxelSolid(transform.position.x + playerWidth, transform.position.y + 1f, transform.position.z)
-                )
-            {
+		get
+		{
+			if (
+				world.IsVoxelSolid(transform.position.x + playerWidth, transform.position.y, transform.position.z) ||
+				world.IsVoxelSolid(transform.position.x + playerWidth, transform.position.y + 1f, transform.position.z)
+				)
+			{
 
-                return true;
+				return true;
 
-            }
-            else
-            {
+			}
+			else
+			{
 
-                return false;
+				return false;
 
-            }
+			}
 
-        }
+		}
 
-    }
+	}
 
-    public void Spawn(Vector3 pos)
-    {
+	public void Spawn(Vector3 pos)
+	{
 
-        transform.position = pos;
+		transform.position = pos;
 
-        isAlive = true;
+		isAlive = true;
 
-        CheckChunksInViewDistance();
+		CheckChunksInViewDistance();
 
-    }
+	}
 
-    private void CheckWorldBounds()
-    {
+	private void CheckWorldBounds()
+	{
 
-        if (transform.position.x <= 1)
-        {
+		if (transform.position.x <= 1)
+		{
 
-            transform.position += new Vector3(1, 0, 0);
+			transform.position += new Vector3(1, 0, 0);
 
-        }
-        else if (transform.position.x >= world.WorldAttributes.WorldSizeInBlocks - 1)
-        {
+		}
+		else if (transform.position.x >= world.WorldAttributes.WorldSizeInBlocks - 1)
+		{
 
-            transform.position += new Vector3(-1, 0, 0);
+			transform.position += new Vector3(-1, 0, 0);
 
-        }
+		}
 
-        if (transform.position.z <= 1)
-        {
+		if (transform.position.z <= 1)
+		{
 
-            transform.position += new Vector3(0, 0, 1);
+			transform.position += new Vector3(0, 0, 1);
 
-        }
-        else if (transform.position.z >= world.WorldAttributes.WorldSizeInBlocks - 1)
-        {
+		}
+		else if (transform.position.z >= world.WorldAttributes.WorldSizeInBlocks - 1)
+		{
 
-            transform.position += new Vector3(0, 0, -1);
+			transform.position += new Vector3(0, 0, -1);
 
-        }
+		}
 
-    }
+	}
 
-    void CheckChunksInViewDistance()
-    {
+	void CheckChunksInViewDistance()
+	{
 
-        if (!isAlive)
-        {
+		if (!isAlive)
+		{
 
-            return;
+			return;
 
-        }
+		}
 
-        PreviousChunkCoord = CurrentChunkCoord;
+		PreviousChunkCoord = CurrentChunkCoord;
 
-        List<Vector2Int> previouslyActiveChunks = new List<Vector2Int>(ChunksInView);
+		List<Vector2Int> previouslyActiveChunks = new List<Vector2Int>(ChunksInView);
 
-        // Loop through all chunks currently within view distance of the player.
-        for (int x = CurrentChunkCoord.x - ViewDistanceInChunks; x <= CurrentChunkCoord.x + ViewDistanceInChunks; ++x)
-        {
+		// Loop through all chunks currently within view distance of the player.
+		for (int x = CurrentChunkCoord.x - ViewDistanceInChunks; x <= CurrentChunkCoord.x + ViewDistanceInChunks; ++x)
+		{
 
-            for (int z = CurrentChunkCoord.y - ViewDistanceInChunks; z <= CurrentChunkCoord.y + ViewDistanceInChunks; ++z)
-            {
+			for (int z = CurrentChunkCoord.y - ViewDistanceInChunks; z <= CurrentChunkCoord.y + ViewDistanceInChunks; ++z)
+			{
 
-                Vector2Int chunkCoord = new Vector2Int(x, z);
+				Vector2Int chunkCoord = new Vector2Int(x, z);
 
-                // If the current chunk is in the world add in view
-                if (world.IsChunkInWorld(chunkCoord))
-                {
+				// If the current chunk is in the world add in view
+				if (world.IsChunkInWorld(chunkCoord))
+				{
 
-                    world.Chunks[x, z].isActive = true;
+					world.Chunks[x, z].isActive = true;
 
-                    ChunksInView.Add(chunkCoord);
+					ChunksInView.Add(chunkCoord);
 
-                }
+				}
 
-                // Check through previously active chunks to see if this chunk is there. If it is, remove it from the list.
-                for (int i = 0; i < previouslyActiveChunks.Count;)
-                {
+				// Check through previously active chunks to see if this chunk is there. If it is, remove it from the list.
+				for (int i = 0; i < previouslyActiveChunks.Count;)
+				{
 
-                    if (previouslyActiveChunks[i].Equals(chunkCoord))
-                    {
+					if (previouslyActiveChunks[i].Equals(chunkCoord))
+					{
 
-                        previouslyActiveChunks.RemoveAt(i);
+						previouslyActiveChunks.RemoveAt(i);
 
-                    }
-                    else
-                    {
+					}
+					else
+					{
 
-                        ++i;
+						++i;
 
-                    }
+					}
 
-                }
+				}
 
-            }
+			}
 
-        }
+		}
 
-        // Any chunks left in the previousActiveChunks list are no longer in the player's view distance, so loop through and disable them.
-        foreach (Vector2Int chunk in previouslyActiveChunks)
-        {
+		// Any chunks left in the previousActiveChunks list are no longer in the player's view distance, so loop through and disable them.
+		foreach (Vector2Int chunk in previouslyActiveChunks)
+		{
 
-            world.Chunks[chunk.x, chunk.y].isActive = false;
+			world.Chunks[chunk.x, chunk.y].isActive = false;
 
-            for (int i = 0; i < ChunksInView.Count;)
-            {
+			for (int i = 0; i < ChunksInView.Count;)
+			{
 
-                if (world.Chunks[chunk.x, chunk.y].Equals(ChunksInView[i]))
-                {
+				if (world.Chunks[chunk.x, chunk.y].Equals(ChunksInView[i]))
+				{
 
-                    ChunksInView.RemoveAt(i);
+					ChunksInView.RemoveAt(i);
 
-                }
-                else
-                {
+				}
+				else
+				{
 
-                    ++i;
+					++i;
 
-                }
+				}
 
-            }
+			}
 
-        }
+		}
 
-    }
+	}
 
 }
