@@ -10,9 +10,6 @@ public class Toolbar : MonoBehaviour
 	private RectTransform highlight;
 
 	[SerializeField]
-	private Player player;
-
-	[SerializeField]
 	private UIItemSlot[] slots;
 
 	private int slotIndex = 0;

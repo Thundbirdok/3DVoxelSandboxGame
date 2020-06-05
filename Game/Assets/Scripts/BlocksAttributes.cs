@@ -6,72 +6,93 @@ using UnityEngine;
 public class BlocksAttributes : ScriptableObject
 {
 
-	[SerializeField]
-	private Material material;
-	[SerializeField]
-	private BlockType[] blocktypes;
+    [SerializeField]
+    private Material material;
+    [SerializeField]
+    private BlockType[] blocktypes;
 
-	public Material Material { get => material; }
+    public Material Material { get => material; }
 
-	[SerializeField]
-	private int textureAtlasSizeInBlocks;
+    [SerializeField]
+    private int textureAtlasSizeInBlocks;
 
-	public int TextureAtlasSizeInBlocks { get => textureAtlasSizeInBlocks; }
+    public int TextureAtlasSizeInBlocks { get => textureAtlasSizeInBlocks; }
 
-	public float NormalizedBlockTextureSize
-	{
+    public float NormalizedBlockTextureSize
+    {
 
-		get { return 1f / (float)textureAtlasSizeInBlocks; }
+        get { return 1f / (float)textureAtlasSizeInBlocks; }
 
-	}
+    }
 
-	public BlockType[] Blocktypes { get => blocktypes; }
+    public BlockType[] Blocktypes { get => blocktypes; }
 }
 
 [System.Serializable]
 public class BlockType
 {
 
-	public string blockName;
-	public bool isSolid;
-	public bool isLiquid;
+    [SerializeField]
+    private string blockName;
 
-	public Sprite Icon;
+    [SerializeField]
+    private bool isSolid;
+    [SerializeField]
+    private bool isLiquid;
 
-	[Header("Texture Values")]
-	public int backFaceTexture;
-	public int frontFaceTexture;
-	public int topFaceTexture;
-	public int bottomFaceTexture;
-	public int leftFaceTexture;
-	public int rightFaceTexture;
+    [SerializeField]
+    private Sprite icon;
 
-	// Back, Front, Top, Bottom, Left, Right
+    [Header("Texture Values")]
+    [SerializeField]
+    private int backFaceTexture;
+    [SerializeField]
+    private int frontFaceTexture;
+    [SerializeField]
+    private int topFaceTexture;
+    [SerializeField]
+    private int bottomFaceTexture;
+    [SerializeField]
+    private int leftFaceTexture;
+    [SerializeField]
+    private int rightFaceTexture;
 
-	public int GetTextureID(int faceIndex)
-	{
+    public string BlockName { get => blockName; }
+    public bool IsSolid { get => isSolid; }
+    public bool IsLiquid { get => isLiquid; }
+    public Sprite Icon { get => icon; }
+    public int BackFaceTexture { get => backFaceTexture; }
+    public int FrontFaceTexture { get => frontFaceTexture; }
+    public int TopFaceTexture { get => topFaceTexture; }
+    public int BottomFaceTexture { get => bottomFaceTexture; }
+    public int LeftFaceTexture { get => leftFaceTexture; }
+    public int RightFaceTexture { get => rightFaceTexture; }
 
-		switch (faceIndex)
-		{
+    // Back, Front, Top, Bottom, Left, Right
+    public int GetTextureID(int faceIndex)
+    {
 
-			case 0:
-				return backFaceTexture;
-			case 1:
-				return frontFaceTexture;
-			case 2:
-				return topFaceTexture;
-			case 3:
-				return bottomFaceTexture;
-			case 4:
-				return leftFaceTexture;
-			case 5:
-				return rightFaceTexture;
-			default:
-				Debug.Log("Error in GetTextureID; invalid face index");
-				return 0;
+        switch (faceIndex)
+        {
 
-		}
+            case 0:
+                return BackFaceTexture;
+            case 1:
+                return FrontFaceTexture;
+            case 2:
+                return TopFaceTexture;
+            case 3:
+                return BottomFaceTexture;
+            case 4:
+                return LeftFaceTexture;
+            case 5:
+                return RightFaceTexture;
+            default:
+                Debug.Log("Error in GetTextureID; invalid face index");
+                return 0;
 
-	}
+        }
+
+    }
 
 }

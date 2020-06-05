@@ -23,7 +23,7 @@ public class CreativeInventory : MonoBehaviour
             ItemStack stack = new ItemStack((byte)i, 1, 64);
 
             newSlot.GetComponent<UIItemSlot>().PutStack(stack);
-            newSlot.GetComponent<UIItemSlot>().IsCreative = true;
+            newSlot.GetComponent<UIItemSlot>().Type = UIItemSlot.Types.Creative;
 
         }
 

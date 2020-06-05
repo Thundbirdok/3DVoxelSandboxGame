@@ -19,7 +19,17 @@ public class UIItemSlot : MonoBehaviour
 	[SerializeField]
 	private World world;
 
-	public bool IsCreative;
+	public enum Types
+	{
+		Default,
+		Creative,
+		CraftSlot,
+		ResultSlot
+	}
+
+	public Types Type;
+
+	public bool IsClicked;	
 
 	public bool HasItem
 	{
@@ -235,6 +245,13 @@ public class ItemSlot
 
 	public int Take(int amt)
 	{
+
+		if (!HasItem)
+		{
+
+			return 0;
+
+		}
 
 		if (amt > stack.Amount)
 		{

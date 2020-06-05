@@ -152,7 +152,7 @@ public class Chunk
 
 		}
 
-		return world.BlocksAttributes.Blocktypes[Voxels[x, y, z]].isSolid;
+		return world.BlocksAttributes.Blocktypes[Voxels[x, y, z]].IsSolid;
 
 	}
 

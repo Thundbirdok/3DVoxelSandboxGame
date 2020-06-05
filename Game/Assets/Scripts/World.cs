@@ -124,7 +124,7 @@ public class World : MonoBehaviour
 		Vector2Int ChunkCoord = GetChunkCoord(pos);
 		Vector2Int InChunkCoord = GetInChunkCoord(pos);
 
-		return blocksAttributes.Blocktypes[Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, Mathf.FloorToInt(pos.y), InChunkCoord.y]].isSolid;
+		return blocksAttributes.Blocktypes[Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, Mathf.FloorToInt(pos.y), InChunkCoord.y]].IsSolid;
 
 	}
 
@@ -144,7 +144,7 @@ public class World : MonoBehaviour
 		GetChunkCoord(x, z, out xChunk, out zChunk);
 		GetInChunkCoord(x, z, out xInChunk, out zInChunk);
 
-		return blocksAttributes.Blocktypes[Chunks[xChunk, zChunk].Voxels[xInChunk, Mathf.FloorToInt(y), zInChunk]].isSolid;
+		return blocksAttributes.Blocktypes[Chunks[xChunk, zChunk].Voxels[xInChunk, Mathf.FloorToInt(y), zInChunk]].IsSolid;
 
 	}
 

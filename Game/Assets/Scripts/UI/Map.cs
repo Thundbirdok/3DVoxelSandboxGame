@@ -142,10 +142,10 @@ public class Map : MonoBehaviour
 				coord.y / world.WorldAttributes.ChunkWidth].Voxels[coord.x % world.WorldAttributes.ChunkWidth,
 				y, coord.y % world.WorldAttributes.ChunkWidth];
 
-			if (world.BlocksAttributes.Blocktypes[blockIndex].isSolid)
+			if (world.BlocksAttributes.Blocktypes[blockIndex].IsSolid)
 			{
 
-				return MapColors[world.BlocksAttributes.Blocktypes[blockIndex].topFaceTexture];
+				return MapColors[world.BlocksAttributes.Blocktypes[blockIndex].TopFaceTexture];
 
 			}
 
