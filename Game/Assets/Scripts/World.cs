@@ -208,6 +208,16 @@ public class World : MonoBehaviour
 
 	}
 
+	public int GetBlockID(Vector3 pos)
+	{
+
+		Vector2Int ChunkCoord = GetChunkCoord(pos);
+		Vector2Int InChunkCoord = GetInChunkCoord(pos);
+
+		return Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, Mathf.FloorToInt(pos.y), InChunkCoord.y];
+
+	}
+
 	public void EditVoxel(Vector3 pos, byte newID)
 	{
 

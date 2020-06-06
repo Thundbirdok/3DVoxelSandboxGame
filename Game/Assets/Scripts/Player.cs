@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -62,6 +63,9 @@ public class Player : MonoBehaviour
 	private UIController uicontroller;
 
 	public byte selectedBlockIndex = 1;
+
+	private Vector3 destroyedBlock;
+	private float destroyedBlockDurability;
 
 	private void Start()
 	{
@@ -218,21 +222,58 @@ public class Player : MonoBehaviour
 		{
 
 			// Destroy block.
-			if (Input.GetMouseButtonDown(0))
+			if (Input.GetMouseButton(0))
 			{
 
-				world.EditVoxel(highlightBlock.position, 0);
+				if (destroyedBlock == Vector3.one * -1)
+				{
+
+					destroyedBlock = highlightBlock.position;
+					destroyedBlockDurability = world.BlocksAttributes.Blocktypes[world.GetBlockID(destroyedBlock)].Durability;
+
+				}
+				else
+				{					
+
+					if (highlightBlock.position == destroyedBlock)
+					{						
+
+						destroyedBlockDurability -= 1f * Time.fixedDeltaTime;
+
+						if (destroyedBlockDurability <= 0)
+						{
+
+							world.EditVoxel(highlightBlock.position, 0);
+
+						}
+
+					}
+					else
+					{
+
+						destroyedBlock = Vector3.one * -1;
+
+					}
+
+				}
+
+			}
+
+			if (Input.GetMouseButtonUp(0))
+			{
+
+				destroyedBlock = Vector3.one * -1;
 
 			}
 
 			// Place block.
 			if (Input.GetMouseButtonDown(1))
-			{                
+			{
 
 				if (toolbar.HasItemInSlot())
 				{
 
-					world.EditVoxel(placeBlock.position, toolbar.GetSelectedBlockId());                                        
+					world.EditVoxel(placeBlock.position, toolbar.GetSelectedBlockId());
 					toolbar.TakeBlock(1);
 
 				}

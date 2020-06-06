@@ -18,6 +18,7 @@ MonoBehaviour:
     id: 0
     isSolid: 0
     isLiquid: 0
+    durability: 0
     icon: {fileID: 0}
     backFaceTexture: 0
     frontFaceTexture: 0
@@ -29,6 +30,7 @@ MonoBehaviour:
     id: 1
     isSolid: 1
     isLiquid: 0
+    durability: 0
     icon: {fileID: 1668631880078830459, guid: da7f4993bf9ff7e4fa973e8d95990d69, type: 3}
     backFaceTexture: 9
     frontFaceTexture: 9
@@ -40,6 +42,7 @@ MonoBehaviour:
     id: 2
     isSolid: 1
     isLiquid: 0
+    durability: 5
     icon: {fileID: 2531585740214343497, guid: da7f4993bf9ff7e4fa973e8d95990d69, type: 3}
     backFaceTexture: 0
     frontFaceTexture: 0
@@ -51,6 +54,7 @@ MonoBehaviour:
     id: 3
     isSolid: 1
     isLiquid: 0
+    durability: 1.5
     icon: {fileID: 5431833053050669182, guid: da7f4993bf9ff7e4fa973e8d95990d69, type: 3}
     backFaceTexture: 2
     frontFaceTexture: 2
@@ -62,6 +66,7 @@ MonoBehaviour:
     id: 4
     isSolid: 1
     isLiquid: 0
+    durability: 1.5
     icon: {fileID: -3137509097769737148, guid: da7f4993bf9ff7e4fa973e8d95990d69, type: 3}
     backFaceTexture: 1
     frontFaceTexture: 1
@@ -73,6 +78,7 @@ MonoBehaviour:
     id: 5
     isSolid: 1
     isLiquid: 0
+    durability: 3
     icon: {fileID: -180753191933307767, guid: da7f4993bf9ff7e4fa973e8d95990d69, type: 3}
     backFaceTexture: 8
     frontFaceTexture: 8
@@ -84,6 +90,7 @@ MonoBehaviour:
     id: 6
     isSolid: 1
     isLiquid: 0
+    durability: 1.5
     icon: {fileID: 4163173834195617304, guid: da7f4993bf9ff7e4fa973e8d95990d69, type: 3}
     backFaceTexture: 10
     frontFaceTexture: 10
@@ -95,6 +102,7 @@ MonoBehaviour:
     id: 7
     isSolid: 1
     isLiquid: 0
+    durability: 2
     icon: {fileID: 7101808556078131587, guid: da7f4993bf9ff7e4fa973e8d95990d69, type: 3}
     backFaceTexture: 5
     frontFaceTexture: 5
@@ -106,6 +114,7 @@ MonoBehaviour:
     id: 8
     isSolid: 1
     isLiquid: 0
+    durability: 2
     icon: {fileID: 2633313143589470460, guid: da7f4993bf9ff7e4fa973e8d95990d69, type: 3}
     backFaceTexture: 4
     frontFaceTexture: 4
@@ -117,6 +126,7 @@ MonoBehaviour:
     id: 9
     isSolid: 1
     isLiquid: 1
+    durability: 0
     icon: {fileID: 0}
     backFaceTexture: 11
     frontFaceTexture: 11
@@ -128,6 +138,7 @@ MonoBehaviour:
     id: 10
     isSolid: 1
     isLiquid: 0
+    durability: 3
     icon: {fileID: 0}
     backFaceTexture: 3
     frontFaceTexture: 3
@@ -139,6 +150,7 @@ MonoBehaviour:
     id: 11
     isSolid: 1
     isLiquid: 0
+    durability: 3
     icon: {fileID: 0}
     backFaceTexture: 13
     frontFaceTexture: 12
@@ -150,6 +162,7 @@ MonoBehaviour:
     id: 12
     isSolid: 1
     isLiquid: 0
+    durability: 3
     icon: {fileID: 0}
     backFaceTexture: 13
     frontFaceTexture: 14
