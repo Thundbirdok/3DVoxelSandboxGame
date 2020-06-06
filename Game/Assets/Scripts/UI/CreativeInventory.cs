@@ -15,15 +15,37 @@ public class CreativeInventory : MonoBehaviour
     private void Start()
     {
 
-        for (int i = 1; i < world.BlocksAttributes.Blocktypes.Length; ++i)
+        foreach (var block in world.BlocksAttributes.Blocktypes)
         {
 
-            GameObject newSlot = Instantiate(slotPrefab, transform);
+            if (block.Icon != null)
+            {
 
-            ItemStack stack = new ItemStack((byte)i, 1, 64);
+                GameObject newSlot = Instantiate(slotPrefab, transform);
 
-            newSlot.GetComponent<UIItemSlot>().PutStack(stack);
-            newSlot.GetComponent<UIItemSlot>().Type = UIItemSlot.Types.Creative;
+                ItemStack stack = new ItemStack(block.ID, 1, 64);
+
+                newSlot.GetComponent<UIItemSlot>().PutStack(stack);
+                newSlot.GetComponent<UIItemSlot>().Type = UIItemSlot.Types.Creative;
+
+            }
+
+        }
+
+        foreach (var item in world.ItemsList)
+        {
+
+            if (item.Icon != null)
+            {
+
+                GameObject newSlot = Instantiate(slotPrefab, transform);
+
+                ItemStack stack = new ItemStack(item.ID, 1, 64);
+
+                newSlot.GetComponent<UIItemSlot>().PutStack(stack);
+                newSlot.GetComponent<UIItemSlot>().Type = UIItemSlot.Types.Creative;
+
+            }
 
         }
 

@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Axe
   m_EditorClassIdentifier: 
   isFormless: 0
-  slots: 000000000000000000
-  result: 14
+  slots: 080808001400001400
+  result: 22
   resultAmount: 1

@@ -26,6 +26,25 @@ public class BlocksAttributes : ScriptableObject
     }
 
     public BlockType[] Blocktypes { get => blocktypes; }
+
+    public BlockType GetBlock(byte ID)
+    {
+
+        foreach(var block in blocktypes)
+        {            
+
+            if (ID == block.ID)
+            {
+
+                return block;
+
+            }
+
+        }
+
+        return null;
+
+    }
 }
 
 [System.Serializable]
@@ -34,6 +53,9 @@ public class BlockType
 
     [SerializeField]
     private string blockName;
+
+    [SerializeField]
+    private byte id;    
 
     [SerializeField]
     private bool isSolid;
@@ -58,6 +80,7 @@ public class BlockType
     private int rightFaceTexture;
 
     public string BlockName { get => blockName; }
+    public byte ID { get => id; }    
     public bool IsSolid { get => isSolid; }
     public bool IsLiquid { get => isLiquid; }
     public Sprite Icon { get => icon; }
@@ -66,7 +89,7 @@ public class BlockType
     public int TopFaceTexture { get => topFaceTexture; }
     public int BottomFaceTexture { get => bottomFaceTexture; }
     public int LeftFaceTexture { get => leftFaceTexture; }
-    public int RightFaceTexture { get => rightFaceTexture; }
+    public int RightFaceTexture { get => rightFaceTexture; }    
 
     // Back, Front, Top, Bottom, Left, Right
     public int GetTextureID(int faceIndex)
@@ -88,11 +111,11 @@ public class BlockType
             case 5:
                 return RightFaceTexture;
             default:
-                Debug.Log("Error in GetTextureID; invalid face index");
+                Debug.LogError("Error in GetTextureID; invalid face index");
                 return 0;
 
         }
 
-    }
+    }   
 
 }

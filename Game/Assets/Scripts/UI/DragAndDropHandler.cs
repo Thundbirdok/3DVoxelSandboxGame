@@ -20,9 +20,6 @@ public class DragAndDropHandler : MonoBehaviour
     private EventSystem m_EventSystem = null;
 
     [SerializeField]
-    private Craft craft;
-
-    [SerializeField]
     private UIController uicontroller;
 
     private void Update()

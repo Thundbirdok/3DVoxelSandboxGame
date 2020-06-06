@@ -17,19 +17,6 @@ public class Toolbar : MonoBehaviour
 	private void Start()
 	{
 
-		byte index = 1;
-
-		foreach (UIItemSlot s in slots)
-		{
-
-			ItemStack stack = new ItemStack(index, UnityEngine.Random.Range(2, 65), 64);
-
-			s.PutStack(stack);
-
-			++index;
-
-		}
-
 	}
 
 	private void Update()

@@ -16,11 +16,15 @@ public class World : MonoBehaviour
 	private WorldAttributes worldAttributes;
 	[SerializeField]
 	private BlocksAttributes blocksAttributes;
+	[SerializeField]
+	private ItemsList itemsList;
 
 	public WorldAttributes WorldAttributes { get => worldAttributes; }
-
 	public BlocksAttributes BlocksAttributes { get => blocksAttributes; }
+	public ItemsList ItemsList { get => itemsList; }
+
 	public Chunk[,] Chunks { get; private set; }
+	
 
 	public int[,] Bioms;
 

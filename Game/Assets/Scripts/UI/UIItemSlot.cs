@@ -134,14 +134,42 @@ public class UIItemSlot : MonoBehaviour
 	}
 
 	public void UpdateSlot()
-	{
+	{		
 
 		if (itemSlot != null && itemSlot.HasItem)
 		{
 
-			SlotIcon.sprite = world.BlocksAttributes.Blocktypes[itemSlot.ID].Icon;
+			var block = world.BlocksAttributes.GetBlock(itemSlot.ID);
+
+			if (block == null)
+			{
+
+				var item = world.ItemsList.GetItem(itemSlot.ID);
+				
+				if (item != null)
+				{
+
+					slotIcon.sprite = item.Icon;
+
+				}
+				else
+				{
+
+					Debug.LogError("ID not exist!");
+
+				}
+
+			}
+			else
+			{
+
+				slotIcon.sprite = block.Icon;
+
+			}
+
+//			SlotIcon.sprite = world.BlocksAttributes.Blocktypes[itemSlot.ID].Icon;
 			slotAmount.text = itemSlot.Amount.ToString();
-			SlotIcon.enabled = true;
+			slotIcon.enabled = true;
 			slotAmount.enabled = true;
 
 		}
@@ -292,6 +320,7 @@ public class ItemSlot
 
 	public int Put(int amt)
 	{
+
 		if (stack.Size - stack.Amount >= amt)
 		{
 
