@@ -209,10 +209,23 @@ public class Item
     [SerializeField]
     private Sprite icon = null;
 
+    public enum ItemType
+    {
+        Item,
+        Axe,
+        Pickaxe,
+        Shovel
+    }
+
     [SerializeField]
-    private bool IsTool = false;
+    private ItemType type = ItemType.Item;
+
+    [SerializeField]
+    private float power;
 
     public byte ID { get => id; }
     public Sprite Icon { get => icon; }
+    public ItemType Type { get => type; }
+    public float Power { get => power; }
 
 }

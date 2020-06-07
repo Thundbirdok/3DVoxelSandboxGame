@@ -172,13 +172,14 @@ MonoBehaviour:
   gravity: 9.8
   playerWidth: 0.15
   ViewDistanceInChunks: 3
+  toolbar: {fileID: 1263424030}
+  uicontroller: {fileID: 1705652834}
+  selectedBlockIndex: 1
   highlightBlock: {fileID: 845084651}
   placeBlock: {fileID: 178187965}
   checkIncrement: 0.07
   reach: 4
-  toolbar: {fileID: 1263424030}
-  uicontroller: {fileID: 1705652834}
-  selectedBlockIndex: 1
+  DefaultDestructionPower: 1
 --- !u!1 &28143140
 GameObject:
   m_ObjectHideFlags: 0

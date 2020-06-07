@@ -61,7 +61,7 @@ public class Toolbar : MonoBehaviour
 
 	}
 
-	internal byte GetSelectedBlockId()
+	internal byte GetSelectedItemID()
 	{
 
 		return slots[slotIndex].ID;

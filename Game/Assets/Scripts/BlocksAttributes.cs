@@ -66,6 +66,9 @@ public class BlockType
     private float durability;
 
     [SerializeField]
+    private Item.ItemType targetTool;
+
+    [SerializeField]
     private Sprite icon;
 
     [Header("Texture Values")]
@@ -87,6 +90,7 @@ public class BlockType
     public bool IsSolid { get => isSolid; }
     public bool IsLiquid { get => isLiquid; }
     public float Durability { get => durability; }
+    public Item.ItemType TargetTool { get => targetTool; }
     public Sprite Icon { get => icon; }
     public int BackFaceTexture { get => backFaceTexture; }
     public int FrontFaceTexture { get => frontFaceTexture; }

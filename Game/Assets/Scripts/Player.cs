@@ -51,12 +51,7 @@ public class Player : MonoBehaviour
 	private Vector2Int CurrentChunkCoord;
 	private Vector2Int PreviousChunkCoord;
 
-	//Create and Destroy
-	public Transform highlightBlock;
-	public Transform placeBlock;
-	public float checkIncrement = 0.1f;
-	public float reach = 8f;
-
+	//Toolbar
 	[SerializeField]
 	private Toolbar toolbar;
 	[SerializeField]
@@ -64,8 +59,18 @@ public class Player : MonoBehaviour
 
 	public byte selectedBlockIndex = 1;
 
-	private Vector3 destroyedBlock;
+	//Create and Destroy
+	public Transform highlightBlock;
+	public Transform placeBlock;
+	public float checkIncrement = 0.1f;
+	public float reach = 8f;
+
+	private Vector3 destroyedBlockPosition;
 	private float destroyedBlockDurability;
+	private Item.ItemType destroyedBlockTargetTool;
+
+	[SerializeField]
+	private float DefaultDestructionPower = 1;
 
 	private void Start()
 	{
@@ -225,25 +230,37 @@ public class Player : MonoBehaviour
 			if (Input.GetMouseButton(0))
 			{
 
-				if (destroyedBlock == Vector3.one * -1)
+				if (destroyedBlockPosition == Vector3.one * -1)
 				{
 
-					destroyedBlock = highlightBlock.position;
-					destroyedBlockDurability = world.BlocksAttributes.Blocktypes[world.GetBlockID(destroyedBlock)].Durability;
+					destroyedBlockPosition = highlightBlock.position;
+					destroyedBlockDurability = world.BlocksAttributes.Blocktypes[world.GetBlockID(destroyedBlockPosition)].Durability;
+					destroyedBlockTargetTool = world.BlocksAttributes.Blocktypes[world.GetBlockID(destroyedBlockPosition)].TargetTool;
 
 				}
-				else
-				{					
 
-					if (highlightBlock.position == destroyedBlock)
-					{						
+				if (highlightBlock.position == destroyedBlockPosition)
+				{
 
-						destroyedBlockDurability -= 1f * Time.fixedDeltaTime;
+					float power;
 
-						if (destroyedBlockDurability <= 0)
+					if (toolbar.HasItemInSlot())
+					{
+
+						byte id = toolbar.GetSelectedItemID();
+
+						var item = world.ItemsList.GetItem(id);						
+
+						if (item != null && item.Type == destroyedBlockTargetTool)
+						{							
+
+							power = item.Power;
+
+						}
+						else
 						{
 
-							world.EditVoxel(highlightBlock.position, 0);
+							power = DefaultDestructionPower;
 
 						}
 
@@ -251,18 +268,39 @@ public class Player : MonoBehaviour
 					else
 					{
 
-						destroyedBlock = Vector3.one * -1;
+
+						power = DefaultDestructionPower;
+
+					}
+
+					destroyedBlockDurability -= power * Time.fixedDeltaTime;
+
+
+					if (destroyedBlockDurability <= 0)
+					{
+
+						world.EditVoxel(highlightBlock.position, 0);
+						destroyedBlockPosition = Vector3.one * -1;
 
 					}
 
 				}
+				else
+				{
+
+					destroyedBlockPosition = Vector3.one * -1;
+
+				}
+
+
+				Debug.Log(destroyedBlockDurability);
 
 			}
 
 			if (Input.GetMouseButtonUp(0))
 			{
 
-				destroyedBlock = Vector3.one * -1;
+				destroyedBlockPosition = Vector3.one * -1;
 
 			}
 
@@ -273,7 +311,7 @@ public class Player : MonoBehaviour
 				if (toolbar.HasItemInSlot())
 				{
 
-					world.EditVoxel(placeBlock.position, toolbar.GetSelectedBlockId());
+					world.EditVoxel(placeBlock.position, toolbar.GetSelectedItemID());
 					toolbar.TakeBlock(1);
 
 				}
