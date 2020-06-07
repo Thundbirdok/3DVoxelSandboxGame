@@ -311,7 +311,7 @@ MonoBehaviour:
   spawnPosition: {x: 64, y: 35, z: 64}
   worldAttributes: {fileID: 11400000, guid: 33106321b6a6fe543b4094227e97d955, type: 2}
   blocksAttributes: {fileID: 11400000, guid: 1dcba7852861e3d468a35c719585c0b1, type: 2}
-  itemsList: {fileID: 11400000, guid: 7a81f31e2068f3e4ead63bc90995004c, type: 2}
+  itemsList: {fileID: 11400000, guid: 9682bebd89ef70c4f938bea5f02b055e, type: 2}
 --- !u!4 &50123751
 Transform:
   m_ObjectHideFlags: 0

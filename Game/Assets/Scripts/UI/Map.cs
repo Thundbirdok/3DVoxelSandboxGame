@@ -6,13 +6,13 @@ using UnityEngine;
 public class Map : MonoBehaviour
 {
 	[SerializeField]
-	private RenderTexture MapTexture;
+	private RenderTexture MapTexture = null;
 
 	[SerializeField]
-	private Texture2D src;
+	private Texture2D src = null;
 
 	[SerializeField]
-	private World world;
+	private World world = null;
 
 	private Color[] MapColors;
 

@@ -7,7 +7,7 @@ public class RecipesBook : ScriptableObject
 {
 
 	[SerializeField]
-	private Recipe[] recipes;
+	private Recipe[] recipes = null;
 
 	public Recipe[] Recipes { get => recipes; }
 

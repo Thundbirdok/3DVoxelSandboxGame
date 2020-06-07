@@ -6,16 +6,16 @@ public class Craft : MonoBehaviour
 {
 
     [SerializeField]
-    private UIItemSlot[] craftSlots;
+    private UIItemSlot[] craftSlots = null;
 
     [SerializeField]
-    private UIItemSlot result;
+    private UIItemSlot result = null;
 
     [SerializeField]
-    private UIController uicontroller;
+    private UIController uicontroller = null;
 
     [SerializeField]
-    private RecipesBook recipesBook;
+    private RecipesBook recipesBook = null;
 
     private void Update()
     {

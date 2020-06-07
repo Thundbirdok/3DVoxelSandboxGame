@@ -7,19 +7,19 @@ public class UIController : MonoBehaviour
 {
 
 	[SerializeField]
-	private World World;
+	private World World = null;
 
 	[SerializeField]
-	private GameObject Menu;
+	private GameObject Menu = null;
 
 	[SerializeField]
-	private GameObject GameInterface;
+	private GameObject GameInterface = null;
 
 	[SerializeField]
-	private GameObject Inventory;
+	private GameObject Inventory = null;
 
 	[SerializeField]
-	private GameObject Map;
+	private GameObject Map = null;
 	private Map MapScript;
 
 	private bool isInUI;

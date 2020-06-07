@@ -7,14 +7,14 @@ public class BlocksAttributes : ScriptableObject
 {
 
     [SerializeField]
-    private Material material;
+    private Material material = null;
     [SerializeField]
-    private BlockType[] blocktypes;
+    private BlockType[] blocktypes = null;
 
     public Material Material { get => material; }
 
     [SerializeField]
-    private int textureAtlasSizeInBlocks;
+    private int textureAtlasSizeInBlocks = 0;
 
     public int TextureAtlasSizeInBlocks { get => textureAtlasSizeInBlocks; }
 
@@ -52,45 +52,49 @@ public class BlockType
 {
 
     [SerializeField]
-    private string blockName;
+    private string blockName = null;
 
     [SerializeField]
-    private byte id;    
+    private byte id = 0;    
 
     [SerializeField]
-    private bool isSolid;
+    private bool isSolid = false;
     [SerializeField]
-    private bool isLiquid;
+    private bool isLiquid = false;
 
     [SerializeField]
-    private float durability;
+    private float durability = 0;
 
     [SerializeField]
-    private Item.ItemType targetTool;
+    private ItemType.ItemClass targetTool = ItemType.ItemClass.Item;
 
     [SerializeField]
-    private Sprite icon;
+    private byte drop = 0;
+
+    [SerializeField]
+    private Sprite icon = null;
 
     [Header("Texture Values")]
     [SerializeField]
-    private int backFaceTexture;
+    private int backFaceTexture = 0;
     [SerializeField]
-    private int frontFaceTexture;
+    private int frontFaceTexture = 0;
     [SerializeField]
-    private int topFaceTexture;
+    private int topFaceTexture = 0;
     [SerializeField]
-    private int bottomFaceTexture;
+    private int bottomFaceTexture = 0;
     [SerializeField]
-    private int leftFaceTexture;
+    private int leftFaceTexture = 0;
     [SerializeField]
-    private int rightFaceTexture;
+    private int rightFaceTexture = 0;
 
     public string BlockName { get => blockName; }
     public byte ID { get => id; }    
     public bool IsSolid { get => isSolid; }
     public bool IsLiquid { get => isLiquid; }
     public float Durability { get => durability; }
-    public Item.ItemType TargetTool { get => targetTool; }
+    public ItemType.ItemClass TargetTool { get => targetTool; }
+    public byte Drop { get => drop; }
     public Sprite Icon { get => icon; }
     public int BackFaceTexture { get => backFaceTexture; }
     public int FrontFaceTexture { get => frontFaceTexture; }

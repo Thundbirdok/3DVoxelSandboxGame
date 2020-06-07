@@ -3,16 +3,16 @@ using UnityEngine;
 using UnityEditor.SceneManagement;
 using System.Collections.Generic;
 
-[CustomEditor(typeof(ItemsList))]
+[CustomEditor(typeof(ItemsAttributes))]
 public class ItemsListGUIEditor : Editor
 {
     
-    private ItemsList items;
+    private ItemsAttributes items;
 
     public void Awake()
     {
 
-        items = (ItemsList)target;
+        items = (ItemsAttributes)target;
 
     }
 
@@ -56,22 +56,7 @@ public class ItemsListGUIEditor : Editor
 
         base.OnInspectorGUI();
 
-        //if (GUI.changed)
-        //{
-
-        //    SetObjectDirty(itemsList.gameObject);
-
-        //}
-
     }
-
-    //public static void SetObjectDirty(GameObject obj)
-    //{
-
-    //    EditorUtility.SetDirty(obj);
-    //    EditorSceneManager.MarkSceneDirty(obj.scene);
-
-    //}
 
 }
 

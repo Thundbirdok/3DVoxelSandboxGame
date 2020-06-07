@@ -9,7 +9,7 @@ public class DragAndDropHandler : MonoBehaviour
 {
 
     [SerializeField]
-    private UIItemSlot cursorSlot;
+    private UIItemSlot cursorSlot = null;
 
     [SerializeField]
     private GraphicRaycaster m_Raycaster = null;
@@ -20,7 +20,7 @@ public class DragAndDropHandler : MonoBehaviour
     private EventSystem m_EventSystem = null;
 
     [SerializeField]
-    private UIController uicontroller;
+    private UIController uicontroller = null;
 
     private void Update()
     {

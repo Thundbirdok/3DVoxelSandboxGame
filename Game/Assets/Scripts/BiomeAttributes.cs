@@ -9,28 +9,28 @@ public class BiomeAttributes
 	public string biomeName;
 
 	[SerializeField]
-	private byte mainVoxel;
+	private byte mainVoxel = 0;
 
 	[SerializeField]
-	private byte secondVoxel;
+	private byte secondVoxel = 0;
 
 	[SerializeField]
-	private int solidGroundHeight;
+	private int solidGroundHeight = 0;
 
 	[SerializeField]
-	private int biomeHeight;
+	private int biomeHeight = 0;
 
 	[SerializeField]
-	private int groundDepthMin;
+	private int groundDepthMin = 0;
 
 	[SerializeField]
-	private int groundDepthMax;
+	private int groundDepthMax = 0;
 
 	[SerializeField]
-	private float biomeScale;
+	private float biomeScale = 0;
 
 	[SerializeField]
-	private int octavesNumber;
+	private int octavesNumber = 0;
 
 	public byte MainVoxel { get => mainVoxel; set => mainVoxel = value; }
 	public byte SecondVoxel { get => secondVoxel; set => secondVoxel = value; }

@@ -10,24 +10,24 @@ public class Player : MonoBehaviour
 {
 
 	[SerializeField]
-	private Transform cam;
+	private Transform cam = null;
 	[SerializeField]
-	private World world;
+	private World world = null;
 
 	[SerializeField]
-	private float walkSpeed;
+	private float walkSpeed = 0;
 	[SerializeField]
-	private float sprintSpeed;
+	private float sprintSpeed = 0;
 	[SerializeField]
-	private float jumpForce;
+	private float jumpForce = 0;
 	[SerializeField]
-	private float gravity;
+	private float gravity = 0;
 
 	[SerializeField]
-	private float playerWidth;
+	private float playerWidth = 0;
 
 	[SerializeField]
-	private int ViewDistanceInChunks;
+	private int ViewDistanceInChunks = 0;
 
 	private bool isAlive;
 
@@ -53,9 +53,9 @@ public class Player : MonoBehaviour
 
 	//Toolbar
 	[SerializeField]
-	private Toolbar toolbar;
+	private Toolbar toolbar = null;
 	[SerializeField]
-	private UIController uicontroller;
+	private UIController uicontroller = null;
 
 	public byte selectedBlockIndex = 1;
 
@@ -67,7 +67,7 @@ public class Player : MonoBehaviour
 
 	private Vector3 destroyedBlockPosition;
 	private float destroyedBlockDurability;
-	private Item.ItemType destroyedBlockTargetTool;
+	private BlockType destroyedBlock;
 
 	[SerializeField]
 	private float DefaultDestructionPower = 1;
@@ -230,70 +230,7 @@ public class Player : MonoBehaviour
 			if (Input.GetMouseButton(0))
 			{
 
-				if (destroyedBlockPosition == Vector3.one * -1)
-				{
-
-					destroyedBlockPosition = highlightBlock.position;
-					destroyedBlockDurability = world.BlocksAttributes.Blocktypes[world.GetBlockID(destroyedBlockPosition)].Durability;
-					destroyedBlockTargetTool = world.BlocksAttributes.Blocktypes[world.GetBlockID(destroyedBlockPosition)].TargetTool;
-
-				}
-
-				if (highlightBlock.position == destroyedBlockPosition)
-				{
-
-					float power;
-
-					if (toolbar.HasItemInSlot())
-					{
-
-						byte id = toolbar.GetSelectedItemID();
-
-						var item = world.ItemsList.GetItem(id);						
-
-						if (item != null && item.Type == destroyedBlockTargetTool)
-						{							
-
-							power = item.Power;
-
-						}
-						else
-						{
-
-							power = DefaultDestructionPower;
-
-						}
-
-					}
-					else
-					{
-
-
-						power = DefaultDestructionPower;
-
-					}
-
-					destroyedBlockDurability -= power * Time.fixedDeltaTime;
-
-
-					if (destroyedBlockDurability <= 0)
-					{
-
-						world.EditVoxel(highlightBlock.position, 0);
-						destroyedBlockPosition = Vector3.one * -1;
-
-					}
-
-				}
-				else
-				{
-
-					destroyedBlockPosition = Vector3.one * -1;
-
-				}
-
-
-				Debug.Log(destroyedBlockDurability);
+				DestroyBlock();
 
 			}
 
@@ -312,11 +249,84 @@ public class Player : MonoBehaviour
 				{
 
 					world.EditVoxel(placeBlock.position, toolbar.GetSelectedItemID());
-					toolbar.TakeBlock(1);
+					toolbar.TakeItemFromSlot(1);
 
 				}
 
 			}
+
+		}
+
+	}
+
+	private void DestroyBlock()
+	{
+
+		if (destroyedBlockPosition == Vector3.one * -1)
+		{
+
+			destroyedBlockPosition = highlightBlock.position;
+			destroyedBlock = world.BlocksAttributes.Blocktypes[world.GetBlockID(destroyedBlockPosition)];
+			destroyedBlockDurability = destroyedBlock.Durability;
+
+		}
+
+		if (highlightBlock.position == destroyedBlockPosition)
+		{
+
+			float power;
+
+			if (toolbar.HasItemInSlot())
+			{
+
+				byte id = toolbar.GetSelectedItemID();
+
+				var item = world.ItemsAttributes.GetItem(id);
+
+				if (item != null && item.Type == destroyedBlock.TargetTool)
+				{
+
+					power = item.Power;
+
+				}
+				else
+				{
+
+					power = DefaultDestructionPower;
+
+				}
+
+			}
+			else
+			{
+
+				power = DefaultDestructionPower;
+
+			}
+
+			destroyedBlockDurability -= power * Time.fixedDeltaTime;
+
+
+			if (destroyedBlockDurability <= 0)
+			{
+
+				world.EditVoxel(highlightBlock.position, 0);
+				destroyedBlockPosition = Vector3.one * -1;
+
+				if (destroyedBlock.Drop != 0)
+				{
+
+					toolbar.PutStack(new ItemStack(destroyedBlock.Drop, 1, 64));
+
+				}
+
+			}
+
+		}
+		else
+		{
+
+			destroyedBlockPosition = Vector3.one * -1;
 
 		}
 

@@ -7,21 +7,21 @@ public class World : MonoBehaviour
 {
 
 	[SerializeField]
-	private Player player;
+	private Player player = null;
 
 	[SerializeField]
-	private Vector3 spawnPosition;
+	private Vector3 spawnPosition = Vector3.zero;
 
 	[SerializeField]
-	private WorldAttributes worldAttributes;
+	private WorldAttributes worldAttributes = null;
 	[SerializeField]
-	private BlocksAttributes blocksAttributes;
+	private BlocksAttributes blocksAttributes = null;
 	[SerializeField]
-	private ItemsList itemsList;
+	private ItemsAttributes itemsList = null;
 
 	public WorldAttributes WorldAttributes { get => worldAttributes; }
 	public BlocksAttributes BlocksAttributes { get => blocksAttributes; }
-	public ItemsList ItemsList { get => itemsList; }
+	public ItemsAttributes ItemsAttributes { get => itemsList; }
 
 	public Chunk[,] Chunks { get; private set; }
 	

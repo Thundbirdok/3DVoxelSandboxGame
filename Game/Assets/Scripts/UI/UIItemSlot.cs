@@ -9,15 +9,16 @@ public class UIItemSlot : MonoBehaviour
 {
 
 	private ItemSlot itemSlot;
-	[SerializeField]
-	private Image slotImage;
-	[SerializeField]
-	private Image slotIcon;
-	[SerializeField]
-	private TextMeshProUGUI slotAmount;
 
 	[SerializeField]
-	private World world;
+	private Image slotImage = null;
+	[SerializeField]
+	private Image slotIcon = null;
+	[SerializeField]
+	private TextMeshProUGUI slotAmount = null;
+
+	[SerializeField]
+	private World world = null;
 
 	public enum Types
 	{
@@ -76,6 +77,7 @@ public class UIItemSlot : MonoBehaviour
 	}    
 
 	public Image SlotIcon { get => slotIcon; }
+	public Image SlotImage { get => slotImage; }
 
 	public UIItemSlot()
 	{
@@ -144,7 +146,7 @@ public class UIItemSlot : MonoBehaviour
 			if (block == null)
 			{
 
-				var item = world.ItemsList.GetItem(itemSlot.ID);
+				var item = world.ItemsAttributes.GetItem(itemSlot.ID);
 				
 				if (item != null)
 				{

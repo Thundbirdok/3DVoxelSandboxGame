@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "ItemsList", menuName = "Items/ItemsList")]
-public class ItemsList : ScriptableObject, IEnumerable<Item>
+[CreateAssetMenu(fileName = "ItemsAttributes", menuName = "Items/ItemsAttributes")]
+public class ItemsAttributes : ScriptableObject, IEnumerable<ItemType>
 {
 
     [SerializeField, HideInInspector]
-    private List<Item> items;
+    private List<ItemType> items = null;
 
     [SerializeField]
-    private Item currentItem;
+    private ItemType currentItem = null;
 
     private int currentIndex = 0;
 
@@ -21,12 +21,12 @@ public class ItemsList : ScriptableObject, IEnumerable<Item>
         if (items == null)
         {
 
-            items = new List<Item>();
-            items.Add(new Item());
+            items = new List<ItemType>();
+            items.Add(new ItemType());
 
         }
 
-        currentItem = new Item();
+        currentItem = new ItemType();
         items.Add(currentItem);
         currentIndex = items.Count - 1;
 
@@ -100,13 +100,13 @@ public class ItemsList : ScriptableObject, IEnumerable<Item>
     {
 
         items.Clear();
-        currentItem = new Item();
+        currentItem = new ItemType();
         currentIndex = 0;
         items.Add(currentItem);
 
     }
 
-    public Item GetItem(byte ID)
+    public ItemType GetItem(byte ID)
     {
 
         foreach (var item in items)
@@ -125,21 +125,21 @@ public class ItemsList : ScriptableObject, IEnumerable<Item>
 
     }
 
-    public IEnumerator<Item> GetEnumerator()
+    public IEnumerator<ItemType> GetEnumerator()
     {
 
-        return ((IEnumerable<Item>)items).GetEnumerator();
+        return ((IEnumerable<ItemType>)items).GetEnumerator();
 
     }
 
     IEnumerator IEnumerable.GetEnumerator()
     {
 
-        return ((IEnumerable<Item>)items).GetEnumerator();
+        return ((IEnumerable<ItemType>)items).GetEnumerator();
 
     }
 
-    public Item this[int index]
+    public ItemType this[int index]
     {
 
         get
@@ -162,7 +162,7 @@ public class ItemsList : ScriptableObject, IEnumerable<Item>
             if (items == null)
             {
 
-                items = new List<Item>();
+                items = new List<ItemType>();
 
             }
 
@@ -197,19 +197,19 @@ public class ItemsList : ScriptableObject, IEnumerable<Item>
 }
 
 [System.Serializable]
-public class Item
+public class ItemType
 {
 
     [SerializeField]
-    private byte id;
+    private byte id = 0;
 
     [SerializeField]
-    private string Name;
+    private string name = "";
 
     [SerializeField]
     private Sprite icon = null;
 
-    public enum ItemType
+    public enum ItemClass
     {
         Item,
         Axe,
@@ -218,14 +218,15 @@ public class Item
     }
 
     [SerializeField]
-    private ItemType type = ItemType.Item;
+    private ItemClass type = ItemClass.Item;
 
     [SerializeField]
-    private float power;
+    private float power = 0;
 
     public byte ID { get => id; }
+    public string Name { get => name; }
     public Sprite Icon { get => icon; }
-    public ItemType Type { get => type; }
+    public ItemClass Type { get => type; }
     public float Power { get => power; }
-
+    
 }

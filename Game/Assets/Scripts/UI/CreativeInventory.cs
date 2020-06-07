@@ -6,11 +6,9 @@ public class CreativeInventory : MonoBehaviour
 {
 
     [SerializeField]
-    private GameObject slotPrefab;
+    private GameObject slotPrefab = null;
     [SerializeField]
-    private World world;
-
-    //	List<ItemSlot> slots = new List<ItemSlot>();
+    private World world = null;    
 
     private void Start()
     {
@@ -32,7 +30,7 @@ public class CreativeInventory : MonoBehaviour
 
         }
 
-        foreach (var item in world.ItemsList)
+        foreach (var item in world.ItemsAttributes)
         {
 
             if (item.Icon != null)

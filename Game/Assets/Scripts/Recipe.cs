@@ -7,16 +7,16 @@ public class Recipe : ScriptableObject
 {
 
 	[SerializeField]
-	private bool isFormless;
+	private bool isFormless = false;
 
 	[SerializeField]
-	private byte[] slots;
+	private byte[] slots = null;
 
 	[SerializeField]
-	private byte result;
+	private byte result = 0;
 
 	[SerializeField]
-	private byte resultAmount;
+	private byte resultAmount = 0;
 
 	public bool IsFormless { get => isFormless; }
 	public byte[] Slots { get => slots; }

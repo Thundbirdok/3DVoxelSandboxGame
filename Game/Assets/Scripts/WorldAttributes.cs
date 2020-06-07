@@ -7,49 +7,49 @@ public class WorldAttributes : ScriptableObject
 {
 	
 	[SerializeField]
-	private int chunkWidth;
+	private int chunkWidth = 0;
 	[SerializeField]
-	private int chunkHeight;
+	private int chunkHeight = 0;
 
 	[SerializeField]
-	private int powerOfTwoOfWorldSizeInChunks;
+	private int powerOfTwoOfWorldSizeInChunks = 0;
 
 	[SerializeField]
-	private int sitesNumber;
+	private int sitesNumber = 0;
 
 	[SerializeField]
-	private int sitesMinDistance;
+	private int sitesMinDistance = 0;
 
 	[SerializeField]
-	private int boarderBrushRadius;
+	private int boarderBrushRadius = 0;
 
 	[SerializeField]
-	private float worldScale;
+	private float worldScale = 0;
 
 	[SerializeField]
-	private int checkBiomeDistance;
+	private int checkBiomeDistance = 0;
 
 	[SerializeField]
-	private int smoothingBrushRadius;
+	private int smoothingBrushRadius = 0;
 
 	[SerializeField]
-	private int smoothingCheckBrushRadius;
+	private int smoothingCheckBrushRadius = 0;
 
 	[SerializeField]
-	private int oceanHeight;
+	private int oceanHeight = 0;
 
 	[SerializeField]
-	private int riverDepth;
+	private int riverDepth = 0;
 
 
 	[SerializeField]
-	private int riverBrushRadius;
+	private int riverBrushRadius = 0;
 
 	[SerializeField]
-	private float riverBrushScale;
+	private float riverBrushScale = 0;
 
 	[SerializeField]
-	private BiomeAttributes[] biomeAttributes;
+	private BiomeAttributes[] biomeAttributes = null;
 
 	public int ChunkWidth { get => chunkWidth; }
 	public int ChunkHeight { get => chunkHeight; }

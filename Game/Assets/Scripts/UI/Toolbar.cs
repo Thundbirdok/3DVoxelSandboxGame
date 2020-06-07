@@ -7,10 +7,10 @@ public class Toolbar : MonoBehaviour
 {
 
 	[SerializeField]
-	private RectTransform highlight;
+	private RectTransform highlight = null;
 
 	[SerializeField]
-	private UIItemSlot[] slots;
+	private UIItemSlot[] slots = null;
 
 	private int slotIndex = 0;
 
@@ -61,24 +61,72 @@ public class Toolbar : MonoBehaviour
 
 	}
 
-	internal byte GetSelectedItemID()
+	public byte GetSelectedItemID()
 	{
 
 		return slots[slotIndex].ID;
 
 	}
 
-	internal bool HasItemInSlot()
+	public bool HasItemInSlot()
 	{
 
 		return slots[slotIndex].HasItem;
 
 	}
 
-	internal void TakeBlock(int value)
+	public void TakeItemFromSlot(int value)
 	{
 
 		slots[slotIndex].Take(value);
+
+	}
+
+	public int PutTakeToSlot(int value)
+	{
+
+		return slots[slotIndex].Put(value);
+
+	}
+
+	public void PutStackToSlot(ItemStack stack)
+	{
+
+		slots[slotIndex].PutStack(stack);
+
+	}
+
+	public void PutStack(ItemStack stack)
+	{
+
+		foreach (var slot in slots)
+		{
+
+			if (slot.ID == stack.ID)
+			{
+
+				int value = slot.Put(stack.Amount);
+
+				stack.Amount -= value;				
+
+				if (stack.Amount == 0)
+				{
+
+					break;
+
+				}
+
+			}
+			else if (!slot.HasItem)
+			{
+
+				slot.PutStack(stack);
+
+				break;
+
+			}
+
+		}		
 
 	}
 
