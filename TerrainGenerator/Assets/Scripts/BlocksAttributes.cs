@@ -9,9 +9,12 @@ public class BlocksAttributes : ScriptableObject
 	[SerializeField]
 	private Material material;
 	[SerializeField]
+	private Material transparentMaterial;
+	[SerializeField]
 	private BlockType[] blocktypes;
 	
 	public Material Material { get => material; }
+	public Material TransparentMaterial { get => transparentMaterial; }
 
 	[SerializeField]
 	private int textureAtlasSizeInBlocks;
@@ -25,7 +28,8 @@ public class BlocksAttributes : ScriptableObject
 
 	}
 
-	public BlockType[] Blocktypes { get => blocktypes; }	
+	public BlockType[] Blocktypes { get => blocktypes; }
+	
 }
 
 [System.Serializable]
@@ -33,6 +37,7 @@ public class BlockType
 {
 
 	public string blockName;
+	public bool isTransparent;
 	public bool isSolid;
 	public bool isLiquid;
 

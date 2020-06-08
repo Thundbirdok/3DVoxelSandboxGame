@@ -14,6 +14,7 @@ public class WorldAttributes : ScriptableObject
 	[SerializeField]
 	private int powerOfTwoOfWorldSizeInChunks = 0;
 
+	[Header("Bioms")]
 	[SerializeField]
 	private int sitesNumber = 0;
 
@@ -38,9 +39,9 @@ public class WorldAttributes : ScriptableObject
 	[SerializeField]
 	private int oceanHeight = 0;
 
+	[Header("Rivers")]
 	[SerializeField]
 	private int riverDepth = 0;
-
 
 	[SerializeField]
 	private int riverBrushRadius = 0;

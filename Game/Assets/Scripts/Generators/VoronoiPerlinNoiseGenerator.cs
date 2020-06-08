@@ -1,7 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 class VoronoiPerlinNoiseGenerator : IWorldGenerator
@@ -21,15 +18,17 @@ class VoronoiPerlinNoiseGenerator : IWorldGenerator
 
 		List<VoronoiDiagram.GraphEdge> Edges = SetBioms();
 
-		SetHeightMap();        
+		SetHeightMap();
 
-		SmoothingBorders(Edges);        
+		SmoothingBorders(Edges);
 
 		AddWater(Edges);
 
 		BuildTerrain();
 
 		AddSoil();
+
+		AddTrees();
 
 		world.UpdateChunks();
 
@@ -126,8 +125,8 @@ class VoronoiPerlinNoiseGenerator : IWorldGenerator
 		for (int i = 0; i < world.WorldAttributes.SitesNumber; ++i)
 		{
 
-			xVal[i] = Random.Range(0, world.WorldAttributes.WorldSizeInBlocks);
-			yVal[i] = Random.Range(0, world.WorldAttributes.WorldSizeInBlocks);
+			xVal[i] = UnityEngine.Random.Range(0, world.WorldAttributes.WorldSizeInBlocks);
+			yVal[i] = UnityEngine.Random.Range(0, world.WorldAttributes.WorldSizeInBlocks);
 
 		}
 
@@ -221,7 +220,7 @@ class VoronoiPerlinNoiseGenerator : IWorldGenerator
 				if (world.Bioms[x, z] == -2)
 				{
 
-					FillBorder(new Vector2Int(x, z), Random.Range(0, world.WorldAttributes.BiomeAttributes.Length));
+					FillBorder(new Vector2Int(x, z), UnityEngine.Random.Range(0, world.WorldAttributes.BiomeAttributes.Length));
 
 				}
 
@@ -264,7 +263,7 @@ class VoronoiPerlinNoiseGenerator : IWorldGenerator
 	}
 
 	private void SetHeightMap()
-	{        
+	{
 
 		heightMap = new int[world.WorldAttributes.WorldSizeInBlocks, world.WorldAttributes.WorldSizeInBlocks];
 
@@ -272,7 +271,7 @@ class VoronoiPerlinNoiseGenerator : IWorldGenerator
 		{
 
 			for (int z = 0; z < world.WorldAttributes.WorldSizeInBlocks; ++z)
-			{                
+			{
 
 				heightMap[x, z] = GetTerrainHeight(new Vector2Int(x, z));
 
@@ -280,7 +279,7 @@ class VoronoiPerlinNoiseGenerator : IWorldGenerator
 
 		}
 
-	}   
+	}
 
 	private int GetTerrainHeight(Vector2Int pos)
 	{
@@ -480,7 +479,7 @@ class VoronoiPerlinNoiseGenerator : IWorldGenerator
 
 			}
 
-		}        
+		}
 
 	}
 
@@ -679,7 +678,7 @@ class VoronoiPerlinNoiseGenerator : IWorldGenerator
 
 		world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, terrainHeight, InChunkCoord.y] = biome.MainVoxel;
 
-		int groundDepth = Random.Range(biome.GroundDepthMin, biome.GroundDepthMax + 1);
+		int groundDepth = UnityEngine.Random.Range(biome.GroundDepthMin, biome.GroundDepthMax + 1);
 
 		for (y = heightMap[pos.x, pos.y] - 1; y > heightMap[pos.x, pos.y] - groundDepth && y > 0; --y)
 		{
@@ -789,6 +788,108 @@ class VoronoiPerlinNoiseGenerator : IWorldGenerator
 		{
 
 			biomeB = 0;
+
+		}
+
+	}
+
+	private void AddTrees()
+	{
+
+		for (int x = 0; x < world.WorldAttributes.WorldSizeInBlocks; ++x)
+		{
+
+			for (int z = 0; z < world.WorldAttributes.WorldSizeInBlocks; ++z)
+			{
+
+				Vector2Int pos = new Vector2Int(x, z);
+
+				if (PerlinNoise.Get2DPerlin(world, pos, 0, world.WorldAttributes.BiomeAttributes[world.Bioms[x, z]].TreeZoneScale)
+					> world.WorldAttributes.BiomeAttributes[world.Bioms[x, z]].TreeZoneThrashold)
+				{
+
+					if (waterMap[x, z] == 0)
+					{
+
+						if (PerlinNoise.Get2DPerlin(world, pos, 0, world.WorldAttributes.BiomeAttributes[world.Bioms[x, z]].TreePlacementScale)
+							> world.WorldAttributes.BiomeAttributes[world.Bioms[x, z]].TreePlacementThrashold)
+						{
+
+							AddTree(pos);
+
+						}
+
+					}
+
+				}
+
+			}
+
+		}
+
+	}
+
+	private void AddTree(Vector2Int pos)
+	{
+
+		BiomeAttributes biome = world.WorldAttributes.BiomeAttributes[world.Bioms[pos.x, pos.y]];
+
+		int height = Random.Range(biome.TreeMinHeight, biome.TreeMaxHeight);
+
+		Vector2Int ChunkCoord = world.GetChunkCoord(pos);
+		Vector2Int InChunkCoord = world.GetInChunkCoord(pos);
+
+		for (int y = heightMap[pos.x, pos.y] + 1; y <= heightMap[pos.x, pos.y] + height; ++y)
+		{
+
+			world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, y, InChunkCoord.y] = 7;
+
+		}
+
+		AddComa(new Vector3Int(pos.x, heightMap[pos.x, pos.y] + height, pos.y), Mathf.RoundToInt(biome.ComaRadius * ((float)height / biome.TreeMaxHeight)));
+
+	}
+
+	private void AddComa(Vector3Int center, int radius)
+	{
+
+		for (int r = 1; r <= radius; ++r)
+		{
+
+			for (int x = -r; x <= r; ++x)
+			{
+
+				for (int y = -r; y <= r; ++y)
+				{
+
+					for (int z = -r; z <= r; ++z)
+					{
+
+						Vector3Int pos = new Vector3Int(center.x + x, center.y + y, center.z + z);
+
+						if (!world.IsVoxelInWorld(pos))
+						{
+
+							continue;
+
+						}
+
+
+						Vector2Int ChunkCoord = world.GetChunkCoord(pos);
+						Vector2Int InChunkCoord = world.GetInChunkCoord(pos);
+
+						if (Vector3Int.Distance(center, pos) <= radius && world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, pos.y, InChunkCoord.y] == 0)
+						{
+
+							world.Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, pos.y, InChunkCoord.y] = 13;
+
+						}
+
+					}
+
+				}
+
+			}
 
 		}
 

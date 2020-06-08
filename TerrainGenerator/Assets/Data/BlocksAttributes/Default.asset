@@ -13,8 +13,10 @@ MonoBehaviour:
   m_Name: Default
   m_EditorClassIdentifier: 
   material: {fileID: 2100000, guid: 97eeaa3f2c3d3774b991ce54fdc1fd76, type: 2}
+  transparentMaterial: {fileID: 2100000, guid: ab537beb9563f9740a4be964ad5efb2c, type: 2}
   blocktypes:
   - blockName: Air
+    isTransparent: 0
     isSolid: 0
     isLiquid: 0
     backFaceTexture: 0
@@ -24,6 +26,7 @@ MonoBehaviour:
     leftFaceTexture: 0
     rightFaceTexture: 0
   - blockName: Bedrock
+    isTransparent: 0
     isSolid: 1
     isLiquid: 0
     backFaceTexture: 9
@@ -33,6 +36,7 @@ MonoBehaviour:
     leftFaceTexture: 9
     rightFaceTexture: 9
   - blockName: Stone
+    isTransparent: 0
     isSolid: 1
     isLiquid: 0
     backFaceTexture: 0
@@ -42,6 +46,7 @@ MonoBehaviour:
     leftFaceTexture: 0
     rightFaceTexture: 0
   - blockName: Grass
+    isTransparent: 0
     isSolid: 1
     isLiquid: 0
     backFaceTexture: 2
@@ -51,6 +56,7 @@ MonoBehaviour:
     leftFaceTexture: 2
     rightFaceTexture: 2
   - blockName: Dirt
+    isTransparent: 0
     isSolid: 1
     isLiquid: 0
     backFaceTexture: 1
@@ -60,6 +66,7 @@ MonoBehaviour:
     leftFaceTexture: 1
     rightFaceTexture: 1
   - blockName: Cobblestone
+    isTransparent: 0
     isSolid: 1
     isLiquid: 0
     backFaceTexture: 8
@@ -69,6 +76,7 @@ MonoBehaviour:
     leftFaceTexture: 8
     rightFaceTexture: 8
   - blockName: Sand
+    isTransparent: 0
     isSolid: 1
     isLiquid: 0
     backFaceTexture: 10
@@ -78,6 +86,7 @@ MonoBehaviour:
     leftFaceTexture: 10
     rightFaceTexture: 10
   - blockName: Wood
+    isTransparent: 0
     isSolid: 1
     isLiquid: 0
     backFaceTexture: 5
@@ -87,6 +96,7 @@ MonoBehaviour:
     leftFaceTexture: 5
     rightFaceTexture: 5
   - blockName: Wood Plank
+    isTransparent: 0
     isSolid: 1
     isLiquid: 0
     backFaceTexture: 4
@@ -96,15 +106,17 @@ MonoBehaviour:
     leftFaceTexture: 4
     rightFaceTexture: 4
   - blockName: Water
+    isTransparent: 0
     isSolid: 1
     isLiquid: 1
-    backFaceTexture: 11
-    frontFaceTexture: 11
-    topFaceTexture: 11
-    bottomFaceTexture: 11
-    leftFaceTexture: 11
-    rightFaceTexture: 11
+    backFaceTexture: 17
+    frontFaceTexture: 17
+    topFaceTexture: 17
+    bottomFaceTexture: 17
+    leftFaceTexture: 17
+    rightFaceTexture: 17
   - blockName: Coal Ore
+    isTransparent: 0
     isSolid: 1
     isLiquid: 0
     backFaceTexture: 3
@@ -114,6 +126,7 @@ MonoBehaviour:
     leftFaceTexture: 3
     rightFaceTexture: 3
   - blockName: Furnace
+    isTransparent: 0
     isSolid: 1
     isLiquid: 0
     backFaceTexture: 13
@@ -123,6 +136,7 @@ MonoBehaviour:
     leftFaceTexture: 13
     rightFaceTexture: 13
   - blockName: Burning Furnace
+    isTransparent: 0
     isSolid: 1
     isLiquid: 0
     backFaceTexture: 13
@@ -131,4 +145,14 @@ MonoBehaviour:
     bottomFaceTexture: 15
     leftFaceTexture: 13
     rightFaceTexture: 13
-  textureAtlasSizeInBlocks: 4
+  - blockName: Leafs
+    isTransparent: 1
+    isSolid: 1
+    isLiquid: 0
+    backFaceTexture: 16
+    frontFaceTexture: 16
+    topFaceTexture: 16
+    bottomFaceTexture: 16
+    leftFaceTexture: 16
+    rightFaceTexture: 16
+  textureAtlasSizeInBlocks: 16

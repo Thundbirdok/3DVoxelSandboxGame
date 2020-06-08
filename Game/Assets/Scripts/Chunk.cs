@@ -17,6 +17,8 @@ public class Chunk
 	private int vertexIndex = 0;
 	private List<Vector3> vertices = new List<Vector3>();
 	private List<int> triangles = new List<int>();
+	List<int> transparentTriangles = new List<int>();
+	Material[] materials = new Material[2];
 	private List<Vector2> uvs = new List<Vector2>();
 
 	public byte[,,] Voxels;
@@ -53,11 +55,15 @@ public class Chunk
 
 	public Chunk(Vector2Int _coord, World _world)
 	{
+
 		world = _world;
 
 		coord = _coord;
 		chunkObject = new GameObject();
 		chunkObject.transform.position = new Vector3(coord.x * world.WorldAttributes.ChunkWidth, 0f, coord.y * world.WorldAttributes.ChunkWidth);
+
+		materials[0] = world.BlocksAttributes.Material;
+		materials[1] = world.BlocksAttributes.TransparentMaterial;
 
 		Voxels = new byte[world.WorldAttributes.ChunkWidth, world.WorldAttributes.ChunkHeight, world.WorldAttributes.ChunkWidth];
 
@@ -65,7 +71,7 @@ public class Chunk
 		meshFilter = chunkObject.AddComponent<MeshFilter>();
 
 		chunkObject.transform.SetParent(_world.transform);
-		meshRenderer.material = world.BlocksAttributes.Material;
+		meshRenderer.materials = materials;
 
 		chunkObject.name = coord.x + ", " + coord.y;
 
@@ -79,6 +85,7 @@ public class Chunk
 		vertexIndex = 0;
 		vertices.Clear();
 		triangles.Clear();
+		transparentTriangles.Clear();
 		uvs.Clear();
 
 	}
@@ -233,8 +240,30 @@ public class Chunk
 
 	}
 
+	private bool IsVoxelTransparent(Vector3 pos)
+	{
+
+		int x = Mathf.FloorToInt(pos.x);
+		int y = Mathf.FloorToInt(pos.y);
+		int z = Mathf.FloorToInt(pos.z);
+
+		if (x < 0 || x >= world.WorldAttributes.ChunkWidth || y < 0 || y >= world.WorldAttributes.ChunkHeight || z < 0 || z >= world.WorldAttributes.ChunkWidth)
+		{
+
+			return true;
+
+		}
+
+		return world.BlocksAttributes.Blocktypes[Voxels[x, y, z]].IsTransparent;
+
+	}
+
 	private void UpdateMeshData(Vector3 pos)
 	{
+
+		byte blockID = Voxels[(int)pos.x, (int)pos.y, (int)pos.z];
+
+		bool isTransparent = world.BlocksAttributes.Blocktypes[blockID].IsTransparent;
 
 		if (CheckVoxel(pos))
 		{
@@ -242,10 +271,8 @@ public class Chunk
 			for (int p = 0; p < 6; p++)
 			{
 
-				if (!CheckVoxel(pos + VoxelData.faceChecks[p]))
+				if (!CheckVoxel(pos + VoxelData.faceChecks[p]) || IsVoxelTransparent(pos + VoxelData.faceChecks[p]))
 				{
-
-					byte blockID = Voxels[(int)pos.x, (int)pos.y, (int)pos.z];
 
 					vertices.Add(pos + VoxelData.voxelVerts[VoxelData.voxelTris[p, 0]]);
 					vertices.Add(pos + VoxelData.voxelVerts[VoxelData.voxelTris[p, 1]]);
@@ -254,12 +281,25 @@ public class Chunk
 
 					AddTexture(world.BlocksAttributes.Blocktypes[blockID].GetTextureID(p));
 
-					triangles.Add(vertexIndex);
-					triangles.Add(vertexIndex + 1);
-					triangles.Add(vertexIndex + 2);
-					triangles.Add(vertexIndex + 2);
-					triangles.Add(vertexIndex + 1);
-					triangles.Add(vertexIndex + 3);
+					if (isTransparent)
+					{
+						transparentTriangles.Add(vertexIndex);
+						transparentTriangles.Add(vertexIndex + 1);
+						transparentTriangles.Add(vertexIndex + 2);
+						transparentTriangles.Add(vertexIndex + 2);
+						transparentTriangles.Add(vertexIndex + 1);
+						transparentTriangles.Add(vertexIndex + 3);
+					}
+					else
+					{
+						triangles.Add(vertexIndex);
+						triangles.Add(vertexIndex + 1);
+						triangles.Add(vertexIndex + 2);
+						triangles.Add(vertexIndex + 2);
+						triangles.Add(vertexIndex + 1);
+						triangles.Add(vertexIndex + 3);
+					}
+
 					vertexIndex += 4;
 
 				}
@@ -276,9 +316,14 @@ public class Chunk
 		Mesh mesh = new Mesh
 		{
 			vertices = vertices.ToArray(),
-			triangles = triangles.ToArray(),
-			uv = uvs.ToArray()
+
+			subMeshCount = 2
 		};
+
+		mesh.SetTriangles(triangles.ToArray(), 0);
+		mesh.SetTriangles(transparentTriangles.ToArray(), 1);
+
+		mesh.uv = uvs.ToArray();
 
 		mesh.RecalculateNormals();
 

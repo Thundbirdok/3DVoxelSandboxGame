@@ -9,9 +9,12 @@ public class BlocksAttributes : ScriptableObject
     [SerializeField]
     private Material material = null;
     [SerializeField]
+    private Material transparentMaterial = null;
+    [SerializeField]
     private BlockType[] blocktypes = null;
 
     public Material Material { get => material; }
+    public Material TransparentMaterial { get => transparentMaterial; }
 
     [SerializeField]
     private int textureAtlasSizeInBlocks = 0;
@@ -25,7 +28,7 @@ public class BlocksAttributes : ScriptableObject
 
     }
 
-    public BlockType[] Blocktypes { get => blocktypes; }
+    public BlockType[] Blocktypes { get => blocktypes; }    
 
     public BlockType GetBlock(byte ID)
     {
@@ -55,8 +58,10 @@ public class BlockType
     private string blockName = null;
 
     [SerializeField]
-    private byte id = 0;    
+    private byte id = 0;
 
+    [SerializeField]
+    private bool isTransparent = false;
     [SerializeField]
     private bool isSolid = false;
     [SerializeField]
@@ -89,7 +94,8 @@ public class BlockType
     private int rightFaceTexture = 0;
 
     public string BlockName { get => blockName; }
-    public byte ID { get => id; }    
+    public byte ID { get => id; }
+    public bool IsTransparent { get => isTransparent; }
     public bool IsSolid { get => isSolid; }
     public bool IsLiquid { get => isLiquid; }
     public float Durability { get => durability; }
