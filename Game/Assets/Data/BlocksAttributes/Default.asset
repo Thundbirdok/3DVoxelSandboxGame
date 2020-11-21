@@ -1,0 +1,228 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ead9703ddec522b4b8efc9651582efb8, type: 3}
+  m_Name: Default
+  m_EditorClassIdentifier: 
+  material: {fileID: 2100000, guid: 97eeaa3f2c3d3774b991ce54fdc1fd76, type: 2}
+  transparentMaterial: {fileID: 2100000, guid: 0f136a2d5dbb5c94596e0b27327dc6c0, type: 2}
+  blocktypes:
+  - blockName: Air
+    id: 0
+    isTransparent: 0
+    isSolid: 0
+    isLiquid: 0
+    durability: 0
+    targetTool: 0
+    drop: 0
+    icon: {fileID: 0}
+    backFaceTexture: 0
+    frontFaceTexture: 0
+    topFaceTexture: 0
+    bottomFaceTexture: 0
+    leftFaceTexture: 0
+    rightFaceTexture: 0
+  - blockName: Bedrock
+    id: 1
+    isTransparent: 0
+    isSolid: 1
+    isLiquid: 0
+    durability: 0
+    targetTool: 0
+    drop: 0
+    icon: {fileID: 1668631880078830459, guid: da7f4993bf9ff7e4fa973e8d95990d69, type: 3}
+    backFaceTexture: 9
+    frontFaceTexture: 9
+    topFaceTexture: 9
+    bottomFaceTexture: 9
+    leftFaceTexture: 9
+    rightFaceTexture: 9
+  - blockName: Stone
+    id: 2
+    isTransparent: 0
+    isSolid: 1
+    isLiquid: 0
+    durability: 5
+    targetTool: 2
+    drop: 5
+    icon: {fileID: 2531585740214343497, guid: da7f4993bf9ff7e4fa973e8d95990d69, type: 3}
+    backFaceTexture: 0
+    frontFaceTexture: 0
+    topFaceTexture: 0
+    bottomFaceTexture: 0
+    leftFaceTexture: 0
+    rightFaceTexture: 0
+  - blockName: Grass
+    id: 3
+    isTransparent: 0
+    isSolid: 1
+    isLiquid: 0
+    durability: 1.5
+    targetTool: 3
+    drop: 4
+    icon: {fileID: 5431833053050669182, guid: da7f4993bf9ff7e4fa973e8d95990d69, type: 3}
+    backFaceTexture: 2
+    frontFaceTexture: 2
+    topFaceTexture: 7
+    bottomFaceTexture: 1
+    leftFaceTexture: 2
+    rightFaceTexture: 2
+  - blockName: Dirt
+    id: 4
+    isTransparent: 0
+    isSolid: 1
+    isLiquid: 0
+    durability: 1.5
+    targetTool: 3
+    drop: 4
+    icon: {fileID: -3137509097769737148, guid: da7f4993bf9ff7e4fa973e8d95990d69, type: 3}
+    backFaceTexture: 1
+    frontFaceTexture: 1
+    topFaceTexture: 1
+    bottomFaceTexture: 1
+    leftFaceTexture: 1
+    rightFaceTexture: 1
+  - blockName: Cobblestone
+    id: 5
+    isTransparent: 0
+    isSolid: 1
+    isLiquid: 0
+    durability: 3
+    targetTool: 2
+    drop: 5
+    icon: {fileID: -180753191933307767, guid: da7f4993bf9ff7e4fa973e8d95990d69, type: 3}
+    backFaceTexture: 8
+    frontFaceTexture: 8
+    topFaceTexture: 8
+    bottomFaceTexture: 8
+    leftFaceTexture: 8
+    rightFaceTexture: 8
+  - blockName: Sand
+    id: 6
+    isTransparent: 0
+    isSolid: 1
+    isLiquid: 0
+    durability: 1.5
+    targetTool: 3
+    drop: 6
+    icon: {fileID: 4163173834195617304, guid: da7f4993bf9ff7e4fa973e8d95990d69, type: 3}
+    backFaceTexture: 10
+    frontFaceTexture: 10
+    topFaceTexture: 10
+    bottomFaceTexture: 10
+    leftFaceTexture: 10
+    rightFaceTexture: 10
+  - blockName: Wood
+    id: 7
+    isTransparent: 0
+    isSolid: 1
+    isLiquid: 0
+    durability: 2
+    targetTool: 1
+    drop: 7
+    icon: {fileID: 7101808556078131587, guid: da7f4993bf9ff7e4fa973e8d95990d69, type: 3}
+    backFaceTexture: 5
+    frontFaceTexture: 5
+    topFaceTexture: 6
+    bottomFaceTexture: 6
+    leftFaceTexture: 5
+    rightFaceTexture: 5
+  - blockName: Wood Plank
+    id: 8
+    isTransparent: 0
+    isSolid: 1
+    isLiquid: 0
+    durability: 2
+    targetTool: 1
+    drop: 7
+    icon: {fileID: 2633313143589470460, guid: da7f4993bf9ff7e4fa973e8d95990d69, type: 3}
+    backFaceTexture: 4
+    frontFaceTexture: 4
+    topFaceTexture: 4
+    bottomFaceTexture: 4
+    leftFaceTexture: 4
+    rightFaceTexture: 4
+  - blockName: Water
+    id: 9
+    isTransparent: 0
+    isSolid: 1
+    isLiquid: 1
+    durability: 0
+    targetTool: 0
+    drop: 0
+    icon: {fileID: 0}
+    backFaceTexture: 17
+    frontFaceTexture: 17
+    topFaceTexture: 17
+    bottomFaceTexture: 17
+    leftFaceTexture: 17
+    rightFaceTexture: 17
+  - blockName: Coal Ore
+    id: 10
+    isTransparent: 0
+    isSolid: 1
+    isLiquid: 0
+    durability: 3
+    targetTool: 2
+    drop: 10
+    icon: {fileID: 0}
+    backFaceTexture: 3
+    frontFaceTexture: 3
+    topFaceTexture: 3
+    bottomFaceTexture: 3
+    leftFaceTexture: 3
+    rightFaceTexture: 3
+  - blockName: Furnace
+    id: 11
+    isTransparent: 0
+    isSolid: 1
+    isLiquid: 0
+    durability: 3
+    targetTool: 2
+    drop: 11
+    icon: {fileID: 0}
+    backFaceTexture: 13
+    frontFaceTexture: 12
+    topFaceTexture: 15
+    bottomFaceTexture: 15
+    leftFaceTexture: 13
+    rightFaceTexture: 13
+  - blockName: Burning Furnace
+    id: 12
+    isTransparent: 0
+    isSolid: 1
+    isLiquid: 0
+    durability: 3
+    targetTool: 2
+    drop: 11
+    icon: {fileID: 0}
+    backFaceTexture: 13
+    frontFaceTexture: 14
+    topFaceTexture: 15
+    bottomFaceTexture: 15
+    leftFaceTexture: 13
+    rightFaceTexture: 13
+  - blockName: Leafs
+    id: 13
+    isTransparent: 1
+    isSolid: 1
+    isLiquid: 0
+    durability: 0.5
+    targetTool: 0
+    drop: 0
+    icon: {fileID: 0}
+    backFaceTexture: 16
+    frontFaceTexture: 16
+    topFaceTexture: 16
+    bottomFaceTexture: 16
+    leftFaceTexture: 16
+    rightFaceTexture: 16
+  textureAtlasSizeInBlocks: 16

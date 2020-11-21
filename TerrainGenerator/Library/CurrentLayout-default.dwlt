@@ -139,7 +139,7 @@ MonoBehaviour:
   m_MinSize: {x: 436, y: 494}
   m_MaxSize: {x: 14006, y: 14044}
   vertical: 1
-  controlID: 55
+  controlID: 89
 --- !u!114 &7
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -358,9 +358,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: 460.1422, y: -146.76688, z: 580.28815}
+    m_Target: {x: -447.31155, y: -1.8451884, z: -59.08821}
     speed: 2
-    m_Value: {x: 460.1422, y: -146.76688, z: 580.28815}
+    m_Value: {x: -447.31155, y: -1.8451884, z: -59.08821}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -389,9 +389,9 @@ MonoBehaviour:
       speed: 2
       m_Value: 0
   m_Rotation:
-    m_Target: {x: -0.14296426, y: -0.26074177, z: 0.040625963, w: -0.9564517}
+    m_Target: {x: -0.026449155, y: 0.78458786, z: -0.021632368, w: -0.62359226}
     speed: 2
-    m_Value: {x: -0.1440471, y: -0.26004684, z: 0.040920943, w: -0.95391387}
+    m_Value: {x: -0.026407568, y: 0.78146154, z: -0.021532325, w: -0.62302244}
   m_Size:
     m_Target: 620.20557
     speed: 2
@@ -507,18 +507,18 @@ MonoBehaviour:
       y: 17
       width: 663
       height: 539
-    m_Scale: {x: 1.0609, y: 1.0609}
-    m_Translation: {x: 351.5361, y: 263.43958}
+    m_Scale: {x: 1.092727, y: 1.092727}
+    m_Translation: {x: 342.8222, y: 259.37277}
     m_MarginLeft: 0
     m_MarginRight: 0
     m_MarginTop: 0
     m_MarginBottom: 0
     m_LastShownAreaInsideMargins:
       serializedVersion: 2
-      x: -331.3565
-      y: -248.31708
-      width: 624.9411
-      height: 508.0592
+      x: -313.7309
+      y: -237.36284
+      width: 606.73895
+      height: 493.26138
     m_MinimalGUI: 1
   m_defaultScale: 1
   m_TargetTexture: {fileID: 0}
@@ -567,20 +567,20 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets
+    - Assets/Data/WorldAttributes
   m_ViewMode: 1
   m_StartGridSize: 64
   m_LastFolders:
-  - Assets
+  - Assets/Data/WorldAttributes
   m_LastFoldersGridSize: -1
   m_LastProjectPath: E:\Projects\3DVoxelSandboxGame\TerrainGenerator
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
     scrollPos: {x: 0, y: 0}
-    m_SelectedIDs: 0a2f0000
-    m_LastClickedID: 12042
-    m_ExpandedIDs: 000000000a2f0000dc2f00001030000000ca9a3b
+    m_SelectedIDs: 38300000
+    m_LastClickedID: 12344
+    m_ExpandedIDs: 00000000162d0000ea2d00001e2e000000ca9a3b
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -608,7 +608,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 000000000a2f0000dc2f000010300000
+    m_ExpandedIDs: 00000000162d0000ea2d00001e2e0000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -719,9 +719,9 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: 0a2f0000
+      m_SelectedIDs: 562d0000
       m_LastClickedID: 0
-      m_ExpandedIDs: 2cfbffff
+      m_ExpandedIDs: 6efbffff
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 

@@ -24,7 +24,6 @@ MonoBehaviour:
   smoothingCheckBrushRadius: 2
   oceanHeight: 25
   riverDepth: 4
-  riverPart: 20
   riverBrushRadius: 3
   riverBrushScale: 0.5
   biomeAttributes:
@@ -36,7 +35,14 @@ MonoBehaviour:
     groundDepthMin: 0
     groundDepthMax: 2
     biomeScale: 0.3
-    octavesNumber: 3
+    octavesNumber: 1
+    treeMinHeight: 0
+    treeMaxHeight: 0
+    comaRadius: 0
+    treeZoneScale: 0
+    treeZoneThrashold: 1
+    treePlacementScale: 0
+    treePlacementThrashold: 1
   - biomeName: Plain
     mainVoxel: 3
     secondVoxel: 4
@@ -46,6 +52,13 @@ MonoBehaviour:
     groundDepthMax: 6
     biomeScale: 0.2
     octavesNumber: 3
+    treeMinHeight: 5
+    treeMaxHeight: 12
+    comaRadius: 4
+    treeZoneScale: 1.5
+    treeZoneThrashold: 0.6
+    treePlacementScale: 12
+    treePlacementThrashold: 0.8
   - biomeName: Desert
     mainVoxel: 6
     secondVoxel: 6
@@ -55,3 +68,10 @@ MonoBehaviour:
     groundDepthMax: 20
     biomeScale: 0.5
     octavesNumber: 2
+    treeMinHeight: 0
+    treeMaxHeight: 0
+    comaRadius: 0
+    treeZoneScale: 1
+    treeZoneThrashold: 1
+    treePlacementScale: 0
+    treePlacementThrashold: 1

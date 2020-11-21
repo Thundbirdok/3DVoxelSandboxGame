@@ -225,6 +225,16 @@ public class World : MonoBehaviour
 
 	}
 
+	public void SetVoxel(Vector3 pos, byte id)
+	{
+
+		Vector2Int ChunkCoord = GetChunkCoord(pos);
+		Vector2Int InChunkCoord = GetInChunkCoord(pos);
+
+		Chunks[ChunkCoord.x, ChunkCoord.y].Voxels[InChunkCoord.x, Mathf.FloorToInt(pos.y), InChunkCoord.y] = 7;
+
+	}
+
 	internal void UpdateChunks()
 	{
 
