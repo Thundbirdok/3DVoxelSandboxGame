@@ -98,7 +98,12 @@ public class Player : MonoBehaviour
 			}
 
 			transform.Rotate(Vector3.up * mouseHorizontal);
-			cam.Rotate(Vector3.right * -mouseVertical);
+
+			mouseVertical = Mathf.Clamp(mouseVertical, -85, 85);
+			var euler = cam.transform.localEulerAngles;
+			euler.x = mouseVertical;
+			cam.transform.localEulerAngles = euler;			
+
 			transform.Translate(velocity, Space.World);
 
 		}
@@ -200,7 +205,7 @@ public class Player : MonoBehaviour
 		horizontal = Input.GetAxis("Horizontal");
 		vertical = Input.GetAxis("Vertical");
 		mouseHorizontal = Input.GetAxis("Mouse X");
-		mouseVertical = Input.GetAxis("Mouse Y");
+		mouseVertical -= Input.GetAxis("Mouse Y");
 
 		if (Input.GetButtonDown("Sprint") && isGrounded)
 		{
